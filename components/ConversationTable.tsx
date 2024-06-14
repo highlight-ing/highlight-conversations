@@ -12,6 +12,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  FilterFn,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
@@ -35,17 +36,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FilterFn } from '@tanstack/react-table';
 import { conversations, ConversationData } from "../data/conversations";
 
 const multiColumnFilter: FilterFn<ConversationData> = (row, columnId, filterValue) => {
-    const name = row.getValue('name') as string;
-    const description = row.getValue('description') as string;
-    return (
-      name.toLowerCase().includes(filterValue.toLowerCase()) ||
-      description.toLowerCase().includes(filterValue.toLowerCase())
-    );
-  };
+  const name = row.getValue('name') as string;
+  const description = row.getValue('description') as string;
+  return (
+    name.toLowerCase().includes(filterValue.toLowerCase()) ||
+    description.toLowerCase().includes(filterValue.toLowerCase())
+  );
+};
 
 export const columns: ColumnDef<ConversationData>[] = [
   {
@@ -76,6 +76,7 @@ export const columns: ColumnDef<ConversationData>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="text-white"
       >
         Name
         <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -89,6 +90,7 @@ export const columns: ColumnDef<ConversationData>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="text-white"
       >
         Date
         <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -101,6 +103,7 @@ export const columns: ColumnDef<ConversationData>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="text-white"
       >
         Description
         <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -114,6 +117,7 @@ export const columns: ColumnDef<ConversationData>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="text-white"
       >
         Audio Length
         <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -190,25 +194,24 @@ export function ConversationTable() {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full min-h-screen background text-neutral-100">
+      <header className="py-4">
+        <h1 className="text-center text-3xl font-bold">Conversations</h1>
+      </header>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter by name or description"
-          value={
-            (table.getColumn("name")?.getFilterValue() as string) ?? 
-            (table.getColumn("description")?.getFilterValue() as string) ??
-            ""
-        }
+          placeholder="Filter by name or description..."
+          value={(table.getColumn("description")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
             const value = event.target.value;
             table.getColumn("name")?.setFilterValue(value);
             table.getColumn("description")?.setFilterValue(value);
           }}
-          className="max-w-sm"
+          className="max-w-sm bg-neutral-900 text-neutral-200"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto text-neutral-200 bg-neutral-900 hover:bg-neutral-600">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -220,7 +223,7 @@ export function ConversationTable() {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
+                    className="capitalize text-white"
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
@@ -234,20 +237,26 @@ export function ConversationTable() {
         </DropdownMenu>
         <Button
           variant="destructive"
-          className="ml-4"
+          className="ml-4 bg-red-400 hover:bg-red-700"
           onClick={handleDeleteSelected}
         >
           Delete Selected
         </Button>
+        <Button
+          className="ml-4 bg-emerald-400 hover:bg-emerald-300 text- font-bold py-2 px-4 rounded"
+          onClick={() => console.log("New Conversation")}
+        >
+          + New Conversation
+        </Button>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border border-neutral-600">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="bg-neutral-900">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -266,9 +275,10 @@ export function ConversationTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="bg-neutral-800 hover:bg-neutral-800"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="border-neutral-700">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -291,7 +301,7 @@ export function ConversationTable() {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        <div className="flex-1 text-sm text-neutral-400">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
@@ -301,6 +311,7 @@ export function ConversationTable() {
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="bg-neutral-800 hover:bg-neutral-600 text-neutral-100"
           >
             Previous
           </Button>
@@ -309,6 +320,7 @@ export function ConversationTable() {
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="bg-neutral-800 hover:bg-neutral-600 text-neutral-100"
           >
             Next
           </Button>
@@ -317,4 +329,5 @@ export function ConversationTable() {
     </div>
   );
 }
+
 export default ConversationTable;
