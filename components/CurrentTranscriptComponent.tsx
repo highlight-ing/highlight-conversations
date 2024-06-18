@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchMicActivity } from '../services/audioService';
 
 type CurrentTranscriptComponentProps = {
   transcript: string;
@@ -6,9 +7,22 @@ type CurrentTranscriptComponentProps = {
 };
 
 const CurrentTranscriptComponent: React.FC<CurrentTranscriptComponentProps> = ({ transcript, isWaiting }) => {
+  const [micActivity, setMicActivity] = useState<number>(0);
+  useEffect(() => {
+    const pollMicActivity = async () => {
+      const activity = await fetchMicActivity();
+      setMicActivity(activity);
+    };
+
+    const intervalId = setInterval(pollMicActivity, 100); // Poll every second
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
   return (
     <div className="current-transcript p-4 bg-gray-900 text-white rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-2">Current Transcription</h2>
+      <h2 className="text-xl font-bold mb-2 flex items-center">
+        Current Transcription ({micActivity})
+      </h2>
       <div className="transcript-content mb-4 h-64 overflow-y-auto p-2 border border-gray-700 rounded-lg bg-gray-800">
         {transcript.split('\n').map((line, index) => (
           <p key={index} className="text-sm">

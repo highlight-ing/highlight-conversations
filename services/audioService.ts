@@ -43,3 +43,9 @@ export const fetchTranscript = async (
     setIsWaiting(true);
   }
 };
+
+export const fetchMicActivity = async (): Promise<number> => {
+  const micActivity = await Highlight.user.getMicActivity(300);
+  console.log("Fetched mic activity:", micActivity);
+  return micActivity;
+};
