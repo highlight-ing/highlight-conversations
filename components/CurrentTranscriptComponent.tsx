@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchMicActivity } from '../services/audioService';
+import MicActivityAnimation from './MicActivityAnimation';
 
 type CurrentTranscriptComponentProps = {
   transcript: string;
@@ -20,6 +21,8 @@ const CurrentTranscriptComponent: React.FC<CurrentTranscriptComponentProps> = ({
   }, []);
   return (
     <div className="current-transcript p-4 bg-gray-900 text-white rounded-lg shadow-md">
+      <MicActivityAnimation micActivity={micActivity} />
+
       <h2 className="text-xl font-bold mb-2 flex items-center">
         Current Transcription ({micActivity})
       </h2>

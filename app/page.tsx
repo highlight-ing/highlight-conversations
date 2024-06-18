@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { fetchTranscript } from '../services/audioService';
+import React, { useState, useEffect, useRef } from 'react';
+import { fetchTranscript, fetchMicActivity } from '../services/audioService';
 import ConversationTable from '../components/table/data-table';
 import CurrentTranscriptComponent from '../components/CurrentTranscriptComponent';
 import { ConversationData } from '../data/conversations';
@@ -10,16 +10,43 @@ const HomePage: React.FC = () => {
   const [conversations, setConversations] = useState<ConversationData[]>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [micActivity, setMicActivity] = useState<number>(0);
+  const micActivityRef = useRef<number>(micActivity);
+  const activityDurationRef = useRef<number>(0);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchTranscript(currentTranscript, setCurrentTranscript, setConversations, setIsWaiting, timeoutId, setTimeoutId);
-    }, 30000); // 30 seconds
-
-    return () => {
-      clearInterval(intervalId);
-      if (timeoutId) clearTimeout(timeoutId);
+    const pollMicActivity = async () => {
+      const activity = await fetchMicActivity();
+      setMicActivity(activity);
     };
+
+    const intervalId = setInterval(pollMicActivity, 100); // Poll every 100 ms
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
+
+  useEffect(() => {
+    const checkMicActivity = () => {
+      if (micActivityRef.current === 0 || micActivityRef.current === 1) {
+        activityDurationRef.current += 1;
+      } else {
+        activityDurationRef.current = 0;
+      }
+
+      if (activityDurationRef.current >= 15) {
+        if (timeoutId) clearTimeout(timeoutId);
+        const newTimeoutId = setTimeout(() => {
+          setIsWaiting(true);
+          fetchTranscript(currentTranscript, setCurrentTranscript, setConversations, setIsWaiting, timeoutId, setTimeoutId);
+        }, 0);
+        setTimeoutId(newTimeoutId);
+        activityDurationRef.current = 0;
+      }
+    };
+
+    const intervalId = setInterval(checkMicActivity, 1000); // Check every second
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, [currentTranscript, timeoutId]);
 
   return (
