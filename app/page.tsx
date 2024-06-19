@@ -1,12 +1,12 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
-import { fetchTranscript, fetchMicActivity } from '../services/audioService';
-import ConversationTable from '../components/table/data-table';
-import CurrentTranscriptComponent from '../components/CurrentTranscriptComponent';
-import { ConversationData } from '../data/conversations';
+import React, { useState, useEffect, useRef } from "react";
+import { fetchTranscript, fetchMicActivity } from "../services/audioService";
+import ConversationTable from "../components/table/data-table";
+import CurrentTranscriptComponent from "../components/CurrentTranscriptComponent";
+import { ConversationData } from "../data/conversations";
 
 const HomePage: React.FC = () => {
-  const [currentTranscript, setCurrentTranscript] = useState<string>('');
+  const [currentTranscript, setCurrentTranscript] = useState<string>("");
   const [conversations, setConversations] = useState<ConversationData[]>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
@@ -33,11 +33,19 @@ const HomePage: React.FC = () => {
         activityDurationRef.current = 0;
       }
 
-      if (activityDurationRef.current >= 15) {
+      if (activityDurationRef.current >= 10) {
+        console.log('activityDurationRef.current', activityDurationRef.current);
         if (timeoutId) clearTimeout(timeoutId);
         const newTimeoutId = setTimeout(() => {
           setIsWaiting(true);
-          fetchTranscript(currentTranscript, setCurrentTranscript, setConversations, setIsWaiting, timeoutId, setTimeoutId);
+          fetchTranscript(
+            currentTranscript,
+            setCurrentTranscript,
+            setConversations,
+            setIsWaiting,
+            timeoutId,
+            setTimeoutId,
+          );
         }, 0);
         setTimeoutId(newTimeoutId);
         activityDurationRef.current = 0;
@@ -50,13 +58,16 @@ const HomePage: React.FC = () => {
   }, [currentTranscript, timeoutId]);
 
   return (
-    <div className="w-full min-h-screen bg-gray-900 text-neutral-100">
+    <div className="flex min-h-screen w-full">
       <header className="py-4">
-        <h1 className="text-center text-3xl font-bold">Conversations</h1>
       </header>
-      <div className="p-4">
-        <CurrentTranscriptComponent transcript={currentTranscript} isWaiting={isWaiting} />
-        <ConversationTable conversations={conversations} />
+      <div className="py-4">
+      <h1 className="text-center text-3xl font-bold">Conversations</h1>
+        <CurrentTranscriptComponent
+          transcript={currentTranscript}
+          isWaiting={isWaiting}
+        />
+        <ConversationTable conversations={ conversations } />
       </div>
     </div>
   );

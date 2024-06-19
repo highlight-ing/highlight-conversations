@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { fetchMicActivity } from '../services/audioService';
-import MicActivityAnimation from './MicActivityAnimation';
+import React, { useState, useEffect } from "react";
+import { fetchMicActivity } from "../services/audioService";
+import AnimatedAudioEnergy from "./AnimatedAudioEnergy";
 
 type CurrentTranscriptComponentProps = {
   transcript: string;
   isWaiting: boolean;
 };
 
-const CurrentTranscriptComponent: React.FC<CurrentTranscriptComponentProps> = ({ transcript, isWaiting }) => {
+const CurrentTranscriptComponent: React.FC<CurrentTranscriptComponentProps> = ({
+  transcript,
+  isWaiting,
+}) => {
   const [micActivity, setMicActivity] = useState<number>(0);
   useEffect(() => {
     const pollMicActivity = async () => {
@@ -15,19 +18,22 @@ const CurrentTranscriptComponent: React.FC<CurrentTranscriptComponentProps> = ({
       setMicActivity(activity);
     };
 
-    const intervalId = setInterval(pollMicActivity, 100); // Poll every second
+    const intervalId = setInterval(pollMicActivity, 100); // Poll every 100 ms
 
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
   return (
-    <div className="current-transcript p-4 bg-gray-900 text-white rounded-lg shadow-md">
-      <MicActivityAnimation micActivity={micActivity} />
-
-      <h2 className="text-xl font-bold mb-2 flex items-center">
-        Current Transcription ({micActivity})
-      </h2>
-      <div className="transcript-content mb-4 h-64 overflow-y-auto p-2 border border-gray-700 rounded-lg bg-gray-800">
-        {transcript.split('\n').map((line, index) => (
+    <div className="current-transcript rounded-lg p-4 shadow-md">
+      <div className="justify-left flex items-center">
+        <h2 className="mb-2 flex items-center text-xl font-bold">
+          Current Transcription ({micActivity})
+        </h2>
+        <div className="">
+          <AnimatedAudioEnergy maxHeight={20} micActivity={micActivity} />
+        </div>
+      </div>
+      <div className="transcript-content mb-4 h-64 overflow-y-auto rounded-lg border border-gray-700 p-2">
+        {transcript.split("\n").map((line, index) => (
           <p key={index} className="text-sm">
             {line}
           </p>
@@ -36,7 +42,7 @@ const CurrentTranscriptComponent: React.FC<CurrentTranscriptComponentProps> = ({
       {isWaiting ? (
         <div className="waiting-indicator flex items-center">
           <svg
-            className="animate-spin mr-2 h-5 w-5 text-gray-400"
+            className="mr-2 h-5 w-5 animate-spin text-gray-400"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -58,7 +64,7 @@ const CurrentTranscriptComponent: React.FC<CurrentTranscriptComponentProps> = ({
           <span className="text-gray-400">Waiting for the next batch...</span>
         </div>
       ) : (
-        <div className="text-green-400">Receiving audio data...</div>
+        <div className="text-brand">Receiving audio data...</div>
       )}
     </div>
   );
