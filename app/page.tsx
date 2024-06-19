@@ -4,6 +4,8 @@ import { fetchTranscript, fetchMicActivity } from "../services/audioService";
 import ConversationTable from "../components/table/data-table";
 import CurrentTranscriptComponent from "../components/CurrentTranscriptComponent";
 import { ConversationData } from "../data/conversations";
+import Header from "../components/Header/Header";
+import Head from "next/head";
 
 const HomePage: React.FC = () => {
   const [currentTranscript, setCurrentTranscript] = useState<string>("");
@@ -13,6 +15,7 @@ const HomePage: React.FC = () => {
   const [micActivity, setMicActivity] = useState<number>(0);
   const micActivityRef = useRef<number>(micActivity);
   const activityDurationRef = useRef<number>(0);
+  const [autoClearValue, setAutoClearValue] = useState(1);
 
   useEffect(() => {
     const pollMicActivity = async () => {
@@ -59,15 +62,8 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full">
-      <header className="py-4">
-      </header>
-      <div className="py-4">
-      <h1 className="text-center text-3xl font-bold">Conversations</h1>
-        <CurrentTranscriptComponent
-          transcript={currentTranscript}
-          isWaiting={isWaiting}
-        />
-        <ConversationTable conversations={ conversations } />
+        <Header autoClearValue={autoClearValue} onAutoClearValueChange={setAutoClearValue} />
+      <div>
       </div>
     </div>
   );
