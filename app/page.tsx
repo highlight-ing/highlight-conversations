@@ -3,13 +3,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { fetchTranscript, fetchMicActivity } from "../services/audioService";
 import ConversationTable from "../components/table/data-table";
 import CurrentTranscriptComponent from "../components/CurrentTranscriptComponent";
-import { ConversationData } from "../data/conversations";
+import { ConversationData, mockConversations } from "../data/conversations";
 import Header from "../components/Header/Header";
 import Head from "next/head";
+import ConversationGrid from "../components/Card/ConversationGrid";
 
 const HomePage: React.FC = () => {
   const [currentTranscript, setCurrentTranscript] = useState<string>("");
-  const [conversations, setConversations] = useState<ConversationData[]>([]);
+  const [conversations, setConversations] =
+    useState<ConversationData[]>(mockConversations);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [micActivity, setMicActivity] = useState<number>(0);
@@ -37,7 +39,7 @@ const HomePage: React.FC = () => {
       }
 
       if (activityDurationRef.current >= 10) {
-        console.log('activityDurationRef.current', activityDurationRef.current);
+        console.log("activityDurationRef.current", activityDurationRef.current);
         if (timeoutId) clearTimeout(timeoutId);
         const newTimeoutId = setTimeout(() => {
           setIsWaiting(true);
@@ -61,10 +63,12 @@ const HomePage: React.FC = () => {
   }, [currentTranscript, timeoutId]);
 
   return (
-    <div className="flex min-h-screen w-full">
-        <Header autoClearValue={autoClearValue} onAutoClearValueChange={setAutoClearValue} />
-      <div>
-      </div>
+    <div className="flex min-h-screen w-full flex-col">
+      <Header
+        autoClearValue={autoClearValue}
+        onAutoClearValueChange={setAutoClearValue}
+      />
+      <ConversationGrid conversations={conversations} />
     </div>
   );
 };

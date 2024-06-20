@@ -11,4 +11,12 @@ export interface ConversationData {
 }
 
 // Initialize with empty array or some mock data if needed
-export const conversations: ConversationData[] = [];
+export const mockConversations: ConversationData[] = [
+  {
+    id: "1",
+    summary: "Summary 1",
+    timestamp: "June 12, 2024 03:28pm",
+    topic: "Topic 1",
+    transcript: "Transcript 1",
+  },
+];
