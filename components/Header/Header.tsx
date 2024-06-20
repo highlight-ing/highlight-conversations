@@ -1,14 +1,17 @@
 // components/Header.tsx
-import React, { useState } from "react";
+import React from "react";
 import AutoClearSelection from "./AutoClearSelection";
 
-const Header: React.FC = () => {
-  const [autoClearValue, setAutoClearValue] = useState(1);
+interface HeaderProps {
+  autoClearValue: number;
+  onAutoClearValueChange: (value: number) => void;
+}
 
+const Header: React.FC<HeaderProps> = ({ autoClearValue, onAutoClearValueChange }) => {
   return (
-    <div className="fixed left-0 right-0 top-0 flex w-full items-center justify-between p-4 flex-col">
+    <div className="w-full flex items-center justify-between p-4">
       <h1 className="px-2 text-left">Conversations</h1>
-      <AutoClearSelection value={autoClearValue} onChange={setAutoClearValue} />
+      <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
     </div>
   );
 };
