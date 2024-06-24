@@ -9,7 +9,7 @@ const POLL_TRANSCRIPT_INTERVAL = 29000; // Poll every 29 seconds
 const IDLE_THRESHOLD = 150; // 15 seconds (150 * 100ms) of low activity to consider conversation ended
 
 interface ConversationsManagerProps {
-    onMicActivityChange: (activity: number) => void;
+  onMicActivityChange: (activity: number) => void;
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivityChange }) => {
@@ -39,7 +39,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
 
   const pollTranscription = useCallback(async () => {
     const transcript = await fetchTranscript();
-    
+
     if (transcript) {
       setCurrentConversation(prev => prev.trim() + ' ' + transcript.trim());
     }
@@ -57,8 +57,14 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
     return () => clearInterval(intervalId);
   }, [pollTranscription]);
 
+  //   console.log("Setting segment status callback inside conversations manager");
+  //   setSegmentStatusCallback((current, total) => {
+  //     console.log("Segments: ", current, total);
+  //   });
+  // }, []);
+
   return (
-    <ConversationGrid 
+    <ConversationGrid
       currentConversation={currentConversation}
       conversations={conversations}
       micActivity={micActivity}

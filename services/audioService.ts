@@ -1,5 +1,7 @@
 // services/audioService.ts
 import Highlight from "@highlight-ai/app-runtime";
+import { HighlightContext } from "@highlight-ai/app-runtime";
+import api from "@highlight-ai/app-runtime";
 
 export const fetchTranscript = async (): Promise<string | null> => {
   let transcript = await Highlight.user.getAudio(false);
@@ -25,7 +27,16 @@ export const setTranscriptionCallback = (callback: (text: string, startTime: num
 export const setSegmentStatusCallback = (callback: (current: number, total: number) => void) => {
   try {
     console.log("Setting segment status callback");
-    Highlight.user.setSegmentStatusCallback(callback);
+
+    api.addEventListener("onContext", (context: HighlightContext) => {
+      // You should perform some logic here using the context.
+      const focusedAppTitle = context.application.focusedWindow.title;
+      console.log("Context update:", context);
+    });
+
+    api.addEventListener("segment-status-update", (event) => {
+      console.log("Segment status update:", event);
+    });
   } catch (error) {
     console.error("Failed to set segment status callback:", error);
   }
