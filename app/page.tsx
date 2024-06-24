@@ -1,12 +1,21 @@
 "use client"
 // pages/index.tsx (or your main page component)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header/Header';
-import ConversationGrid from '@/components/Card/ConversationGrid';
-import {ConversationData, mockConversations } from '@/data/conversations';
+import ConversationsManager from '@/components/ConversationManager/ConversationManager';
+import { setAsrRealtime } from '@/services/audioService';
 
 const MainPage: React.FC = () => {
   const [autoClearValue, setAutoClearValue] = useState(1);
+  const [micActivity, setMicActivity] = useState(0);
+
+  const handleMicActivityChange = (activity: number) => {
+    setMicActivity(activity);
+  }
+
+  useEffect(() => {
+    setAsrRealtime(false);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -15,7 +24,8 @@ const MainPage: React.FC = () => {
         onAutoClearValueChange={setAutoClearValue}
       />
       <main className="flex-grow p-4">
-        <ConversationGrid conversations={mockConversations} />
+        <ConversationsManager onMicActivityChange={handleMicActivityChange} />
+        <h2>Mic Activity: {micActivity}</h2>
       </main>
     </div>
   );

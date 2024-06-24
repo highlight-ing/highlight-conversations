@@ -24,6 +24,10 @@ const config = {
       },
       colors: {
         border: "hsl(var(--border))",
+        borderColor: {
+          brand: "hsl(var(--brand))",
+          "brand-light": "hsl(var(--brand-light))",
+        },
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
@@ -39,6 +43,10 @@ const config = {
         brand: {
           DEFAULT: "hsl(var(--brand))",
           foreground: "hsl(var(--brand-foreground))",
+        },
+        brandLight: {
+          DEFAULT: "hsl(var(--brand-light))",
+          foreground: "hsl(var(--brand-light-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

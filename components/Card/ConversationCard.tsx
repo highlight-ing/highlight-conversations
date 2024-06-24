@@ -14,18 +14,20 @@ import {
     conversation: ConversationData;
   }
 
-  const ConversationCard = ({ conversation }: ConversationCardProps) => {
+  const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{conversation.summary}</CardTitle>
-                <CardDescription>{conversation.timestamp}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p>{conversation.transcript}</p>
-            </CardContent>
-        </Card>
-    )
-  }
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>{conversation.topic || 'Untitled Conversation'}</CardTitle>
+          <CardDescription>{conversation.timestamp}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 overflow-y-auto">
+            <p>{conversation.transcript}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   export default ConversationCard;
