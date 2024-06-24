@@ -58,6 +58,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
   }, [pollMicActivity]);
 
   useEffect(() => {
+    console.log("Setting segment status callback inside conversations manager");
     setSegmentStatusCallback((current, total) => {
       console.log("Segments: ", current, total);
     });
