@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchTranscript, fetchMicActivity, setTranscriptionCallback, setSegmentStatusCallback } from '../../services/audioService';
+import { fetchTranscript, fetchMicActivity } from '../../services/audioService';
 import { ConversationData, mockConversations } from '../../data/conversations';
 import ConversationGrid from '../Card/ConversationGrid';
 import { v4 as uuidv4 } from 'uuid';
 
 const POLL_MIC_INTERVAL = 100; // Poll every 100 ms
-const POLL_TRANSCRIPT_INTERVAL = 30000; // Poll every 30 seconds
+const POLL_TRANSCRIPT_INTERVAL = 29000; // Poll every 29 seconds
 const IDLE_THRESHOLD = 150; // 15 seconds (150 * 100ms) of low activity to consider conversation ended
 
 interface ConversationsManagerProps {
@@ -15,11 +15,7 @@ interface ConversationsManagerProps {
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivityChange }) => {
   const [currentConversation, setCurrentConversation] = useState('');
   const [conversations, setConversations] = useState<ConversationData[]>(mockConversations);
-  const [lastTranscript, setLastTranscript] = useState('');
   const [micActivity, setMicActivity] = useState(0);
-  const [remainingSegments, setRemainingSegments] = useState<number>(0);
-  const [latestTranscript, setLatestTranscript] = useState<string>('');
-
   const idleCountRef = useRef(0);
 
   const pollMicActivity = useCallback(async () => {
@@ -41,15 +37,13 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
     }
   }, [onMicActivityChange, currentConversation]);
 
-  // const pollTranscription = useCallback(async () => {
-  //   const transcript = await fetchTranscript();
+  const pollTranscription = useCallback(async () => {
+    const transcript = await fetchTranscript();
     
-  //   if (transcript && transcript !== lastTranscript) {
-  //     console.log("New Transcript: ", transcript);
-  //     setCurrentConversation(prev => prev.trim() + ' ' + transcript.trim());
-  //     setLastTranscript(transcript);
-  //   }
-  // }, [lastTranscript]);
+    if (transcript) {
+      setCurrentConversation(prev => prev.trim() + ' ' + transcript.trim());
+    }
+  }, []);
 
   // Effect for polling mic activity
   useEffect(() => {
@@ -57,31 +51,11 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
     return () => clearInterval(intervalId);
   }, [pollMicActivity]);
 
+  // Effect for polling transcription
   useEffect(() => {
-    setSegmentStatusCallback((current, total) => {
-      console.log("Segments: ", current, total);
-    });
-  }, []);
-
-  // // Effect for polling transcription
-  // useEffect(() => {
-  //   const intervalId = setInterval(pollTranscription, POLL_TRANSCRIPT_INTERVAL);
-  //   return () => clearInterval(intervalId);
-  // }, [pollTranscription]);
-
-  // useEffect(() => {
-  //   setupASRCallbacks(
-  //     (segments: number) => {
-  //       console.log("Segments: ", segments);
-  //       setRemainingSegments(segments);
-  //     },
-  //     (text: string, startTime: number, endTime: number) => {
-  //       setCurrentConversation(prev => prev + text);
-  //       setLatestTranscript(text);
-  //       console.log(`Transcript from ${new Date(startTime).toISOString()} to ${new Date(endTime).toISOString()}`);
-  //     }
-  //   );
-  // }, []);
+    const intervalId = setInterval(pollTranscription, POLL_TRANSCRIPT_INTERVAL);
+    return () => clearInterval(intervalId);
+  }, [pollTranscription]);
 
   return (
     <ConversationGrid 

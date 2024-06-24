@@ -14,20 +14,25 @@ import {
     conversation: ConversationData;
   }
 
-  const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>{conversation.topic || 'Untitled Conversation'}</CardTitle>
-          <CardDescription>{conversation.timestamp}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 overflow-y-auto">
-            <p>{conversation.transcript}</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
+import { Button } from "@/components/ui/button";
+
+const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => {
+  return (
+    <Card className="w-full flex flex-col">
+      <CardHeader>
+        <CardTitle>{conversation.topic || 'Untitled Conversation'}</CardTitle>
+        <CardDescription>{conversation.timestamp}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow flex flex-col">
+        <div className="h-64 overflow-y-auto mb-4">
+          <p>{conversation.transcript}</p>
+        </div>
+        <Button className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand))/0.9]">
+          Prompt
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
 
   export default ConversationCard;
