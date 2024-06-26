@@ -57,12 +57,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
     return () => clearInterval(intervalId);
   }, [pollTranscription]);
 
-  //   console.log("Setting segment status callback inside conversations manager");
-  //   setSegmentStatusCallback((current, total) => {
-  //     console.log("Segments: ", current, total);
-  //   });
-  // }, []);
-
   return (
     <ConversationGrid
       currentConversation={currentConversation}
