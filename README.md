@@ -11,7 +11,8 @@ npm install && npm run dev
 ```
 
 ### You'll need to be running the main Highlight app for this app to work.
-### Make sure that `@highlight-ai/app-runtime` package is at least `0.0.22`
+### Make sure that `@highlight-ai/app-runtime` package is at least `0.0.23`
+### Fetching transcripts have changed slightly with latest (06/27) build on highlight, will need to adjust in this app -- Auto clear conversations is set to minutes not specified days (for easier testing) if you see your cards disappear quickly
 
 ## Triage
 

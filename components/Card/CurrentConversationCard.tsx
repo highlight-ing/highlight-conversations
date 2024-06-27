@@ -23,7 +23,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   const skeletonCorner = "rounded-lg";
 
   return (
-    <Card className={`w-full border-2 ${borderClass} transition-all duration-300`}>
+    <Card className={`w-full border-2 ${borderClass} transition-all duration-300 bg-border/50`}>
       <CardHeader>
         <CardTitle>Current Conversation</CardTitle>
       </CardHeader>
