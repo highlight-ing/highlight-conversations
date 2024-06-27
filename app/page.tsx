@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Header from '@/components/Header/Header'
 import ConversationsManager from '@/components/ConversationManager/ConversationManager'
 import { setAsrRealtime } from '@/services/audioService'
@@ -8,10 +8,37 @@ import { ConversationData } from '@/data/conversations'
 import { saveConversations, loadConversations } from '@/utils/localStorage'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
 
+const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
+// TODO: - set to false or remove for production
+const IS_TEST_MODE = true
+const AUTO_CLEAR_POLL = 60000
+
+
+const clearOldConversations = (
+  conversations: ConversationData[],
+  autoClearValue: number,
+  isTestMode: boolean
+): ConversationData[] => {
+  const now = new Date()
+  return conversations.filter((conversation) => {
+    if (isTestMode) {
+      return minutesDifference(conversation.timestamp, now) < autoClearValue
+    } else {
+      return daysDifference(conversation.timestamp, now) < autoClearValue
+    }
+  })
+}
+
 const MainPage: React.FC = () => {
-  const [autoClearValue, setAutoClearValue] = useState(1)
+  const [autoClearValue, setAutoClearValue] = useState<number>(() => {
+    const storedValue = localStorage.getItem(AUTO_CLEAR_VALUE_KEY)
+    return storedValue ? parseInt(storedValue, 10) : 1
+  })
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
+
+  const conversationsRef = useRef(conversations)
+  const autoClearValueRef = useRef(autoClearValue)
 
   // Load saved conversations from Local Storage
   useEffect(() => {
@@ -35,31 +62,25 @@ const MainPage: React.FC = () => {
 
   const handleAutoClearValueChange = (value: number) => {
     setAutoClearValue(value)
+    localStorage.setItem(AUTO_CLEAR_VALUE_KEY, value.toString())
   }
 
-  // TODO: - for testing purposes only, remove for production
-  const clearOldConversationsMinutes = useCallback(() => {
-    const now = new Date()
-    const updatedConversations = conversations.filter((conversation) => {
-      return minutesDifference(conversation.timestamp, now) < autoClearValue
-    })
-    setConversations(updatedConversations)
-  }, [autoClearValue, conversations])
-
-  const clearOldConversationsDays = useCallback(() => {
-    const now = new Date()
-    const updatedConversations = conversations.filter((conversation) => {
-      return daysDifference(conversation.timestamp, now) < autoClearValue
-    })
-    setConversations(updatedConversations)
-  }, [autoClearValue, conversations])
-
+  // Clear old conversations on load and at regular intervals
   useEffect(() => {
-    const intervalId = setInterval(clearOldConversationsMinutes, 10000) // Check every 10 seconds
-    return () => {
-      clearInterval(intervalId)
+    const clearConversations = () => {
+      const updatedConversations = clearOldConversations(
+        conversationsRef.current,
+        autoClearValueRef.current,
+        IS_TEST_MODE
+      )
+      setConversations(updatedConversations)
     }
-  }, [clearOldConversationsMinutes])
+
+    clearConversations() // Clear on load
+
+    const intervalId = setInterval(clearConversations, AUTO_CLEAR_POLL)
+    return () => clearInterval(intervalId)
+  }, [])
 
   const addConversation = useCallback((newConversation: Omit<ConversationData, 'timestamp'>) => {
     const conversationWithCurrentTimestamp = {

@@ -5,6 +5,7 @@ import ConversationGrid from "../Card/ConversationGrid"
 
 const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
 const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
+//TODO: - make this setable and probably default to like 30 seconds
 const IDLE_THRESHOLD = 150 // 15 seconds (150 * 100ms) of low activity to consider conversation ended
 
 interface ConversationsManagerProps {
