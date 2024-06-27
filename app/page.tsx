@@ -102,7 +102,6 @@ const MainPage: React.FC = () => {
           conversations={conversations}
           addConversation={addConversation}
         />
-        <h2>Mic Activity: {micActivity}</h2>
       </main>
     </div>
   )

@@ -15,14 +15,39 @@ interface AutoClearSelectionProps {
   onChange: (value: number) => void;
 }
 
+const getAutoClearLabel = (days: number): string => {
+  switch (days) {
+    case 1:
+      return "day";
+    case 7:
+      return "week";
+    case 14:
+      return "2 weeks";
+    case 21:
+      return "3 weeks";
+    case 30:
+      return "month";
+    default:
+      return `${days} days`;
+  }
+};
+
 const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
   value,
   onChange,
 }) => {
-  const options = Array.from({ length: 30 }, (_, i) => ({
-    label: `${i + 1} days`,
-    value: i + 1,
-  }))
+  const options = [
+    { value: 1, label: "Day" },
+    { value: 2, label: "2 Days" },
+    { value: 3, label: "3 Days" },
+    { value: 4, label: "4 Days" },
+    { value: 5, label: "5 Days" },
+    { value: 6, label: "6 Days" },
+    { value: 7, label: "Week" },
+    { value: 14, label: "2 Weeks" },
+    { value: 21, label: "3 Weeks" },
+    { value: 30, label: "Month" },
+  ];
 
   return (
     <div>
