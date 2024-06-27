@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchTranscript, fetchMicActivity } from "../../services/audioService";
-import { ConversationData, mockConversations } from "../../data/conversations";
-import ConversationGrid from "../Card/ConversationGrid";
-import { v4 as uuidv4 } from "uuid";
+import React, { useState, useEffect, useCallback, useRef } from "react"
+import { fetchTranscript, fetchMicActivity } from "../../services/audioService"
+import { ConversationData, mockConversations } from "../../data/conversations"
+import ConversationGrid from "../Card/ConversationGrid"
+import { v4 as uuidv4 } from "uuid"
+import { saveConversations, loadConversations } from "../../utils/localStorage"
 
-const POLL_MIC_INTERVAL = 100; // Poll every 100 ms
-const POLL_TRANSCRIPT_INTERVAL = 29000; // Poll every 29 seconds
-const IDLE_THRESHOLD = 150; // 15 seconds (150 * 100ms) of low activity to consider conversation ended
+const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
+const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
+const IDLE_THRESHOLD = 150 // 15 seconds (150 * 100ms) of low activity to consider conversation ended
 
 interface ConversationsManagerProps {
   onMicActivityChange: (activity: number) => void;
@@ -17,12 +18,19 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 }) => {
   const [currentConversation, setCurrentConversation] = useState("");
   const [conversations, setConversations] =
-    useState<ConversationData[]>(mockConversations);
+    useState<ConversationData[]>([]);
   const [micActivity, setMicActivity] = useState(0);
   const [isWaitingForTranscript, setIsWaitingForTranscript] = useState(false);
   const idleCountRef = useRef(0);
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Load conversations from LocalStorage on component mount
+  useEffect(() => {
+    const storedConversations = loadConversations();
+    setConversations(storedConversations);
+  }, []);
+
+  // Poll Mic Activity to triggle idle threshold and save conversation
   const pollMicActivity = useCallback(async () => {
     const activity = await fetchMicActivity();
     setMicActivity(activity);
@@ -36,12 +44,17 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
     if (idleCountRef.current >= IDLE_THRESHOLD && currentConversation.trim()) {
       const newConversation = createConversation(currentConversation);
-      setConversations((prev) => [newConversation, ...prev]);
+      setConversations((prev) => {
+        const updatedConversations = [newConversation, ...prev];
+        saveConversations(updatedConversations); // Save to LocalStorage
+        return updatedConversations;
+      });
       setCurrentConversation("");
       idleCountRef.current = 0;
     }
   }, [onMicActivityChange, currentConversation]);
 
+  // Poll Highlight api for transcripts
   const pollTranscription = useCallback(async () => {
     setIsWaitingForTranscript(false);
     try {
@@ -80,11 +93,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       }
     };
   }, [pollTranscription]);
-
-  // Test for isWaitingForTranscript
-  useEffect(() => {
-    console.log("isWaitingForTranscript changed:", isWaitingForTranscript);
-  }, [isWaitingForTranscript]);
 
   return (
     <ConversationGrid
