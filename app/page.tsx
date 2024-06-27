@@ -1,76 +1,110 @@
-"use client";
-import React, { useState, useEffect, useRef } from "react";
-import { fetchTranscript, fetchMicActivity } from "../services/audioService";
-import ConversationTable from "../components/table/data-table";
-import CurrentTranscriptComponent from "../components/CurrentTranscriptComponent";
-import { ConversationData } from "../data/conversations";
+"use client"
 
-const HomePage: React.FC = () => {
-  const [currentTranscript, setCurrentTranscript] = useState<string>("");
-  const [conversations, setConversations] = useState<ConversationData[]>([]);
-  const [isWaiting, setIsWaiting] = useState<boolean>(false);
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-  const [micActivity, setMicActivity] = useState<number>(0);
-  const micActivityRef = useRef<number>(micActivity);
-  const activityDurationRef = useRef<number>(0);
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import Header from '@/components/Header/Header'
+import ConversationsManager from '@/components/ConversationManager/ConversationManager'
+import { setAsrRealtime } from '@/services/audioService'
+import { ConversationData } from '@/data/conversations'
+import { saveConversations, loadConversations } from '@/utils/localStorage'
+import { minutesDifference, daysDifference } from '@/utils/dateUtils'
 
+const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
+// TODO: - set to false or remove for production
+const IS_TEST_MODE = true
+const AUTO_CLEAR_POLL = 60000
+
+
+const clearOldConversations = (
+  conversations: ConversationData[],
+  autoClearValue: number,
+  isTestMode: boolean
+): ConversationData[] => {
+  const now = new Date()
+  return conversations.filter((conversation) => {
+    if (isTestMode) {
+      return minutesDifference(conversation.timestamp, now) < autoClearValue
+    } else {
+      return daysDifference(conversation.timestamp, now) < autoClearValue
+    }
+  })
+}
+
+const MainPage: React.FC = () => {
+  const [autoClearValue, setAutoClearValue] = useState<number>(() => {
+    const storedValue = localStorage.getItem(AUTO_CLEAR_VALUE_KEY)
+    return storedValue ? parseInt(storedValue, 10) : 1
+  })
+  const [micActivity, setMicActivity] = useState(0)
+  const [conversations, setConversations] = useState<ConversationData[]>([])
+
+  const conversationsRef = useRef(conversations)
+  const autoClearValueRef = useRef(autoClearValue)
+
+  // Load saved conversations from Local Storage
   useEffect(() => {
-    const pollMicActivity = async () => {
-      const activity = await fetchMicActivity();
-      setMicActivity(activity);
-    };
+    const storedConversations = loadConversations()
+    setConversations(storedConversations)
+  }, [])
 
-    const intervalId = setInterval(pollMicActivity, 100); // Poll every 100 ms
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, []);
-
+  // Save conversations to Local Storage whenever they change
   useEffect(() => {
-    const checkMicActivity = () => {
-      if (micActivityRef.current === 0 || micActivityRef.current === 1) {
-        activityDurationRef.current += 1;
-      } else {
-        activityDurationRef.current = 0;
-      }
+    saveConversations(conversations)
+  }, [conversations])
 
-      if (activityDurationRef.current >= 10) {
-        console.log('activityDurationRef.current', activityDurationRef.current);
-        if (timeoutId) clearTimeout(timeoutId);
-        const newTimeoutId = setTimeout(() => {
-          setIsWaiting(true);
-          fetchTranscript(
-            currentTranscript,
-            setCurrentTranscript,
-            setConversations,
-            setIsWaiting,
-            timeoutId,
-            setTimeoutId,
-          );
-        }, 0);
-        setTimeoutId(newTimeoutId);
-        activityDurationRef.current = 0;
-      }
-    };
+  // Set ASR Realtime effect TODO: Deprecate?
+  useEffect(() => {
+    setAsrRealtime(false)
+  }, [])
 
-    const intervalId = setInterval(checkMicActivity, 1000); // Check every second
+  const handleMicActivityChange = (activity: number) => {
+    setMicActivity(activity)
+  }
 
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, [currentTranscript, timeoutId]);
+  const handleAutoClearValueChange = (value: number) => {
+    setAutoClearValue(value)
+    localStorage.setItem(AUTO_CLEAR_VALUE_KEY, value.toString())
+  }
+
+  // Clear old conversations on load and at regular intervals
+  useEffect(() => {
+    const clearConversations = () => {
+      const updatedConversations = clearOldConversations(
+        conversationsRef.current,
+        autoClearValueRef.current,
+        IS_TEST_MODE
+      )
+      setConversations(updatedConversations)
+    }
+
+    clearConversations() // Clear on load
+
+    const intervalId = setInterval(clearConversations, AUTO_CLEAR_POLL)
+    return () => clearInterval(intervalId)
+  }, [])
+
+  const addConversation = useCallback((newConversation: Omit<ConversationData, 'timestamp'>) => {
+    const conversationWithCurrentTimestamp = {
+      ...newConversation,
+      timestamp: new Date()
+    }
+    setConversations(prevConversations => [conversationWithCurrentTimestamp, ...prevConversations])
+  }, [])
 
   return (
-    <div className="flex min-h-screen w-full">
-      <header className="py-4">
-      </header>
-      <div className="py-4">
-      <h1 className="text-center text-3xl font-bold">Conversations</h1>
-        <CurrentTranscriptComponent
-          transcript={currentTranscript}
-          isWaiting={isWaiting}
+    <div className="flex flex-col min-h-screen">
+      <Header
+        autoClearValue={autoClearValue}
+        onAutoClearValueChange={handleAutoClearValueChange}
+      />
+      <main className="flex-grow p-4">
+        <ConversationsManager 
+          onMicActivityChange={handleMicActivityChange}
+          conversations={conversations}
+          addConversation={addConversation}
         />
-        <ConversationTable conversations={ conversations } />
-      </div>
+      </main>
     </div>
-  );
-};
+  )
+}
 
-export default HomePage;
+export default MainPage

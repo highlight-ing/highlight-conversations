@@ -17,6 +17,7 @@
       --card-foreground: 0 0% 98%;
   
       --border: 0 0% 14.9%;
+      --border-gray: 0 0% 86.3%;
       --input: 0 0% 14.9%;
       --radius: 0.3rem;
   
@@ -36,6 +37,7 @@
   
       --brand: 151 82% 61%;
       --brand-foreground: 151 82% 9.3%;
+      --brand-light: 151 82% 81%;
   
       --discord: 235 86% 65%;
       --discord-foreground: 235 43% 99.3%;

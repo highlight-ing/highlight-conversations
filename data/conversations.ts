@@ -1,14 +1,21 @@
 // data/conversations.ts
-//TODO: Temporary skeleton data
+import { v4 as uuidv4 } from "uuid"
 
-// types/conversation.ts
 export interface ConversationData {
-  id: string; // UUID
-  summary: string;
-  timestamp: string; // e.g., "June 12, 2024 03:28pm"
-  topic: string;
-  transcript: string;
+  id: string // UUID
+  summary: string
+  timestamp: Date
+  topic: string
+  transcript: string
 }
 
-// Initialize with empty array or some mock data if needed
-export const conversations: ConversationData[] = [];
+export const createConversation = (transcript: string): ConversationData => {
+  let uuid = uuidv4();
+  return {
+    id: uuid,
+    summary: transcript.slice(0, 50),
+    topic: uuid.slice(0, 4),
+    transcript: transcript,
+    timestamp: new Date(),
+  }
+}

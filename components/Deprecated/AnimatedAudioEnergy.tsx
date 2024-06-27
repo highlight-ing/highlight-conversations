@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, useAnimation } from "framer-motion";
 import styled from "styled-components";
-import { HighlightTheme } from "../styles/HighlightTheme";
+import { HighlightTheme } from "../../styles/HighlightTheme";
 
 interface AnimatedAudioEnergyProps {
     maxHeight?: number;
