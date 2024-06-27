@@ -24,8 +24,12 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => 
         <CardDescription>{conversation.timestamp}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col">
-        <div className="h-64 overflow-y-auto mb-4">
-          <p>{conversation.transcript}</p>
+        <div className="relative mb-4 h-64">
+          <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none"></div>
+          <div className="h-full overflow-y-auto scrollbar-hide">
+            <p className="px-1">{conversation.transcript}</p>
+          </div>
         </div>
         <Button className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand))/0.9]">
           Prompt
