@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { AnimatePresence } from "framer-motion";
 import Header from '@/components/Header/Header'
 import ConversationsManager from '@/components/ConversationManager/ConversationManager'
 import { setAsrRealtime } from '@/services/audioService'
@@ -12,7 +13,6 @@ const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = true
 const AUTO_CLEAR_POLL = 60000
-
 
 const clearOldConversations = (
   conversations: ConversationData[],
@@ -30,15 +30,20 @@ const clearOldConversations = (
 }
 
 const MainPage: React.FC = () => {
-  const [autoClearValue, setAutoClearValue] = useState<number>(() => {
-    const storedValue = localStorage.getItem(AUTO_CLEAR_VALUE_KEY)
-    return storedValue ? parseInt(storedValue, 10) : 1
-  })
+  const [autoClearValue, setAutoClearValue] = useState<number>(1)
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
 
   const conversationsRef = useRef(conversations)
   const autoClearValueRef = useRef(autoClearValue)
+
+    // Use useEffect to set the initial autoClearValue from localStorage
+    useEffect(() => {
+      const storedValue = localStorage.getItem(AUTO_CLEAR_VALUE_KEY)
+      if (storedValue) {
+        setAutoClearValue(parseInt(storedValue, 10))
+      }
+    }, [])
 
   // Load saved conversations from Local Storage
   useEffect(() => {
@@ -90,6 +95,15 @@ const MainPage: React.FC = () => {
     setConversations(prevConversations => [conversationWithCurrentTimestamp, ...prevConversations])
   }, [])
 
+
+  const deleteConversation = useCallback((id: string) => {
+    setConversations(prevConversations => {
+      const updatedConversations = prevConversations.filter(conv => conv.id !== id);
+      saveConversations(updatedConversations);
+      return updatedConversations;
+    });
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header
@@ -97,11 +111,14 @@ const MainPage: React.FC = () => {
         onAutoClearValueChange={handleAutoClearValueChange}
       />
       <main className="flex-grow p-4">
+        <AnimatePresence>
         <ConversationsManager 
           onMicActivityChange={handleMicActivityChange}
           conversations={conversations}
           addConversation={addConversation}
+          onDeleteConversation={deleteConversation}
         />
+        </AnimatePresence>
       </main>
     </div>
   )

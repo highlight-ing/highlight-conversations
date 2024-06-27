@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { ConversationData } from "@/data/conversations";
 import useScrollGradient from "@/hooks/useScrollGradient";
 import { formatTimestamp } from "@/utils/dateUtils";
+import { FaTrash } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 import {
     Card,
@@ -13,18 +15,30 @@ import {
   } from "@/components/ui/card"
 
   interface ConversationCardProps {
-    conversation: ConversationData;
+    conversation: ConversationData
+    onDelete: (id: string) => void
   }
 
 import { Button } from "@/components/ui/button";
 
-const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => {
+const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDelete }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
 
   return (
-    <Card className="w-full flex flex-col">
+    <motion.div
+    initial={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.8 }}
+    transition={{ duration: 0.3 }}
+    >
+    <Card className="w-full flex flex-col relative">
     <CardHeader>
+    <button
+      onClick={() => onDelete(conversation.id)}
+      className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition-colors duration-200"
+    >
+      <FaTrash size={16} />
+    </button>
       <CardTitle>{conversation.topic || 'Untitled Conversation'}</CardTitle>
       <CardDescription>{formatTimestamp(conversation.timestamp)}</CardDescription>
     </CardHeader>
@@ -48,7 +62,8 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => 
       </Button>
     </CardContent>
   </Card>
+  </motion.div>
 );
 };
 
-  export default ConversationCard;
+export default ConversationCard;

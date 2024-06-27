@@ -12,12 +12,14 @@ interface ConversationsManagerProps {
   onMicActivityChange: (activity: number) => void;
   conversations: ConversationData[]
   addConversation: (conversations: ConversationData) => void
+  onDeleteConversation: (id: string) => void
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   onMicActivityChange,
   conversations,
   addConversation,
+  onDeleteConversation,
 }) => {
   const [currentConversation, setCurrentConversation] = useState("");
   const [micActivity, setMicActivity] = useState(0);
@@ -91,6 +93,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       conversations={conversations}
       micActivity={micActivity}
       isWaitingForTranscript={isWaitingForTranscript}
+      onDeleteConversation={onDeleteConversation}
     />
   )
 }

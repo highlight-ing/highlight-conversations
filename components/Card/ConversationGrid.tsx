@@ -1,12 +1,15 @@
+import React from "react"
+import { AnimatePresence, motion } from "framer-motion";
 import ConversationCard from "./ConversationCard";
 import CurrentConversationCard from "./CurrentConversationCard";
 import { ConversationData } from "@/data/conversations";
 
 interface ConversationGridProps {
-  currentConversation: string;
-  conversations: ConversationData[];
-  micActivity: number;
-  isWaitingForTranscript: boolean;
+  currentConversation: string
+  conversations: ConversationData[]
+  micActivity: number
+  isWaitingForTranscript: boolean
+  onDeleteConversation: (id: string) => void
 }
 
 const ConversationGrid: React.FC<ConversationGridProps> = ({
@@ -14,6 +17,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   conversations,
   micActivity,
   isWaitingForTranscript,
+  onDeleteConversation,
 }) => {
   return (
     <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -22,9 +26,23 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
         micActivity={micActivity}
         isWaitingForTranscript={isWaitingForTranscript}
       />
+      <AnimatePresence>
       {conversations.map((conversation) => (
-        <ConversationCard key={conversation.id} conversation={conversation} />
+        <motion.div
+        key={conversation.id}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.3 }}
+        >
+          <ConversationCard 
+          key={conversation.id} 
+          conversation={conversation}
+          onDelete={onDeleteConversation} 
+          />
+        </motion.div>
       ))}
+      </AnimatePresence>
     </div>
   );
 };
