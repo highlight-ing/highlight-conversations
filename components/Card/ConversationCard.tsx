@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ConversationData } from "@/data/conversations";
+import useScrollGradient from "@/hooks/useScrollGradient";
 
 import {
     Card,
@@ -18,27 +19,7 @@ import { Button } from "@/components/ui/button";
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [showTopGradient, setShowTopGradient] = useState(false);
-  const [showBottomGradient, setShowBottomGradient] = useState(false);
-
-  const handleScroll = () => {
-    const element = scrollRef.current
-    if (element) {
-      setShowTopGradient(element.scrollTop > 0)
-      setShowBottomGradient(
-        element.scrollHeight - element.clientHeight > element.scrollTop
-      )
-    }
-  };
-
-  useEffect(() => {
-    const element = scrollRef.current
-    if (element) {
-      element.addEventListener("scroll", handleScroll)
-      handleScroll()
-    }
-    return () => element?.removeEventListener("scroll", handleScroll)
-  }, [conversation.transcript])
+  const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
 
   return (
     <Card className="w-full flex flex-col">
@@ -57,7 +38,6 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => 
         <div 
           ref={scrollRef}
           className="h-full overflow-y-auto scrollbar-hide"
-          onScroll={handleScroll}
         >
           <p className="px-1">{conversation.transcript}</p>
         </div>
