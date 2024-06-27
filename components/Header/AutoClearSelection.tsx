@@ -20,9 +20,9 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
   onChange,
 }) => {
   const options = Array.from({ length: 30 }, (_, i) => ({
-    label: `${i + 1}`,
+    label: `${i + 1} days`,
     value: i + 1,
-  }));
+  }))
 
   return (
     <div>
@@ -30,15 +30,16 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
         <label className="mr-2" htmlFor="autoClearSelection">Auto Clear Conversations every:</label>
         <Select
           onValueChange={(selectedValue) => onChange(parseInt(selectedValue))}
+          value={value.toString()}
         >
-          <SelectTrigger className="w-[100px]">
-            <SelectValue placeholder="7" />
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder="Select" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {options.map((option) => (
                 <SelectItem key={option.value} value={option.value.toString()}>
-                  <SelectLabel>{option.label}</SelectLabel>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -46,7 +47,7 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
         </Select>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default AutoClearSelection;

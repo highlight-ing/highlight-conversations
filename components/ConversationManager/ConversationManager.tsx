@@ -11,24 +11,20 @@ const IDLE_THRESHOLD = 150 // 15 seconds (150 * 100ms) of low activity to consid
 
 interface ConversationsManagerProps {
   onMicActivityChange: (activity: number) => void;
+  conversations: ConversationData[]
+  addConversation: (conversations: ConversationData) => void
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   onMicActivityChange,
+  conversations,
+  addConversation,
 }) => {
   const [currentConversation, setCurrentConversation] = useState("");
-  const [conversations, setConversations] =
-    useState<ConversationData[]>([]);
   const [micActivity, setMicActivity] = useState(0);
   const [isWaitingForTranscript, setIsWaitingForTranscript] = useState(false);
   const idleCountRef = useRef(0);
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Load conversations from LocalStorage on component mount
-  useEffect(() => {
-    const storedConversations = loadConversations();
-    setConversations(storedConversations);
-  }, []);
 
   // Poll Mic Activity to triggle idle threshold and save conversation
   const pollMicActivity = useCallback(async () => {
@@ -43,16 +39,12 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     }
 
     if (idleCountRef.current >= IDLE_THRESHOLD && currentConversation.trim()) {
-      const newConversation = createConversation(currentConversation);
-      setConversations((prev) => {
-        const updatedConversations = [newConversation, ...prev];
-        saveConversations(updatedConversations); // Save to LocalStorage
-        return updatedConversations;
-      });
-      setCurrentConversation("");
-      idleCountRef.current = 0;
+      const newConversation = createConversation(currentConversation)
+      addConversation(newConversation)
+      setCurrentConversation("")
+      idleCountRef.current = 0
     }
-  }, [onMicActivityChange, currentConversation]);
+  }, [onMicActivityChange, currentConversation, addConversation])
 
   // Poll Highlight api for transcripts
   const pollTranscription = useCallback(async () => {
@@ -101,8 +93,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       micActivity={micActivity}
       isWaitingForTranscript={isWaitingForTranscript}
     />
-  );
-};
+  )
+}
 
 const createConversation = (transcript: string): ConversationData => {
   let uuid = uuidv4();
