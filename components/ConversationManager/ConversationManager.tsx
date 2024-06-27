@@ -16,6 +16,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
   const [currentConversation, setCurrentConversation] = useState('');
   const [conversations, setConversations] = useState<ConversationData[]>(mockConversations);
   const [micActivity, setMicActivity] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const idleCountRef = useRef(0);
 
   const pollMicActivity = useCallback(async () => {
@@ -38,11 +39,13 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
   }, [onMicActivityChange, currentConversation]);
 
   const pollTranscription = useCallback(async () => {
+    setIsLoading(true);
     const transcript = await fetchTranscript();
 
     if (transcript) {
       setCurrentConversation(prev => prev.trim() + ' ' + transcript.trim());
     }
+    setIsLoading(false);
   }, []);
 
   // Effect for polling mic activity
@@ -62,6 +65,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({ onMicActivi
       currentConversation={currentConversation}
       conversations={conversations}
       micActivity={micActivity}
+      isLoading={isLoading}
     />
   );
 };
