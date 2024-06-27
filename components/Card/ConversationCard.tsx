@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ConversationData } from "@/data/conversations";
 import useScrollGradient from "@/hooks/useScrollGradient";
+import { formatTimestamp } from "@/utils/dateUtils";
 
 import {
     Card,
@@ -25,7 +26,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation }) => 
     <Card className="w-full flex flex-col">
     <CardHeader>
       <CardTitle>{conversation.topic || 'Untitled Conversation'}</CardTitle>
-      <CardDescription>{conversation.timestamp}</CardDescription>
+      <CardDescription>{formatTimestamp(conversation.timestamp)}</CardDescription>
     </CardHeader>
     <CardContent className="flex-grow flex flex-col">
       <div className="relative mb-4 h-64">

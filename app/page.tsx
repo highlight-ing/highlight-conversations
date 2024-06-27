@@ -6,6 +6,7 @@ import ConversationsManager from '@/components/ConversationManager/ConversationM
 import { setAsrRealtime } from '@/services/audioService'
 import { ConversationData } from '@/data/conversations'
 import { saveConversations, loadConversations } from '@/utils/localStorage'
+import { minutesDifference, daysDifference } from '@/utils/dateUtils'
 
 const MainPage: React.FC = () => {
   const [autoClearValue, setAutoClearValue] = useState(1)
@@ -36,29 +37,34 @@ const MainPage: React.FC = () => {
     setAutoClearValue(value)
   }
 
-  const clearOldConversations = useCallback(() => {
+  // TODO: - for testing purposes only, remove for production
+  const clearOldConversationsMinutes = useCallback(() => {
     const now = new Date()
     const updatedConversations = conversations.filter((conversation) => {
-      const conversationDate = new Date(conversation.timestamp)
-      const diffMs = now.getTime() - conversationDate.getTime()
-      const diffMinutes = Math.floor(diffMs / 5000)
-      const shouldKeep = diffMinutes < autoClearValue
-      return shouldKeep
+      return minutesDifference(conversation.timestamp, now) < autoClearValue
+    })
+    setConversations(updatedConversations)
+  }, [autoClearValue, conversations])
+
+  const clearOldConversationsDays = useCallback(() => {
+    const now = new Date()
+    const updatedConversations = conversations.filter((conversation) => {
+      return daysDifference(conversation.timestamp, now) < autoClearValue
     })
     setConversations(updatedConversations)
   }, [autoClearValue, conversations])
 
   useEffect(() => {
-    const intervalId = setInterval(clearOldConversations, 5000) // Check every 10 seconds
+    const intervalId = setInterval(clearOldConversationsMinutes, 10000) // Check every 10 seconds
     return () => {
       clearInterval(intervalId)
     }
-  }, [clearOldConversations])
+  }, [clearOldConversationsMinutes])
 
-  const addConversation = useCallback((newConversation: ConversationData) => {
+  const addConversation = useCallback((newConversation: Omit<ConversationData, 'timestamp'>) => {
     const conversationWithCurrentTimestamp = {
       ...newConversation,
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     }
     setConversations(prevConversations => [conversationWithCurrentTimestamp, ...prevConversations])
   }, [])

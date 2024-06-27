@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import { fetchTranscript, fetchMicActivity } from "../../services/audioService"
-import { ConversationData, mockConversations } from "../../data/conversations"
+import { ConversationData, createConversation } from "../../data/conversations"
 import ConversationGrid from "../Card/ConversationGrid"
-import { v4 as uuidv4 } from "uuid"
-import { saveConversations, loadConversations } from "../../utils/localStorage"
 
 const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
 const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
@@ -96,15 +94,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   )
 }
 
-const createConversation = (transcript: string): ConversationData => {
-  let uuid = uuidv4();
-  return {
-    id: uuid,
-    summary: transcript.slice(0, 50),
-    topic: uuid.slice(0, 4),
-    transcript: transcript,
-    timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
-  };
-};
+
 
 export default ConversationsManager;
