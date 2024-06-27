@@ -1,39 +1,43 @@
 # highlight-conversations-app
-Capture your conversations with transcripts and intelligence 
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Capture your conversations with transcripts and intelligence.
 
-## Getting Started
+## Instructions
 
-First, run the development server:
+Run the following commands to get started:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install && npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### You'll need to be running the main Highlight app for this app to work.
+### Make sure that `@highlight-ai/app-runtime` package is at least `0.0.22`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Triage
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Must haves for release
 
-## Learn More
+- ~~Auto clear conversations~~
+- ~~Mic activity feedback~~
+- ~~Skeleton for incoming transcript~~
+- ~~LocalStorage~~
+- Toggle for microphone superpower (Julian is in progress)
+- Prompt conversations (Julian is in progress)
+- Modal Welcome screen (disablable, explain everything is local and private)
+- Figure out title of conversations (right now UUID looks ugly)
+- Run app in background
+- UI Cleanup:
+  - Current Conversation take width of grid (allows for easier reads of current conversation)
+  - Smaller past conversation cards
+  - Have grid of cards in defined scroll area
+  - ~~Trashcan icon and delete conversation card~~
+  - Additional branding touchup (gradients, textures, etc...) (Jamie in progress)
 
-To learn more about Next.js, take a look at the following resources:
+### Nice to haves
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Tap to expand card to see full conversations (might be useless without topic/summary)
+- End point to store session audio to do full retranscript for increased accuracy
+- Tap to expand conversation
+- Diarization (will require some UI to setup nicely, as well as fuller transcript per Karthick's explanation)
+- Select Multiple Cards for deletion/sharing
+- Sharing conversation (probably useless without topic and summary)
