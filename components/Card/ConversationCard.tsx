@@ -31,7 +31,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
     exit={{ opacity: 0, scale: 0.8 }}
     transition={{ duration: 0.3 }}
     >
-    <Card className="w-full flex flex-col relative bg-border/50">
+    <Card className="w-full flex flex-col relative bg-background-100">
     <CardHeader>
     <button
       onClick={() => onDelete(conversation.id)}
