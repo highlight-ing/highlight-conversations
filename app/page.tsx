@@ -1,10 +1,13 @@
-"use client"
+'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from 'framer-motion'
 import Header from '@/components/Header/Header'
 import ConversationsManager from '@/components/ConversationManager/ConversationManager'
-import { setAsrRealtime } from '@/services/audioService'
+import { 
+  setAsrRealtime,
+  setAudioSuperpowerEnabled
+ } from '@/services/highlightService'
 import { ConversationData } from '@/data/conversations'
 import { saveConversations, loadConversations } from '@/utils/localStorage'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
@@ -33,17 +36,21 @@ const MainPage: React.FC = () => {
   const [autoClearValue, setAutoClearValue] = useState<number>(1)
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true)
 
   const conversationsRef = useRef(conversations)
   const autoClearValueRef = useRef(autoClearValue)
 
-    // Use useEffect to set the initial autoClearValue from localStorage
-    useEffect(() => {
-      const storedValue = localStorage.getItem(AUTO_CLEAR_VALUE_KEY)
-      if (storedValue) {
-        setAutoClearValue(parseInt(storedValue, 10))
-      }
-    }, [])
+  const handleAudioToggle = async (isOn: boolean) => {
+    await setAudioSuperpowerEnabled(isOn)
+  }
+  // Use useEffect to set the initial autoClearValue from localStorage
+  useEffect(() => {
+    const storedValue = localStorage.getItem(AUTO_CLEAR_VALUE_KEY)
+    if (storedValue) {
+      setAutoClearValue(parseInt(storedValue, 10))
+    }
+  }, [])
 
   // Load saved conversations from Local Storage
   useEffect(() => {
@@ -92,32 +99,33 @@ const MainPage: React.FC = () => {
       ...newConversation,
       timestamp: new Date()
     }
-    setConversations(prevConversations => [conversationWithCurrentTimestamp, ...prevConversations])
+    setConversations((prevConversations) => [conversationWithCurrentTimestamp, ...prevConversations])
   }, [])
 
-
   const deleteConversation = useCallback((id: string) => {
-    setConversations(prevConversations => {
-      const updatedConversations = prevConversations.filter(conv => conv.id !== id);
-      saveConversations(updatedConversations);
-      return updatedConversations;
-    });
-  }, []);
+    setConversations((prevConversations) => {
+      const updatedConversations = prevConversations.filter((conv) => conv.id !== id)
+      saveConversations(updatedConversations)
+      return updatedConversations
+    })
+  }, [])
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <Header
         autoClearValue={autoClearValue}
         onAutoClearValueChange={handleAutoClearValueChange}
+        isAudioOn={isAudioEnabled}
+        onAudioSwitch={handleAudioToggle}
       />
       <main className="flex-grow p-4">
         <AnimatePresence>
-        <ConversationsManager 
-          onMicActivityChange={handleMicActivityChange}
-          conversations={conversations}
-          addConversation={addConversation}
-          onDeleteConversation={deleteConversation}
-        />
+          <ConversationsManager
+            onMicActivityChange={handleMicActivityChange}
+            conversations={conversations}
+            addConversation={addConversation}
+            onDeleteConversation={deleteConversation}
+          />
         </AnimatePresence>
       </main>
     </div>
