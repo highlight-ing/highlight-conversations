@@ -14,7 +14,7 @@ import { minutesDifference, daysDifference } from '@/utils/dateUtils'
 
 const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
 // TODO: - set to false or remove for production
-const IS_TEST_MODE = true
+const IS_TEST_MODE = false
 const AUTO_CLEAR_POLL = 60000
 
 const clearOldConversations = (
@@ -22,24 +22,31 @@ const clearOldConversations = (
   autoClearValue: number,
   isTestMode: boolean
 ): ConversationData[] => {
-  const now = new Date()
+  if (!conversations || conversations.length === 0) {
+    return [];
+  }
+
+  const now = new Date();
+  
   return conversations.filter((conversation) => {
-    if (isTestMode) {
-      return minutesDifference(conversation.timestamp, now) < autoClearValue
-    } else {
-      return daysDifference(conversation.timestamp, now) < autoClearValue
-    }
-  })
-}
+    const conversationDate = new Date(conversation.timestamp);
+    
+    const diff = isTestMode
+      ? minutesDifference(conversationDate, now)
+      : daysDifference(conversationDate, now);
+        
+    const shouldKeep = diff < autoClearValue;
+    
+    return shouldKeep;
+  });
+};
 
 const MainPage: React.FC = () => {
   const [autoClearValue, setAutoClearValue] = useState<number>(1)
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
   const [isAudioEnabled, setIsAudioEnabled] = useState(true)
-
-  const conversationsRef = useRef(conversations)
-  const autoClearValueRef = useRef(autoClearValue)
+  const isInitialMount = useRef(true)
 
   const handleAudioToggle = async (isOn: boolean) => {
     await setAudioSuperpowerEnabled(isOn)
@@ -52,6 +59,7 @@ const MainPage: React.FC = () => {
     }
   }, [])
 
+
   // Load saved conversations from Local Storage
   useEffect(() => {
     const storedConversations = loadConversations()
@@ -60,6 +68,10 @@ const MainPage: React.FC = () => {
 
   // Save conversations to Local Storage whenever they change
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     saveConversations(conversations)
   }, [conversations])
 
@@ -77,22 +89,23 @@ const MainPage: React.FC = () => {
     localStorage.setItem(AUTO_CLEAR_VALUE_KEY, value.toString())
   }
 
-  // Clear old conversations on load and at regular intervals
   useEffect(() => {
     const clearConversations = () => {
       const updatedConversations = clearOldConversations(
-        conversationsRef.current,
-        autoClearValueRef.current,
+        conversations,
+        autoClearValue,
         IS_TEST_MODE
-      )
-      setConversations(updatedConversations)
-    }
-
-    clearConversations() // Clear on load
-
-    const intervalId = setInterval(clearConversations, AUTO_CLEAR_POLL)
-    return () => clearInterval(intervalId)
-  }, [])
+      );
+      if (updatedConversations.length !== conversations.length) {
+        setConversations(updatedConversations);
+      }
+    };
+  
+    clearConversations(); // Clear on load
+  
+    const intervalId = setInterval(clearConversations, AUTO_CLEAR_POLL);
+    return () => clearInterval(intervalId);
+  }, [conversations, autoClearValue]); // Add dependencies
 
   const addConversation = useCallback((newConversation: Omit<ConversationData, 'timestamp'>) => {
     const conversationWithCurrentTimestamp = {

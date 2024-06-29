@@ -4,7 +4,8 @@ import useScrollGradient from "@/hooks/useScrollGradient";
 import { formatTimestamp } from "@/utils/dateUtils";
 import { FaTrash } from "react-icons/fa";
 import { motion } from "framer-motion";
-
+import { getTextPrediction } from "@/services/highlightService";
+import { GeneratedPrompt } from "@/types/types";
 import {
     Card,
     CardContent,
@@ -24,6 +25,20 @@ import { Button } from "@/components/ui/button";
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDelete }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
+  const [prompts, setPrompts] = useState<GeneratedPrompt[]>([]);
+
+  const handlePromptClick = async () => {
+    console.log("Starting text prediction...");
+    
+    try {
+      const generatedPrompts = await getTextPrediction(conversation.transcript);
+      console.log("Generated prompts:", generatedPrompts);
+      setPrompts(generatedPrompts);
+    } catch (error) {
+      console.error("Error in prompt generation:", error);
+    }
+  };
+
 
   return (
     <motion.div
@@ -57,7 +72,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
           <p className="px-1">{conversation.transcript}</p>
         </div>
       </div>
-      <Button className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand))*1.1]">
+      <Button onClick={handlePromptClick} className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand))*1.1]">
         Prompt
       </Button>
     </CardContent>
