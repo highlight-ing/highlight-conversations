@@ -10,6 +10,7 @@ interface ConversationGridProps {
   micActivity: number
   isWaitingForTranscript: boolean
   onDeleteConversation: (id: string) => void
+  onSave: () => void
 }
 
 const ConversationGrid: React.FC<ConversationGridProps> = ({
@@ -18,6 +19,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   micActivity,
   isWaitingForTranscript,
   onDeleteConversation,
+  onSave,
 }) => {
   return (
     <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -25,6 +27,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
         transcript={currentConversation}
         micActivity={micActivity}
         isWaitingForTranscript={isWaitingForTranscript}
+        onSave={onSave}
       />
       <AnimatePresence>
       {conversations.map((conversation) => (

@@ -1,19 +1,22 @@
 // components/CurrentConversationCard.tsx
-import React, { useRef } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import styles from "@/styles/CurrentConversationCard.module.css";
-import useScrollGradient from "@/hooks/useScrollGradient";
+import React, { useRef } from "react"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "../ui/button"
+import styles from "@/styles/CurrentConversationCard.module.css"
+import useScrollGradient from "@/hooks/useScrollGradient"
 interface CurrentConversationCardProps {
   transcript: string;
   micActivity: number;
   isWaitingForTranscript: boolean;
+  onSave: () => void
 }
 
 const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   transcript,
   micActivity,
   isWaitingForTranscript,
+  onSave,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)

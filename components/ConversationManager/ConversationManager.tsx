@@ -6,7 +6,7 @@ import ConversationGrid from '../Card/ConversationGrid'
 const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
 const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
 //TODO: - make this setable and probably default to like 30 seconds
-const IDLE_THRESHOLD = 150 // 15 seconds (150 * 100ms) of low activity to consider conversation ended
+const IDLE_THRESHOLD = 150 // 15 seconds (150 * 100ms) of non-activity to consider conversation ended
 
 interface ConversationsManagerProps {
   onMicActivityChange: (activity: number) => void
@@ -19,13 +19,21 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   onMicActivityChange,
   conversations,
   addConversation,
-  onDeleteConversation
+  onDeleteConversation,
 }) => {
   const [currentConversation, setCurrentConversation] = useState('')
   const [micActivity, setMicActivity] = useState(0)
   const [isWaitingForTranscript, setIsWaitingForTranscript] = useState(false)
   const idleCountRef = useRef(0)
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const saveCurrentConversation = useCallback(() => {
+    if (currentConversation.trim()) {
+      const newConversation = createConversation(currentConversation)
+      addConversation(newConversation)
+      setCurrentConversation('')
+    }
+  }, [currentConversation, addConversation])
 
   // Poll Mic Activity to triggle idle threshold and save conversation
   const pollMicActivity = useCallback(async () => {
@@ -39,13 +47,16 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       idleCountRef.current = 0
     }
 
-    if (idleCountRef.current >= IDLE_THRESHOLD && currentConversation.trim()) {
-      const newConversation = createConversation(currentConversation)
-      addConversation(newConversation)
-      setCurrentConversation('')
+    if (idleCountRef.current >= IDLE_THRESHOLD) {
+      saveCurrentConversation()
       idleCountRef.current = 0
     }
-  }, [onMicActivityChange, currentConversation, addConversation])
+  }, [onMicActivityChange, saveCurrentConversation])
+
+  const handleSave = useCallback(() => {
+    setCurrentConversation(currentConversation)
+    saveCurrentConversation()
+  }, [saveCurrentConversation, currentConversation])
 
   // Poll Highlight api for transcripts
   const pollTranscription = useCallback(async () => {
@@ -91,6 +102,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       micActivity={micActivity}
       isWaitingForTranscript={isWaitingForTranscript}
       onDeleteConversation={onDeleteConversation}
+      onSave={handleSave}
     />
   )
 }

@@ -16,13 +16,12 @@ import {
   } from "@/components/ui/card"
 
   import { getRelativeTimeString } from "@/utils/dateUtils";
+  import { Button } from "@/components/ui/button";
 
   interface ConversationCardProps {
     conversation: ConversationData
     onDelete: (id: string) => void
   }
-
-import { Button } from "@/components/ui/button";
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDelete }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
