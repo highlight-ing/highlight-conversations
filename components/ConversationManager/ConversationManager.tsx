@@ -54,6 +54,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   }, [onMicActivityChange, saveCurrentConversation])
 
   const handleSave = useCallback(() => {
+    console.log("onSave called")
     setCurrentConversation(currentConversation)
     saveCurrentConversation()
   }, [saveCurrentConversation, currentConversation])

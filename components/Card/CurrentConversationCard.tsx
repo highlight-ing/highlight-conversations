@@ -1,10 +1,11 @@
 // components/CurrentConversationCard.tsx
-import React, { useRef } from "react"
+import React, { useRef, useCallback } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "../ui/button"
 import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
+import { FaSave } from "react-icons/fa";
 interface CurrentConversationCardProps {
   transcript: string;
   micActivity: number;
@@ -26,8 +27,14 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   const skeletonCorner = "rounded-lg";
 
   return (
-    <Card className={`w-full border-2 ${borderClass} transition-all duration-300 bg-background-100`}>
+    <Card className={`w-full border-2 ${borderClass} transition-all duration-300 bg-background-100 relative`}>
       <CardHeader>
+      <button
+        onClick={onSave}
+        className="absolute top-4 right-4 text-muted-foreground hover:text-brand transition-colors duration-200"
+      >
+        <FaSave size={18} />
+      </button>
         <CardTitle>Current Conversation</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">
