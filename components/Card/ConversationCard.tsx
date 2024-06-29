@@ -15,6 +15,8 @@ import {
     CardTitle,
   } from "@/components/ui/card"
 
+  import { getRelativeTimeString } from "@/utils/dateUtils";
+
   interface ConversationCardProps {
     conversation: ConversationData
     onDelete: (id: string) => void
@@ -26,6 +28,15 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
   const scrollRef = useRef<HTMLDivElement>(null);
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
   const [prompts, setPrompts] = useState<GeneratedPrompt[]>([]);
+  const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRelativeTime(getRelativeTimeString(conversation.timestamp));
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, [conversation.timestamp]);
 
   const handlePromptClick = async () => {
     console.log("Starting text prediction...");
@@ -50,11 +61,11 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
     <CardHeader>
     <button
       onClick={() => onDelete(conversation.id)}
-      className="absolute top-2 right-2 text-muted-foreground hover:text-red-500 transition-colors duration-200"
+      className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors duration-200"
     >
       <FaTrash size={16} />
     </button>
-      <CardTitle>{conversation.topic || 'Untitled Conversation'}</CardTitle>
+      <CardTitle>{relativeTime || 'Untitled Conversation'}</CardTitle>
       <CardDescription>{formatTimestamp(conversation.timestamp)}</CardDescription>
     </CardHeader>
     <CardContent className="flex-grow flex flex-col">
@@ -72,8 +83,8 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
           <p className="px-1">{conversation.transcript}</p>
         </div>
       </div>
-      <Button onClick={handlePromptClick} className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand))*1.1]">
-        Prompt
+      <Button onClick={handlePromptClick} className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand-light))] active:bg-[hsl(var(--brand-foreground))] transition-colors duration-200">
+        Attach to Highlight
       </Button>
     </CardContent>
   </Card>

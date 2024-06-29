@@ -72,8 +72,8 @@ export const getTextPrediction = async (conversation: string): Promise<Generated
 
     const doneListener = (event: any) => {
       if (event.id === predictionId) {
-        window.highlight.removeEventListener('onTextPredictionUpdate', updateListener);
-        window.highlight.removeEventListener('onTextPredictionDone', doneListener);
+        Highlight.removeEventListener('onTextPredictionUpdate', updateListener);
+        Highlight.removeEventListener('onTextPredictionDone', doneListener);
         
         // Parse the accumulated text into individual prompts
         const parsedPrompts = parsePrompts(accumulatedText);
@@ -81,13 +81,13 @@ export const getTextPrediction = async (conversation: string): Promise<Generated
       }
     };
 
-    window.highlight.addEventListener('onTextPredictionUpdate', updateListener);
-    window.highlight.addEventListener('onTextPredictionDone', doneListener);
+    Highlight.addEventListener('onTextPredictionUpdate', updateListener);
+    Highlight.addEventListener('onTextPredictionDone', doneListener);
 
     // Optional: Add a timeout
     setTimeout(() => {
-      window.highlight.removeEventListener('onTextPredictionUpdate', updateListener);
-      window.highlight.removeEventListener('onTextPredictionDone', doneListener);
+      Highlight.removeEventListener('onTextPredictionUpdate', updateListener);
+      Highlight.removeEventListener('onTextPredictionDone', doneListener);
       reject(new Error('Text prediction timed out'));
     }, 30000); // 30 second timeout
   });

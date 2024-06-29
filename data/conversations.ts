@@ -19,3 +19,4 @@ export const createConversation = (transcript: string): ConversationData => {
     timestamp: new Date(),
   }
 }
+

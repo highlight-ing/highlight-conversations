@@ -51,14 +51,13 @@ const MainPage: React.FC = () => {
   const handleAudioToggle = async (isOn: boolean) => {
     await setAudioSuperpowerEnabled(isOn)
   }
-  // Use useEffect to set the initial autoClearValue from localStorage
+  // Set the initial autoClearValue from localStorage
   useEffect(() => {
     const storedValue = localStorage.getItem(AUTO_CLEAR_VALUE_KEY)
     if (storedValue) {
       setAutoClearValue(parseInt(storedValue, 10))
     }
   }, [])
-
 
   // Load saved conversations from Local Storage
   useEffect(() => {
