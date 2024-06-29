@@ -22,17 +22,17 @@ npm install && npm run dev
 - ~~Mic activity feedback~~
 - ~~Skeleton for incoming transcript~~
 - ~~LocalStorage~~
-- Toggle for microphone superpower (Julian is in progress)
+- ~~Toggle for microphone superpower~~
 - Prompt conversations (Julian is in progress)
 - Modal Welcome screen (disablable, explain everything is local and private)
-- Figure out title of conversations (right now UUID looks ugly)
+- ~~Figure out title of conversations~~
 - Run app in background
 - UI Cleanup:
-  - Current Conversation take width of grid (allows for easier reads of current conversation)
-  - Smaller past conversation cards
+  - ~~Current Conversation take width of grid (allows for easier reads of current conversation)~~
+  - **HOLD** Smaller past conversation cards
   - Have grid of cards in defined scroll area
   - ~~Trashcan icon and delete conversation card~~
-  - Additional branding touchup (gradients, textures, etc...) (Jamie in progress)
+  - ~~Additional branding touchup (gradients, textures, etc...) (Jamie in progress)~~
 
 ### Nice to haves
 
