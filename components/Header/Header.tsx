@@ -1,23 +1,29 @@
 // components/Header.tsx
-import React from "react";
-import AutoClearSelection from "./AutoClearSelection";
-import AudioSwitch from "./AudioSwitch";
-// Import other components as needed
-
+import React from "react"
+import AutoClearSelection from "./AutoClearSelection"
+import AudioSwitch from "./AudioSwitch"
+import CharacterCountSelection from "./CharacterCountSelection"
+import IdleTimerSelection from "./IdleTimerSelection"
 interface HeaderProps {
-  autoClearValue: number;
-  isAudioOn: boolean;
-  onAutoClearValueChange: (value: number) => void;
-  onAudioSwitch: (isOn: boolean) => void;
-  // Add other props as needed
+  autoClearValue: number
+  isAudioOn: boolean
+  characterCount: number
+  idleTimerValue: number
+  onAutoClearValueChange: (value: number) => void
+  onAudioSwitch: (isOn: boolean) => void
+  onCharacterCountChange: (value: number) => void
+  onIdleTimerChange: (value : number) => void
 }
 
 const Header: React.FC<HeaderProps> = ({
   autoClearValue,
-  onAutoClearValueChange,
+  characterCount,
   isAudioOn,
+  idleTimerValue,
+  onAutoClearValueChange,
   onAudioSwitch,
-  // Destructure other props
+  onCharacterCountChange,
+  onIdleTimerChange,
 }) => {
   return (
     <div className="w-full border-b">
@@ -27,9 +33,8 @@ const Header: React.FC<HeaderProps> = ({
         {/* Add more components to this row */}
       </div>
       <div className="flex items-center justify-between p-4">
-        {/* Add another row of components */}
-        {/* <OtherComponent1 /> */}
-        {/* <OtherComponent2 /> */}
+        <CharacterCountSelection value={characterCount} onCharacterCountChange={onCharacterCountChange} />
+        <IdleTimerSelection value={idleTimerValue} onIdleTimerChange={onIdleTimerChange} />
       </div>
       {/* Add more rows as needed */}
     </div>

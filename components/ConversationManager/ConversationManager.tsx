@@ -13,6 +13,8 @@ interface ConversationsManagerProps {
   conversations: ConversationData[]
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
+  idleThreshold: number
+  minCharacters: number
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
@@ -20,6 +22,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   conversations,
   addConversation,
   onDeleteConversation,
+  idleThreshold,
+  minCharacters
 }) => {
   const [currentConversation, setCurrentConversation] = useState('')
   const [micActivity, setMicActivity] = useState(0)
@@ -28,12 +32,12 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const saveCurrentConversation = useCallback(() => {
-    if (currentConversation.trim()) {
+    if (currentConversation.trim().length >= minCharacters) {
       const newConversation = createConversation(currentConversation)
       addConversation(newConversation)
       setCurrentConversation('')
     }
-  }, [currentConversation, addConversation])
+  }, [currentConversation, addConversation, minCharacters])
 
   // Poll Mic Activity to triggle idle threshold and save conversation
   const pollMicActivity = useCallback(async () => {
@@ -47,11 +51,11 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       idleCountRef.current = 0
     }
 
-    if (idleCountRef.current >= IDLE_THRESHOLD) {
+    if (idleCountRef.current >= idleThreshold) {
       saveCurrentConversation()
       idleCountRef.current = 0
     }
-  }, [onMicActivityChange, saveCurrentConversation])
+  }, [onMicActivityChange, saveCurrentConversation, idleThreshold])
 
   const handleSave = useCallback(() => {
     console.log("onSave called")

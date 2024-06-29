@@ -46,6 +46,8 @@ const MainPage: React.FC = () => {
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
   const [isAudioEnabled, setIsAudioEnabled] = useState(true)
+  const [characterCount, setCharacterCount] = useState(400)
+  const [idleTimerValue, setIdleTimerValue] = useState(20)
   const isInitialMount = useRef(true)
 
   const handleAudioToggle = async (isOn: boolean) => {
@@ -129,12 +131,18 @@ const MainPage: React.FC = () => {
         onAutoClearValueChange={handleAutoClearValueChange}
         isAudioOn={isAudioEnabled}
         onAudioSwitch={handleAudioToggle}
+        characterCount={characterCount}
+        idleTimerValue={idleTimerValue}
+        onCharacterCountChange={setCharacterCount}
+        onIdleTimerChange={setIdleTimerValue}
       />
       <main className="flex-grow p-4">
         <AnimatePresence>
           <ConversationsManager
-            onMicActivityChange={handleMicActivityChange}
             conversations={conversations}
+            idleThreshold={idleTimerValue}
+            minCharacters={characterCount}
+            onMicActivityChange={handleMicActivityChange}
             addConversation={addConversation}
             onDeleteConversation={deleteConversation}
           />

@@ -79,7 +79,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
           ref={scrollRef}
           className="h-full overflow-y-auto scrollbar-hide"
         >
-          <p className="px-1">{conversation.transcript}</p>
+          <p className="px-1 select-text">{conversation.transcript}</p>
         </div>
       </div>
       <Button onClick={handlePromptClick} className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand-light))] active:bg-[hsl(var(--brand-foreground))] transition-colors duration-200">
