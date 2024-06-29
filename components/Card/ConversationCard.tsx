@@ -70,10 +70,10 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
     <CardContent className="flex-grow flex flex-col">
       <div className="relative mb-4 h-64">
         {showTopGradient && (
-          <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none" />
         )}
         {showBottomGradient && (
-          <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none" />
         )}
         <div 
           ref={scrollRef}

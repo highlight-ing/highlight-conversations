@@ -37,19 +37,27 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
         <CardTitle>Current Conversation</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">
-        <div className="relative mb-2 h-64">
+        <div className="relative h-64">
           {transcript && showTopGradient && (
-            <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none"></div>
           )}
           {transcript && showBottomGradient && (
-            <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none"></div>
           )}
           <div 
             ref={scrollRef}
             className="h-full overflow-y-auto scrollbar-hide"
           >
             {transcript ? (
+              <>
+              {isWaitingForTranscript && (
+                  <div className="space-y-2 mb-2">
+                    <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
+                    <Skeleton className={`h-4 w-[80%] ${skeletonCorner}`} />
+                  </div>
+                )}
               <p className="px-1">{transcript}</p>
+              </>
             ) : (
               <div className="space-y-2">
                 <Skeleton className={`h-24 w-full ${skeletonCorner}`} />
@@ -60,12 +68,6 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             )}
           </div>
         </div>
-        {isWaitingForTranscript && transcript && (
-          <>
-            <Skeleton className={`mt-2 h-4 w-full ${skeletonCorner}`} />
-            <Skeleton className={`mt-2 h-4 w-[80%] ${skeletonCorner}`} />
-          </>
-        )}
       </CardContent>
     </Card>
   )
