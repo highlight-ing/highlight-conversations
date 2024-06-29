@@ -19,7 +19,7 @@ import {
   loadValue
 } from '@/utils/localStorage'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
-
+import { usePageVisibility } from '@/hooks/usePageVisibility'
 
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
@@ -56,6 +56,7 @@ const MainPage: React.FC = () => {
   const [isAudioEnabled, setIsAudioEnabled] = useState(true)
   const [characterCount, setCharacterCount] = useState(400)
   const [idleTimerValue, setIdleTimerValue] = useState(20)
+  const isVisible = usePageVisibility()
   const isInitialMount = useRef(true)
 
   const handleAudioToggle = async (isOn: boolean) => {

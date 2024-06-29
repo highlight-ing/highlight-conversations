@@ -32,8 +32,9 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   const idleCountRef = useRef(0)
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const saveCurrentConversation = useCallback(() => {
-    if (currentConversation.trim().length >= minCharacters) {
+  const saveCurrentConversation = useCallback((forceSave: boolean = false) => {
+    console.log("is force save: " + forceSave)
+    if (forceSave || currentConversation.trim().length >= minCharacters) {
       const newConversation = createConversation(currentConversation)
       addConversation(newConversation)
       setCurrentConversation('')
@@ -58,10 +59,9 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     }
   }, [onMicActivityChange, saveCurrentConversation, idleThreshold])
 
-  const handleSave = useCallback(() => {
-    console.log("onSave called")
+  const handleSave = useCallback((didTapSaveButton: boolean = false) => {
     setCurrentConversation(currentConversation)
-    saveCurrentConversation()
+    saveCurrentConversation(didTapSaveButton)
   }, [saveCurrentConversation, currentConversation])
 
   // Poll Highlight api for transcripts
@@ -108,7 +108,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       micActivity={micActivity}
       isWaitingForTranscript={isWaitingForTranscript}
       onDeleteConversation={onDeleteConversation}
-      onSave={handleSave}
+      onSave={() => handleSave(true)}
     />
   )
 }

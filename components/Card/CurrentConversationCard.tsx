@@ -25,12 +25,19 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   const borderClass = isActive ? styles.activeBorder : styles.inactiveBorder;
   const skeletonCorner = "rounded-lg";
 
+  const isSaveDisabled = transcript.trim().length === 0;
+
   return (
     <Card className={`w-full border-2 ${borderClass} transition-all duration-300 bg-background-100 relative`}>
       <CardHeader>
       <button
         onClick={onSave}
-        className="absolute top-4 right-4 text-muted-foreground hover:text-brand transition-colors duration-200"
+        disabled={isSaveDisabled}
+        className={`absolute top-4 right-4 text-muted-foreground transition-colors duration-200
+        ${isSaveDisabled
+          ? 'text-gray-400 cursor-not-allowed'
+          : 'text-muted-foreground hover:text-brand'
+        }`}
       >
         <FaSave size={18} />
       </button>

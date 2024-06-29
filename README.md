@@ -28,9 +28,7 @@ npm install && npm run dev
 - ~~Figure out title of conversations~~
 - Run app in background
 - UI Cleanup:
-  - ~~Current Conversation take width of grid (allows for easier reads of current conversation)~~
   - **HOLD** Smaller past conversation cards
-  - Have grid of cards in defined scroll area
   - ~~Trashcan icon and delete conversation card~~
   - ~~Additional branding touchup (gradients, textures, etc...) (Jamie in progress)~~
 
