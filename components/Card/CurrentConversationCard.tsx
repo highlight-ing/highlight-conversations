@@ -2,7 +2,6 @@
 import React, { useRef, useCallback } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "../ui/button"
 import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
 import { FaSave } from "react-icons/fa";

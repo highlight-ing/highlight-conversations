@@ -9,10 +9,18 @@ import {
   setAudioSuperpowerEnabled
  } from '@/services/highlightService'
 import { ConversationData } from '@/data/conversations'
-import { saveConversations, loadConversations } from '@/utils/localStorage'
+import { 
+  saveConversations,
+  loadConversations,
+  AUTO_CLEAR_VALUE_KEY,
+  MIN_CHARACTER_KEY,
+  IDLE_THRESHOLD_KEY,
+  saveValue,
+  loadValue
+} from '@/utils/localStorage'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
 
-const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
+
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
 const AUTO_CLEAR_POLL = 60000
@@ -53,12 +61,11 @@ const MainPage: React.FC = () => {
   const handleAudioToggle = async (isOn: boolean) => {
     await setAudioSuperpowerEnabled(isOn)
   }
-  // Set the initial autoClearValue from localStorage
+  // Load values from localStorage
   useEffect(() => {
-    const storedValue = localStorage.getItem(AUTO_CLEAR_VALUE_KEY)
-    if (storedValue) {
-      setAutoClearValue(parseInt(storedValue, 10))
-    }
+    setAutoClearValue(loadValue(AUTO_CLEAR_VALUE_KEY, 1))
+    setCharacterCount(loadValue(MIN_CHARACTER_KEY, 400))
+    setIdleTimerValue(loadValue(IDLE_THRESHOLD_KEY, 20))
   }, [])
 
   // Load saved conversations from Local Storage
@@ -87,7 +94,17 @@ const MainPage: React.FC = () => {
 
   const handleAutoClearValueChange = (value: number) => {
     setAutoClearValue(value)
-    localStorage.setItem(AUTO_CLEAR_VALUE_KEY, value.toString())
+    saveValue(AUTO_CLEAR_VALUE_KEY, value)
+  }
+
+  const handleCharacterCountChange = (value: number) => {
+    setCharacterCount(value)
+    saveValue(MIN_CHARACTER_KEY, value)
+  }
+
+  const handleIdleTimerChange = (value: number) => {
+    setIdleTimerValue(value)
+    saveValue(IDLE_THRESHOLD_KEY, value)
   }
 
   useEffect(() => {
@@ -128,13 +145,13 @@ const MainPage: React.FC = () => {
     <div className="flex min-h-screen flex-col">
       <Header
         autoClearValue={autoClearValue}
-        onAutoClearValueChange={handleAutoClearValueChange}
-        isAudioOn={isAudioEnabled}
-        onAudioSwitch={handleAudioToggle}
         characterCount={characterCount}
         idleTimerValue={idleTimerValue}
-        onCharacterCountChange={setCharacterCount}
-        onIdleTimerChange={setIdleTimerValue}
+        isAudioOn={isAudioEnabled}
+        onAutoClearValueChange={handleAutoClearValueChange}
+        onAudioSwitch={handleAudioToggle}
+        onCharacterCountChange={handleCharacterCountChange}
+        onIdleTimerChange={handleIdleTimerChange}
       />
       <main className="flex-grow p-4">
         <AnimatePresence>

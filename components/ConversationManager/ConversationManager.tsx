@@ -9,21 +9,22 @@ const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
 const IDLE_THRESHOLD = 150 // 15 seconds (150 * 100ms) of non-activity to consider conversation ended
 
 interface ConversationsManagerProps {
-  onMicActivityChange: (activity: number) => void
+  idleThreshold: number
+  minCharacters: number
   conversations: ConversationData[]
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
-  idleThreshold: number
-  minCharacters: number
+  onMicActivityChange: (activity: number) => void
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
-  onMicActivityChange,
+  idleThreshold,
+  minCharacters,
   conversations,
   addConversation,
+  onMicActivityChange,
   onDeleteConversation,
-  idleThreshold,
-  minCharacters
+
 }) => {
   const [currentConversation, setCurrentConversation] = useState('')
   const [micActivity, setMicActivity] = useState(0)
