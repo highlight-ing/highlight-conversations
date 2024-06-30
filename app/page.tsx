@@ -20,6 +20,7 @@ import {
 } from '@/utils/localStorage'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
 import { usePageVisibility } from '@/hooks/usePageVisibility'
+import WelcomeDialog from '@/components/WelcomeDialog/WelcomeDialog'
 
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
@@ -144,6 +145,7 @@ const MainPage: React.FC = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <WelcomeDialog />
       <Header
         autoClearValue={autoClearValue}
         characterCount={characterCount}
