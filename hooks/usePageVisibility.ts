@@ -1,16 +1,23 @@
 // hooks/usePageVisibility.ts
+'use client'
 import { useState, useEffect } from 'react';
 
 export function usePageVisibility() {
-  const [isVisible, setIsVisible] = useState(!document.hidden);
+const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const handleVisibilityChange = () => setIsVisible(!document.hidden);
-    
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    
+
+    // Check if window is defined (i.e., if we're in the browser)
+    if (typeof window !== 'undefined') {
+      setIsVisible(!document.hidden);
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+    }
+
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (typeof window !== 'undefined') {
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+      }
     };
   }, []);
 
