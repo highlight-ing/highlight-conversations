@@ -36,7 +36,7 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
   return (
     <div>
       <div className="flex flex-row items-center px-4">
-        <Label className="mr-2" htmlFor="autoClearSelection">Auto Clear</Label>
+        <Label className="mr-2 text-muted-foreground" htmlFor="autoClearSelection">Auto Clear</Label>
         <Select
           onValueChange={(selectedValue) => onChange(parseInt(selectedValue))}
           value={value.toString()}

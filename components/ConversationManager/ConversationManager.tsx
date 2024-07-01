@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { fetchTranscript, fetchMicActivity } from '../../services/highlightService'
 import { ConversationData, createConversation } from '../../data/conversations'
@@ -33,7 +34,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const saveCurrentConversation = useCallback((forceSave: boolean = false) => {
-    console.log("is force save: " + forceSave)
     if (forceSave || currentConversation.trim().length >= minCharacters) {
       const newConversation = createConversation(currentConversation)
       addConversation(newConversation)
@@ -43,7 +43,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
   // Poll Mic Activity to triggle idle threshold and save conversation
   const pollMicActivity = useCallback(async () => {
-    const activity = await fetchMicActivity()
+    const activity = await fetchMicActivity(10)
     setMicActivity(activity)
     onMicActivityChange(activity)
 
@@ -53,7 +53,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       idleCountRef.current = 0
     }
 
-    if (idleCountRef.current >= idleThreshold) {
+    if (idleCountRef.current >= idleThreshold * 10) {
       saveCurrentConversation()
       idleCountRef.current = 0
     }

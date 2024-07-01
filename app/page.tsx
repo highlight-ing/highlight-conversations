@@ -62,6 +62,7 @@ const MainPage: React.FC = () => {
   const handleAudioToggle = async (isOn: boolean) => {
     await setAudioSuperpowerEnabled(isOn)
   }
+
   // Load values from localStorage
   useEffect(() => {
     setAutoClearValue(loadValue(AUTO_CLEAR_VALUE_KEY, 1))

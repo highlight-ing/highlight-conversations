@@ -4,6 +4,9 @@ import AutoClearSelection from "./AutoClearSelection"
 import AudioSwitch from "./AudioSwitch"
 import CharacterCountSelection from "./CharacterCountSelection"
 import IdleTimerSelection from "./IdleTimerSelection"
+import InfoTooltip from "./InfoTooltip"
+import { TOOLTIP_CONTENT } from "@/constants/tooltipConstants"
+
 interface HeaderProps {
   autoClearValue: number
   isAudioOn: boolean
@@ -28,15 +31,25 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <div className="w-full border-b">
       <div className="flex items-center justify-between p-4">
-        <AudioSwitch isAudioOn={isAudioOn} onSwitch={onAudioSwitch} />
-        <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
-        {/* Add more components to this row */}
+        <div className="flex items-center">
+          <AudioSwitch isAudioOn={isAudioOn} onSwitch={onAudioSwitch} />
+          <InfoTooltip content={TOOLTIP_CONTENT.AUDIO_SWITCH} />
+        </div>
+        <div className="flex items-center">
+          <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
+          <InfoTooltip content={TOOLTIP_CONTENT.AUTO_CLEAR} />
+        </div>
       </div>
       <div className="flex items-center justify-between p-4">
-        <CharacterCountSelection value={characterCount} onCharacterCountChange={onCharacterCountChange} />
-        <IdleTimerSelection value={idleTimerValue} onIdleTimerChange={onIdleTimerChange} />
+        <div className="flex items-center">
+          <CharacterCountSelection value={characterCount} onCharacterCountChange={onCharacterCountChange} />
+          <InfoTooltip content={TOOLTIP_CONTENT.CHARACTER_COUNT} />
+        </div>
+        <div className="flex items-center">
+          <IdleTimerSelection value={idleTimerValue} onIdleTimerChange={onIdleTimerChange} />
+          <InfoTooltip content={TOOLTIP_CONTENT.IDLE_TIMER} />
+        </div>
       </div>
-      {/* Add more rows as needed */}
     </div>
   );
 };

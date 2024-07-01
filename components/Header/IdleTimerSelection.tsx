@@ -31,7 +31,7 @@ const IdleTimerSelection: React.FC<IdleTimerSelectionProps> = ({
   return (
     <div>
       <div className="flex flex-row items-center px-4">
-        <Label className="mr-2" htmlFor="idleTimerSelection">Idle Timer</Label>
+        <Label className="mr-2 text-muted-foreground" htmlFor="idleTimerSelection">Idle Timer</Label>
         <Select
           onValueChange={(selectedValue) => onIdleTimerChange(parseInt(selectedValue))}
           value={value?.toString() ?? ''}

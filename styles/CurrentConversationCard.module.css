@@ -38,3 +38,25 @@
   .inactiveBorder {
     animation: fadeToGray 0.5s ease-out forwards;
   }
+  /* @keyframes breathe {
+    0%, 100% {
+      border-color: hsl(var(--brand));
+      box-shadow: 0 0 10px hsl(var(--brand) / 0.5);
+    }
+    50% {
+      border-color: hsl(var(--brand-light));
+      box-shadow: 0 0 20px hsl(var(--brand-light) / 0.7);
+    }
+  }
+  
+  .activeBorder {
+    border-color: hsl(var(--brand));
+    box-shadow: 0 0 10px hsl(var(--brand) / 0.5);
+    animation: breathe 3s ease-in-out infinite;
+  }
+  
+  .inactiveBorder {
+    border-color: hsl(var(--border));
+    box-shadow: none;
+    transition: border-color 0.3s ease-out, box-shadow 0.3s ease-out;
+  } */

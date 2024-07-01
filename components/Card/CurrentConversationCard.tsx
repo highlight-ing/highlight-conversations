@@ -1,5 +1,5 @@
 // components/CurrentConversationCard.tsx
-import React, { useRef, useCallback } from "react"
+import React, { useRef, useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import styles from "@/styles/CurrentConversationCard.module.css"
@@ -21,11 +21,36 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null)
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)
 
-  const isActive = micActivity >= 1;
+  const [isActive, setIsActive] = useState(false);
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const borderClass = isActive ? styles.activeBorder : styles.inactiveBorder;
   const skeletonCorner = "rounded-lg";
 
   const isSaveDisabled = transcript.trim().length === 0;
+
+  useEffect(() => {
+    if (micActivity > 0) {
+      setIsActive(true);
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+      }
+    } else {
+      // Start a timer to set isActive to false after 1 second of inactivity
+      if (!inactivityTimerRef.current) {
+        inactivityTimerRef.current = setTimeout(() => {
+          setIsActive(false);
+          inactivityTimerRef.current = null;
+        }, 1500);
+      }
+    }
+
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, [micActivity]);
 
   return (
     <Card className={`w-full border-2 ${borderClass} transition-all duration-300 bg-background-100 relative`}>

@@ -82,9 +82,9 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
           <p className="px-1 select-text">{conversation.transcript}</p>
         </div>
       </div>
-      <Button onClick={handlePromptClick} className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand-light))] active:bg-[hsl(var(--brand-foreground))] transition-colors duration-200">
+      {/* <Button onClick={handlePromptClick} className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand-light))] active:bg-[hsl(var(--brand-foreground))] transition-colors duration-200">
         Attach to Highlight
-      </Button>
+      </Button> */}
     </CardContent>
   </Card>
   </motion.div>

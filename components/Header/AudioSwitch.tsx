@@ -22,12 +22,12 @@ interface AudioSwitchProps {
   
     return (
       <div className="flex items-center space-x-2">
+        <Label className="text-muted-foreground" htmlFor="audio-switch">Microphone Input</Label>
         <Switch
           checked={isChecked}
           onCheckedChange={handleToggle}
           id="audio-switch"
         />
-        <Label htmlFor="audio-switch">Microphone Input</Label>
       </div>
     );
   };

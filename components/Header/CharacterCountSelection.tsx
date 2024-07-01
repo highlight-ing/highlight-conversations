@@ -18,8 +18,8 @@ const CharacterCountSelection: React.FC<CharacterCountSelectionProps> = ({
   return (
     <div className="w-full max-w-sm space-y-4">
       <div className="flex items-center justify-between">
-        <Label htmlFor="characterCount">Character Count</Label>
-        <span>{value}</span>
+        <Label className="text-muted-foreground" htmlFor="characterCount">Character Count:</Label>
+        <Label className="text-foreground w-10 ml-2">{value}</Label>
       </div>
       <Slider
         id="characterCount"
