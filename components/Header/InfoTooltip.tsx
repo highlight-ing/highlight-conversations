@@ -8,7 +8,7 @@ interface InfoTooltipProps {
 
 const InfoTooltip: React.FC<InfoTooltipProps> = ({ content }) => {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger>
           <IoInformationCircleOutline className="text-muted-foreground hover:text-brand transition-colors ml-2" />

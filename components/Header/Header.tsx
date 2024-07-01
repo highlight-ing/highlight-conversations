@@ -36,20 +36,20 @@ const Header: React.FC<HeaderProps> = ({
           <InfoTooltip content={TOOLTIP_CONTENT.AUDIO_SWITCH} />
         </div>
         <div className="flex items-center">
+          <IdleTimerSelection value={idleTimerValue} onIdleTimerChange={onIdleTimerChange} />
+          <InfoTooltip content={TOOLTIP_CONTENT.IDLE_TIMER} />
+        </div>
+        <div className="flex items-center">
           <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
           <InfoTooltip content={TOOLTIP_CONTENT.AUTO_CLEAR} />
         </div>
       </div>
-      <div className="flex items-center justify-between p-4">
+      {/* <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
           <CharacterCountSelection value={characterCount} onCharacterCountChange={onCharacterCountChange} />
           <InfoTooltip content={TOOLTIP_CONTENT.CHARACTER_COUNT} />
-        </div>
-        <div className="flex items-center">
-          <IdleTimerSelection value={idleTimerValue} onIdleTimerChange={onIdleTimerChange} />
-          <InfoTooltip content={TOOLTIP_CONTENT.IDLE_TIMER} />
-        </div>
-      </div>
+        </div> 
+      </div> */}
     </div>
   );
 };

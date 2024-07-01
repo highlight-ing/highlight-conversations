@@ -55,7 +55,7 @@ const MainPage: React.FC = () => {
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
   const [isAudioEnabled, setIsAudioEnabled] = useState(true)
-  const [characterCount, setCharacterCount] = useState(400)
+  const [characterCount, setCharacterCount] = useState(5000)
   const [idleTimerValue, setIdleTimerValue] = useState(20)
   const isVisible = usePageVisibility()
   const isInitialMount = useRef(true)
