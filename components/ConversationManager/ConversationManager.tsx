@@ -13,6 +13,7 @@ interface ConversationsManagerProps {
   idleThreshold: number
   minCharacters: number
   conversations: ConversationData[]
+  isAudioEnabled: boolean
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
@@ -22,6 +23,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   idleThreshold,
   minCharacters,
   conversations,
+  isAudioEnabled,
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
@@ -32,6 +34,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   const [isWaitingForTranscript, setIsWaitingForTranscript] = useState(false)
   const idleCountRef = useRef(0)
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [nextTranscriptIn, setNextTranscriptIn] = useState(POLL_TRANSCRIPT_INTERVAL / 1000)
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const saveCurrentConversation = useCallback((forceSave: boolean = false) => {
     if (forceSave || currentConversation.trim().length >= minCharacters) {
@@ -76,6 +80,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       console.error('Error fetching transcript:', error)
     } finally {
       setIsWaitingForTranscript(true)
+      setNextTranscriptIn(POLL_TRANSCRIPT_INTERVAL / 1000) // Reset countdown
     }
   }, [])
 
@@ -101,12 +106,32 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     }
   }, [pollTranscription])
 
+    // Countdown effect
+    useEffect(() => {
+      const updateCountdown = () => {
+        setNextTranscriptIn((prev) => {
+          if (prev <= 0) return POLL_TRANSCRIPT_INTERVAL / 1000
+          return prev - 1
+        })
+      }
+  
+      countdownIntervalRef.current = setInterval(updateCountdown, 1000)
+  
+      return () => {
+        if (countdownIntervalRef.current) {
+          clearInterval(countdownIntervalRef.current)
+        }
+      }
+    }, [])
+
   return (
     <ConversationGrid
       currentConversation={currentConversation}
       conversations={conversations}
       micActivity={micActivity}
       isWaitingForTranscript={isWaitingForTranscript}
+      isAudioEnabled={isAudioEnabled}
+      nextTranscriptIn={nextTranscriptIn}
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
     />

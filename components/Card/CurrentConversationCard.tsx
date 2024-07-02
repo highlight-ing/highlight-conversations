@@ -2,13 +2,18 @@
 import React, { useRef, useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "../ui/button";
 import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
 import { FaSave } from "react-icons/fa";
+import { IoMdMic } from "react-icons/io" // Import microphone icon
+
 interface CurrentConversationCardProps {
   transcript: string;
   micActivity: number;
   isWaitingForTranscript: boolean;
+  isAudioEnabled: boolean;
+  nextTranscriptIn: number;
   onSave: () => void
 }
 
@@ -16,6 +21,8 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   transcript,
   micActivity,
   isWaitingForTranscript,
+  isAudioEnabled,
+  nextTranscriptIn,
   onSave,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -24,6 +31,8 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   const [isActive, setIsActive] = useState(false);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const borderClass = isActive ? styles.activeBorder : styles.inactiveBorder;
+
+
   const skeletonCorner = "rounded-lg";
 
   const isSaveDisabled = transcript.trim().length === 0;
@@ -55,17 +64,17 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   return (
     <Card className={`w-full border-2 ${borderClass} transition-all duration-300 bg-background-100 relative`}>
       <CardHeader>
-      <button
-        onClick={onSave}
-        disabled={isSaveDisabled}
-        className={`absolute top-4 right-4 text-muted-foreground transition-colors duration-200
-        ${isSaveDisabled
-          ? 'text-gray-400 cursor-not-allowed'
-          : 'text-muted-foreground hover:text-brand'
-        }`}
-      >
-        <FaSave size={18} />
-      </button>
+        <button
+          onClick={onSave}
+          disabled={isSaveDisabled}
+          className={`absolute top-4 right-4 text-muted-foreground transition-colors duration-200
+          ${isSaveDisabled
+            ? 'text-gray-400 cursor-not-allowed'
+            : 'text-muted-foreground hover:text-brand'
+          }`}
+        >
+          <FaSave size={18} />
+        </button>
         <CardTitle>Current Conversation</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">
@@ -92,6 +101,11 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
               </>
             ) : (
               <div className="space-y-2">
+                <p className="text-sm font-medium">Listening ...</p>
+                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                  <p>Next transcript in {nextTranscriptIn}s</p>
+                  <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
+                </div>
                 <Skeleton className={`h-24 w-full ${skeletonCorner}`} />
                 <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
                 <Skeleton className={`h-4 w-[80%] ${skeletonCorner}`} />

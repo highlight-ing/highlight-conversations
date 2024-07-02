@@ -62,6 +62,7 @@ const MainPage: React.FC = () => {
 
   const handleAudioToggle = async (isOn: boolean) => {
     await setAudioSuperpowerEnabled(isOn)
+    setIsAudioEnabled(isOn)
   }
 
   // Load values from localStorage
@@ -163,6 +164,7 @@ const MainPage: React.FC = () => {
             conversations={conversations}
             idleThreshold={idleTimerValue}
             minCharacters={characterCount}
+            isAudioEnabled={isAudioEnabled}
             onMicActivityChange={handleMicActivityChange}
             addConversation={addConversation}
             onDeleteConversation={deleteConversation}
