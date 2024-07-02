@@ -43,7 +43,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
   // Poll Mic Activity to triggle idle threshold and save conversation
   const pollMicActivity = useCallback(async () => {
-    const activity = await fetchMicActivity(10)
+    const activity = await fetchMicActivity(300)
     setMicActivity(activity)
     onMicActivityChange(activity)
 
