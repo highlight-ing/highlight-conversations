@@ -6,6 +6,7 @@ export const CONVERSATIONS_STORAGE_KEY = 'conversations'
 export const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
 export const MIN_CHARACTER_KEY = 'minCharacter'
 export const AUTO_SAVE_SEC_KEY = 'autoSaveSec'
+export const AUDIO_ENABLED_KEY = 'audioEnabled'
 
 export const saveConversations = (conversations: ConversationData[]): void => {
   if (conversations.length === 0) {
@@ -45,13 +46,22 @@ export const loadConversations = (): ConversationData[] => {
   }
 }
 
-export const saveValue = (key: string, value: number) => {
+export const saveNumberValue = (key: string, value: number) => {
   localStorage.setItem(key, value.toString())
 }
 
-export const loadValue = (key: string, defaultValue: number): number => {
+export const loadNumberValue = (key: string, defaultValue: number): number => {
   const storedValue = localStorage.getItem(key)
   return storedValue ? parseInt(storedValue, 10) : defaultValue
+}
+
+export const saveBooleanValue = (key: string, value: boolean) => {
+  localStorage.setItem(key, value.toString())
+}
+
+export const loadBooleanValue = (key: string, defaultValue: boolean): boolean => {
+  const storedValue = localStorage.getItem(key)
+  return storedValue !== null ? storedValue === 'true' : defaultValue
 }
 
 export const migrateToNewDefaults = () => {

@@ -2,8 +2,7 @@
 import React from 'react'
 import AutoClearSelection from './AutoClearSelection'
 import AudioSwitch from './AudioSwitch'
-import CharacterCountSelection from './CharacterCountSelection'
-import IdleTimerSelection from './IdleTimerSelection'
+import AutoSaveSelection from './AutoSaveSelection'
 import InfoTooltip from './InfoTooltip'
 import { TOOLTIP_CONTENT } from '@/constants/tooltipConstants'
 
@@ -11,22 +10,19 @@ interface HeaderProps {
   autoClearValue: number
   isAudioOn: boolean
   characterCount: number
-  idleTimerValue: number
+  autoSaveValue: number
   onAutoClearValueChange: (value: number) => void
   onAudioSwitch: (isOn: boolean) => void
-  onCharacterCountChange: (value: number) => void
-  onIdleTimerChange: (value: number) => void
+  onAutoSaveChange: (value: number) => void
 }
 
 const Header: React.FC<HeaderProps> = ({
   autoClearValue,
-  characterCount,
   isAudioOn,
-  idleTimerValue,
+  autoSaveValue,
   onAutoClearValueChange,
   onAudioSwitch,
-  onCharacterCountChange,
-  onIdleTimerChange
+  onAutoSaveChange
 }) => {
   return (
     <div className="w-full border-b">
@@ -36,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({
           <InfoTooltip content={TOOLTIP_CONTENT.AUDIO_SWITCH} />
         </div>
         <div className="flex items-center">
-          <IdleTimerSelection value={idleTimerValue} onIdleTimerChange={onIdleTimerChange} />
+          <AutoSaveSelection value={autoSaveValue} onIdleTimerChange={onAutoSaveChange} />
           <InfoTooltip content={TOOLTIP_CONTENT.AUTO_SAVE} />
         </div>
         <div className="flex items-center">
@@ -44,12 +40,6 @@ const Header: React.FC<HeaderProps> = ({
           <InfoTooltip content={TOOLTIP_CONTENT.AUTO_CLEAR} />
         </div>
       </div>
-      {/* <div className="flex items-center justify-between p-4">
-        <div className="flex items-center">
-          <CharacterCountSelection value={characterCount} onCharacterCountChange={onCharacterCountChange} />
-          <InfoTooltip content={TOOLTIP_CONTENT.CHARACTER_COUNT} />
-        </div> 
-      </div> */}
     </div>
   )
 }

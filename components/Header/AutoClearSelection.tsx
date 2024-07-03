@@ -31,6 +31,9 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
     { value: 14, label: "Every 2 Weeks" },
     { value: 21, label: "Every 3 Weeks" },
     { value: 30, label: "Every Month" },
+    { value: 90, label: "Every Quarter" },
+    { value: 180, label: "Every 6 Months" },
+    { value: 365, label: "Every Year" },
   ];
 
   return (
