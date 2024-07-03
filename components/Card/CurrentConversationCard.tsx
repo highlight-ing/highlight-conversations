@@ -93,8 +93,11 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
               <>
               {isWaitingForTranscript && (
                   <div className="space-y-2 mb-2">
+                     <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                  <p>Next transcript in {nextTranscriptIn}s</p>
+                  <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
+                </div>
                     <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
-                    <Skeleton className={`h-4 w-[80%] ${skeletonCorner}`} />
                   </div>
                 )}
               <p className="px-1">{transcript}</p>

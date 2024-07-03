@@ -24,7 +24,6 @@ export const fetchLongTranscript = async (): Promise<string | null> => {
 
 export const fetchMicActivity = async (lastNumMs: number = 300): Promise<number> => {
   let activity = await Highlight.user.getMicActivity(lastNumMs);
-  console.log('activity', activity)
   return activity
 };
 

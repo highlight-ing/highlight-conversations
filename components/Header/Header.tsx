@@ -1,11 +1,11 @@
 // components/Header.tsx
-import React from "react"
-import AutoClearSelection from "./AutoClearSelection"
-import AudioSwitch from "./AudioSwitch"
-import CharacterCountSelection from "./CharacterCountSelection"
-import IdleTimerSelection from "./IdleTimerSelection"
-import InfoTooltip from "./InfoTooltip"
-import { TOOLTIP_CONTENT } from "@/constants/tooltipConstants"
+import React from 'react'
+import AutoClearSelection from './AutoClearSelection'
+import AudioSwitch from './AudioSwitch'
+import CharacterCountSelection from './CharacterCountSelection'
+import IdleTimerSelection from './IdleTimerSelection'
+import InfoTooltip from './InfoTooltip'
+import { TOOLTIP_CONTENT } from '@/constants/tooltipConstants'
 
 interface HeaderProps {
   autoClearValue: number
@@ -15,7 +15,7 @@ interface HeaderProps {
   onAutoClearValueChange: (value: number) => void
   onAudioSwitch: (isOn: boolean) => void
   onCharacterCountChange: (value: number) => void
-  onIdleTimerChange: (value : number) => void
+  onIdleTimerChange: (value: number) => void
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -26,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({
   onAutoClearValueChange,
   onAudioSwitch,
   onCharacterCountChange,
-  onIdleTimerChange,
+  onIdleTimerChange
 }) => {
   return (
     <div className="w-full border-b">
@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({
         </div>
         <div className="flex items-center">
           <IdleTimerSelection value={idleTimerValue} onIdleTimerChange={onIdleTimerChange} />
-          <InfoTooltip content={TOOLTIP_CONTENT.IDLE_TIMER} />
+          <InfoTooltip content={TOOLTIP_CONTENT.AUTO_SAVE} />
         </div>
         <div className="flex items-center">
           <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
@@ -51,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({
         </div> 
       </div> */}
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
