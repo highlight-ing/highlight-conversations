@@ -2,16 +2,14 @@
 import React, { useRef, useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "../ui/button";
 import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
 import { FaSave } from "react-icons/fa";
-import { IoMdMic } from "react-icons/io" // Import microphone icon
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CurrentConversationCardProps {
   transcript: string;
   micActivity: number;
-  isWaitingForTranscript: boolean;
   isAudioEnabled: boolean;
   nextTranscriptIn: number;
   onSave: () => void
@@ -20,7 +18,6 @@ interface CurrentConversationCardProps {
 const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   transcript,
   micActivity,
-  isWaitingForTranscript,
   isAudioEnabled,
   nextTranscriptIn,
   onSave,
@@ -35,6 +32,12 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   const skeletonCorner = "rounded-lg";
 
   const isSaveDisabled = transcript.trim().length === 0;
+
+  const [transcriptKey, setTranscriptKey] = useState(0);
+
+  useEffect(() => {
+    setTranscriptKey(prevKey => prevKey + 1);
+  }, [transcript]);
 
   useEffect(() => {
     if (micActivity > 0) {
@@ -77,44 +80,50 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
         <CardTitle>Current Conversation</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">
-        <div className="relative h-64">
+        <div className="space-y-2 mb-2">
+          {!transcript && <p className="text-sm font-medium">Listening ...</p>}
+          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+            <p>Next transcript in {nextTranscriptIn}s</p>
+            <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
+          </div>
+          {transcript && <Skeleton className={`h-4 w-full ${skeletonCorner}`} />}
+        </div>
+        <div className="relative h-56">
           {transcript && showTopGradient && (
             <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none"></div>
           )}
           {transcript && showBottomGradient && (
             <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none"></div>
           )}
-          <div 
-            ref={scrollRef}
-            className="h-full overflow-y-auto scrollbar-hide"
-          >
-            {transcript ? (
-              <>
-              {isWaitingForTranscript && (
-                  <div className="space-y-2 mb-2">
-                     <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                  <p>Next transcript in {nextTranscriptIn}s</p>
-                  <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
-                </div>
-                    <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
-                  </div>
-                )}
-              <p className="px-1">{transcript}</p>
-              </>
-            ) : (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Listening ...</p>
-                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                  <p>Next transcript in {nextTranscriptIn}s</p>
-                  <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
-                </div>
+          <AnimatePresence mode="wait">
+            {!transcript ? (
+              <motion.div
+                key="listening"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-2"
+              >
                 <Skeleton className={`h-24 w-full ${skeletonCorner}`} />
                 <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
                 <Skeleton className={`h-4 w-[80%] ${skeletonCorner}`} />
                 <Skeleton className={`h-4 w-[60%] ${skeletonCorner}`} />
-              </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`transcript-${transcriptKey}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="h-full overflow-y-auto scrollbar-hide"
+                ref={scrollRef}
+              >
+                <p className="px-1">{transcript}</p>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
         </div>
       </CardContent>
     </Card>
