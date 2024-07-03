@@ -1,27 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ConversationData } from "@/data/conversations";
 import useScrollGradient from "@/hooks/useScrollGradient";
-import { formatTimestamp } from "@/utils/dateUtils";
-import { FaTrash } from "react-icons/fa";
+import { formatTimestamp, getRelativeTimeString } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
 import { getTextPrediction } from "@/services/highlightService";
 import { GeneratedPrompt } from "@/types/types";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { CopyIcon, TrashIcon } from "@radix-ui/react-icons";
 
-  import { getRelativeTimeString } from "@/utils/dateUtils";
-  import { Button } from "@/components/ui/button";
-
-  interface ConversationCardProps {
-    conversation: ConversationData
-    onDelete: (id: string) => void
-  }
+interface ConversationCardProps {
+  conversation: ConversationData
+  onDelete: (id: string) => void
+}
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDelete }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -49,6 +39,16 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
     }
   };
 
+  const handleCopyTranscript = () => {
+    navigator.clipboard.writeText(conversation.transcript)
+      .then(() => {
+        console.log("Transcript copied to clipboard");
+        // Optionally, you can add a toast notification here
+      })
+      .catch((error) => {
+        console.error("Failed to copy transcript:", error);
+      });
+  };
 
   return (
     <motion.div
@@ -58,12 +58,20 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
     >
     <Card className="w-full flex flex-col relative bg-background-100">
     <CardHeader>
-    <button
-      onClick={() => onDelete(conversation.id)}
-      className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors duration-200"
-    >
-      <FaTrash size={16} />
-    </button>
+    <div className="absolute top-4 right-4 flex space-x-3">
+      <button
+        onClick={handleCopyTranscript}
+        className="text-muted-foreground hover:text-[hsl(var(--brand))] transition-colors duration-200"
+      >
+        <CopyIcon className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => onDelete(conversation.id)}
+        className="text-muted-foreground hover:text-red-500 transition-colors duration-200"
+      >
+        <TrashIcon className="w-[20px] h-[20px]" />
+      </button>
+    </div>
       <CardTitle>{relativeTime || 'Untitled Conversation'}</CardTitle>
       <CardDescription>{formatTimestamp(conversation.timestamp)}</CardDescription>
     </CardHeader>
