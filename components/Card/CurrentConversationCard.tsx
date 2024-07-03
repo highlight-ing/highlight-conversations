@@ -32,7 +32,6 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const borderClass = isActive ? styles.activeBorder : styles.inactiveBorder;
 
-
   const skeletonCorner = "rounded-lg";
 
   const isSaveDisabled = transcript.trim().length === 0;
