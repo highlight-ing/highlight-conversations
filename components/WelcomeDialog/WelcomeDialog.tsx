@@ -17,42 +17,29 @@ const WelcomeDialog: React.FC = () => {
 
   useEffect(() => {
     const shouldShow = localStorage.getItem('showWelcomeDialog') !== 'false'
-    if (shouldShow) {
-      setIsOpen(true)
-    }
+    if (shouldShow) setIsOpen(true)
   }, [])
 
   const handleClose = () => {
     setIsOpen(false)
-    if (dontShowAgain) {
-      localStorage.setItem('showWelcomeDialog', 'false')
-    }
+    if (dontShowAgain) localStorage.setItem('showWelcomeDialog', 'false')
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle>Welcome to Conversations by Highlight</DialogTitle>
-          {/* <button
-            onClick={handleClose}
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
-          >
-            <FaTimes className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </button> */}
+          <DialogTitle className="text-xl font-bold">Welcome to Conversations by Highlight</DialogTitle>
         </DialogHeader>
-        <DialogDescription className="space-y-4">
-          <p>
-            Conversations listens to your microphone and continuously captures your speech, transcribing it into text. For optimal accuracy, Highlight delivers a transcript every 30 seconds. After a period of inactivity, Conversations automatically saves the conversation.
-          </p>
-          <p>
-            Conversations prioritizes your privacy. It does not store voice data; transcripts are generated using a locally running LLM. Only the transcript is saved locally on your computer. No transcripts are sent to any server or service without your explicit permission. Conversations is designed with your privacy at the forefront.
-          </p>
-          <p>Coming soon:</p>
-          <ul className="list-disc list-inside">
-            <li>Attach your conversation to Highlight to be further processed by your app of choice.</li>
+        <DialogDescription className="space-y-3 text-foreground text-sm">
+          <p className="font-medium">Conversations transcribes your speech in real-time, delivering updates every 30 seconds for optimal accuracy.</p>
+          <p className="font-semibold text-base">Privacy First:</p>
+          <ul className="list-disc list-inside font-normal">
+            <li>No voice data stored</li>
+            <li>Transcripts generated locally</li>
+            <li>Data saved only on your device</li>
           </ul>
+          <p className="text-muted-foreground italic">Coming soon: Attach conversations to Highlight for further processing.</p>
         </DialogDescription>
         <div className="flex items-center space-x-2 justify-center mt-4">
           <Checkbox
@@ -60,14 +47,11 @@ const WelcomeDialog: React.FC = () => {
             checked={dontShowAgain}
             onCheckedChange={(checked) => setDontShowAgain(checked as boolean)}
           />
-          <label
-            htmlFor="dontShowAgain"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
+          <label htmlFor="dontShowAgain" className="text-sm font-medium">
             Don&apos;t show this again
           </label>
         </div>
-        <Button onClick={handleClose} className="mt-4 w-full bg-brand">Close</Button>
+        <Button onClick={handleClose} className="mt-4 w-full bg-brand font-semibold">Close</Button>
       </DialogContent>
     </Dialog>
   )
