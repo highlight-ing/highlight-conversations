@@ -6,13 +6,11 @@ import ConversationGrid from '../Card/ConversationGrid'
 
 const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
 const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
-//TODO: - make this setable and probably default to like 30 seconds
-const IDLE_THRESHOLD = 150 // 15 seconds (150 * 100ms) of non-activity to consider conversation ended
-
 interface ConversationsManagerProps {
   idleThreshold: number
   minCharacters: number
   conversations: ConversationData[]
+  isAudioEnabled: boolean
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
@@ -22,60 +20,81 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   idleThreshold,
   minCharacters,
   conversations,
+  isAudioEnabled,
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
 
 }) => {
-  const [currentConversation, setCurrentConversation] = useState('')
+  const [currentConversationParts, setCurrentConversationParts] = useState<string[]>([])
   const [micActivity, setMicActivity] = useState(0)
-  const [isWaitingForTranscript, setIsWaitingForTranscript] = useState(false)
-  const idleCountRef = useRef(0)
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [nextTranscriptIn, setNextTranscriptIn] = useState(POLL_TRANSCRIPT_INTERVAL / 1000)
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const lastActivityTimeRef = useRef(Date.now())
+
+  // Function to get the current conversation as a string
+  const getCurrentConversationString = useCallback((reversed: boolean = true) => {
+    return reversed 
+      ? currentConversationParts.join(' ') 
+      : [...currentConversationParts].reverse().join(' ')
+  }, [currentConversationParts])
 
   const saveCurrentConversation = useCallback((forceSave: boolean = false) => {
-    if (forceSave || currentConversation.trim().length >= minCharacters) {
-      const newConversation = createConversation(currentConversation)
+    const conversationString = getCurrentConversationString(false) // Get in chronological order
+    if (forceSave || conversationString.trim().length >= minCharacters) {
+      const newConversation = createConversation(conversationString)
       addConversation(newConversation)
-      setCurrentConversation('')
+      setCurrentConversationParts([]) // Clear the current conversation
     }
-  }, [currentConversation, addConversation, minCharacters])
+  }, [getCurrentConversationString, addConversation, minCharacters])
 
-  // Poll Mic Activity to triggle idle threshold and save conversation
+  // Check last known mic activity and trigger save if past idle threshold 
+  useEffect(() => {
+    const checkIdleTime = () => {
+      const currentTime = Date.now()
+      const idleTime = currentTime - lastActivityTimeRef.current
+
+      if (idleTime >= idleThreshold * 1000) {
+        saveCurrentConversation()
+        lastActivityTimeRef.current = currentTime
+      }
+    }
+
+    const idleCheckInterval = setInterval(checkIdleTime, 1000)
+
+    return () => {
+      clearInterval(idleCheckInterval)
+    }
+  }, [idleThreshold, saveCurrentConversation])
+
+  // Poll Mic Activity and make time stamp of last mic activity
   const pollMicActivity = useCallback(async () => {
-    const activity = await fetchMicActivity(10)
+    const activity = await fetchMicActivity(300)
     setMicActivity(activity)
     onMicActivityChange(activity)
 
-    if (activity <= 1) {
-      idleCountRef.current += 1
-    } else {
-      idleCountRef.current = 0
+    if (activity > 1) {
+      lastActivityTimeRef.current = Date.now()
     }
-
-    if (idleCountRef.current >= idleThreshold * 10) {
-      saveCurrentConversation()
-      idleCountRef.current = 0
-    }
-  }, [onMicActivityChange, saveCurrentConversation, idleThreshold])
+  }, [onMicActivityChange])
 
   const handleSave = useCallback((didTapSaveButton: boolean = false) => {
-    setCurrentConversation(currentConversation)
+    setCurrentConversationParts(currentConversationParts)
     saveCurrentConversation(didTapSaveButton)
-  }, [saveCurrentConversation, currentConversation])
+  }, [saveCurrentConversation, currentConversationParts])
 
   // Poll Highlight api for transcripts
   const pollTranscription = useCallback(async () => {
-    setIsWaitingForTranscript(false)
     try {
       const transcript = await fetchTranscript()
       if (transcript) {
-        setCurrentConversation((prev) => prev.trim() + ' ' + transcript.trim())
+        setCurrentConversationParts(prevParts => [transcript.trim(), ...prevParts])
       }
     } catch (error) {
       console.error('Error fetching transcript:', error)
     } finally {
-      setIsWaitingForTranscript(true)
+      setNextTranscriptIn(POLL_TRANSCRIPT_INTERVAL / 1000) // Reset countdown
     }
   }, [])
 
@@ -101,12 +120,31 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     }
   }, [pollTranscription])
 
+    // Countdown effect
+    useEffect(() => {
+      const updateCountdown = () => {
+        setNextTranscriptIn((prev) => {
+          if (prev <= 0) return POLL_TRANSCRIPT_INTERVAL / 1000
+          return prev - 1
+        })
+      }
+  
+      countdownIntervalRef.current = setInterval(updateCountdown, 1000)
+  
+      return () => {
+        if (countdownIntervalRef.current) {
+          clearInterval(countdownIntervalRef.current)
+        }
+      }
+    }, [])
+
   return (
     <ConversationGrid
-      currentConversation={currentConversation}
+      currentConversation={getCurrentConversationString()} // Pass reversed (latest on top)
       conversations={conversations}
       micActivity={micActivity}
-      isWaitingForTranscript={isWaitingForTranscript}
+      isAudioEnabled={isAudioEnabled}
+      nextTranscriptIn={nextTranscriptIn}
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
     />

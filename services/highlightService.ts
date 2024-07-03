@@ -5,6 +5,7 @@ declare global {
   interface Window {
     highlight: {
       internal: {
+        getAudioSuperpowerEnabled: () => Promise<boolean>;
         setAudioSuperpowerEnabled: (enabled: boolean) => Promise<void>;
         getTextPrediction: (messages: LLMMessage[]) => Promise<string>;
       };
@@ -22,7 +23,8 @@ export const fetchLongTranscript = async (): Promise<string | null> => {
 };
 
 export const fetchMicActivity = async (lastNumMs: number = 300): Promise<number> => {
-  return await Highlight.user.getMicActivity(lastNumMs);
+  let activity = await Highlight.user.getMicActivity(lastNumMs);
+  return activity
 };
 
 export const setAsrRealtime = async (isRealtime: boolean): Promise<void> => {
@@ -42,6 +44,10 @@ export const fetchUserEmail = async (): Promise<string> => {
 };
 
 // Internal API functions
+export const getAudioSuperPowerEnabled = async (): Promise<boolean> => {
+  return await window.highlight.internal.getAudioSuperpowerEnabled();
+};
+
 export const setAudioSuperpowerEnabled = async (enabled: boolean): Promise<void> => {
   await window.highlight.internal.setAudioSuperpowerEnabled(enabled);
 };

@@ -30,6 +30,24 @@
       box-shadow: 0 0 10px hsl(var(--brand) / 0.5);
     }
   }
+
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .audioEnabledGradient {
+    background: linear-gradient(270deg, hsl(var(--background-100)), hsl(var(--destructive)), hsl(var(--background-100)));
+    background-size: 200% 200%;
+    animation: gradientAnimation 3s ease infinite;
+  }
   
   .activeBorder {
     animation: fadeFromGray 0.5s ease-out forwards, breathe 3s ease-in-out infinite 0.5s;

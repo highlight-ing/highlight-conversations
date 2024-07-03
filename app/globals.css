@@ -50,6 +50,10 @@
     }
   }
 
+  @keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    10%, 90% { opacity: 1; }
+  }
   @layer base {
     * {
       @apply border-border;
