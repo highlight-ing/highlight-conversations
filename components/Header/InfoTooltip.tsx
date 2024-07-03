@@ -13,8 +13,8 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({ content }) => {
         <TooltipTrigger>
           <IoInformationCircleOutline className="text-muted-foreground hover:text-brand transition-colors ml-2" />
         </TooltipTrigger>
-        <TooltipContent className="max-w-xs whitespace-pre-line text-foreground bg-background/70 backdrop-blur-md p-8 rounded-lg shadow-lg">
-          <p className='font-semibold'>{content}</p>
+        <TooltipContent className="max-w-xs whitespace-pre-line text-muted-foreground bg-background/70 backdrop-blur-md rounded-lg shadow-lg p-2">
+          <p className='font-regular'>{content}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
