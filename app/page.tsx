@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Header from '@/components/Header/Header'
 import ConversationsManager from '@/components/ConversationManager/ConversationManager'
-import { setAsrRealtime, setAudioSuperpowerEnabled } from '@/services/highlightService'
+import { setAsrRealtime, setAudioSuperpowerEnabled, getAudioSuperPowerEnabled } from '@/services/highlightService'
 import { ConversationData } from '@/data/conversations'
 import {
   saveConversations,
@@ -12,8 +12,11 @@ import {
   AUTO_CLEAR_VALUE_KEY,
   MIN_CHARACTER_KEY,
   AUTO_SAVE_SEC_KEY,
-  saveValue,
-  loadValue,
+  AUDIO_ENABLED_KEY,
+  saveNumberValue,
+  loadNumberValue,
+  saveBooleanValue,
+  loadBooleanValue,
   migrateToNewDefaults
 } from '@/utils/localStorage'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
@@ -51,22 +54,28 @@ const MainPage: React.FC = () => {
   const [autoClearValue, setAutoClearValue] = useState<number>(1)
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
-  const [isAudioEnabled, setIsAudioEnabled] = useState(true)
+  const [isAudioEnabled, setIsAudioEnabled] = useState<boolean | null>(null)
   const [characterCount, setCharacterCount] = useState(MIN_CHARACTER_COUNT)
   const [idleTimerValue, setIdleTimerValue] = useState(AUTO_SAVE_SEC)
   const isVisible = usePageVisibility()
   const isInitialMount = useRef(true)
 
-  const handleAudioToggle = async (isOn: boolean) => {
-    await setAudioSuperpowerEnabled(isOn)
-    setIsAudioEnabled(isOn)
-  }
+  useEffect(() => {
+    const initializeAudioState = async () => {
+      const electronSetting = await getAudioSuperPowerEnabled()
+      const localStorageSetting = loadBooleanValue(AUDIO_ENABLED_KEY, electronSetting)
+      
+      setIsAudioEnabled(localStorageSetting)
+    }
+  
+    initializeAudioState()
+  }, [])
 
   // Load values from localStorage
   useEffect(() => {
     migrateToNewDefaults()
-    setAutoClearValue(loadValue(AUTO_CLEAR_VALUE_KEY, AUTO_CLEAR_DAYS))
-    setIdleTimerValue(loadValue(AUTO_SAVE_SEC_KEY, AUTO_SAVE_SEC))
+    setAutoClearValue(loadNumberValue(AUTO_CLEAR_VALUE_KEY, AUTO_CLEAR_DAYS))
+    setIdleTimerValue(loadNumberValue(AUTO_SAVE_SEC_KEY, AUTO_SAVE_SEC))
   }, [])
 
   // Load saved conversations from Local Storage
@@ -89,25 +98,6 @@ const MainPage: React.FC = () => {
     setAsrRealtime(false)
   }, [])
 
-  const handleMicActivityChange = (activity: number) => {
-    setMicActivity(activity)
-  }
-
-  const handleAutoClearValueChange = (value: number) => {
-    setAutoClearValue(value)
-    saveValue(AUTO_CLEAR_VALUE_KEY, value)
-  }
-
-  const handleCharacterCountChange = (value: number) => {
-    setCharacterCount(value)
-    saveValue(MIN_CHARACTER_KEY, value)
-  }
-
-  const handleIdleTimerChange = (value: number) => {
-    setIdleTimerValue(value)
-    saveValue(AUTO_SAVE_SEC_KEY, value)
-  }
-
   useEffect(() => {
     const clearConversations = () => {
       const updatedConversations = clearOldConversations(conversations, autoClearValue, IS_TEST_MODE)
@@ -120,7 +110,27 @@ const MainPage: React.FC = () => {
 
     const intervalId = setInterval(clearConversations, AUTO_CLEAR_POLL)
     return () => clearInterval(intervalId)
-  }, [conversations, autoClearValue]) // Add dependencies
+  }, [conversations, autoClearValue])
+
+  const handleAudioToggle = async (isOn: boolean) => {
+    await setAudioSuperpowerEnabled(isOn)
+    setIsAudioEnabled(isOn)
+    saveBooleanValue(AUDIO_ENABLED_KEY, isOn)
+  }
+
+  const handleMicActivityChange = (activity: number) => {
+    setMicActivity(activity)
+  }
+
+  const handleAutoClearValueChange = (value: number) => {
+    setAutoClearValue(value)
+    saveNumberValue(AUTO_CLEAR_VALUE_KEY, value)
+  }
+
+  const handleAutoSaveChange = (value: number) => {
+    setIdleTimerValue(value)
+    saveNumberValue(AUTO_SAVE_SEC_KEY, value)
+  }
 
   const addConversation = useCallback((newConversation: Omit<ConversationData, 'timestamp'>) => {
     const conversationWithCurrentTimestamp = {
@@ -144,12 +154,11 @@ const MainPage: React.FC = () => {
       <Header
         autoClearValue={autoClearValue}
         characterCount={characterCount}
-        idleTimerValue={idleTimerValue}
-        isAudioOn={isAudioEnabled}
+        autoSaveValue={idleTimerValue}
+        isAudioOn={isAudioEnabled ?? false}
         onAutoClearValueChange={handleAutoClearValueChange}
         onAudioSwitch={handleAudioToggle}
-        onCharacterCountChange={handleCharacterCountChange}
-        onIdleTimerChange={handleIdleTimerChange}
+        onAutoSaveChange={handleAutoSaveChange}
       />
       <main className="flex-grow p-4">
         <AnimatePresence>
@@ -157,7 +166,7 @@ const MainPage: React.FC = () => {
             conversations={conversations}
             idleThreshold={idleTimerValue}
             minCharacters={characterCount}
-            isAudioEnabled={isAudioEnabled}
+            isAudioEnabled={isAudioEnabled ?? false}
             onMicActivityChange={handleMicActivityChange}
             addConversation={addConversation}
             onDeleteConversation={deleteConversation}
