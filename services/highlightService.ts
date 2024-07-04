@@ -1,6 +1,15 @@
 // services/highlightService.ts
+'use client'
 import Highlight from "@highlight-ai/app-runtime";
 import { GeneratedPrompt, LLMMessage } from '../types/types';
+import { loadConversations as loadConversationsFromLocalStorage } from '@/utils/localStorage'
+import { ConversationData } from "@/data/conversations";
+
+export const CONVERSATIONS_STORAGE_KEY = 'conversations'
+export const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
+export const AUTO_SAVE_SEC_KEY = 'autoSaveSec'
+export const AUDIO_ENABLED_KEY = 'audioEnabled'
+
 declare global {
   interface Window {
     highlight: {
@@ -8,6 +17,16 @@ declare global {
         getAudioSuperpowerEnabled: () => Promise<boolean>;
         setAudioSuperpowerEnabled: (enabled: boolean) => Promise<void>;
         getTextPrediction: (messages: LLMMessage[]) => Promise<string>;
+      };
+      appStorage: {
+        isHydrated: () => boolean;
+        whenHydrated: () => Promise<boolean>;
+        all: () => Record<string, any>;
+        get: (key: string) => any;
+        set: (key: string, value: any) => void;
+        setAll: (value: Record<string, any>) => void;
+        delete: (key: string) => void;
+        clear: () => void;
       };
     }
   }
@@ -132,3 +151,202 @@ export const addTextPredictionDoneListener = (listener: (event: any) => void): v
 export const removeTextPredictionDoneListener = (listener: (event: any) => void): void => {
   Highlight.removeEventListener('onTextPredictionDone', listener);
 };
+
+// App Storage functions
+const isBrowser = typeof window !== 'undefined';
+const getAppStorage = () => isBrowser ? window.highlight.appStorage : null;
+
+export const saveToAppStorage = async (key: string, value: any): Promise<void> => {
+  const appStorage = getAppStorage();
+  if (appStorage) {
+    await appStorage.whenHydrated();
+    appStorage.set(key, value);
+  }
+};
+
+export const loadFromAppStorage = async (key: string, defaultValue: any): Promise<any> => {
+  const appStorage = getAppStorage();
+  if (appStorage) {
+    await appStorage.whenHydrated();
+    const value = appStorage.get(key);
+    return value !== undefined ? value : defaultValue;
+  }
+  return defaultValue;
+};
+
+export const removeFromAppStorage = async (key: string): Promise<void> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    appStorage.delete(key);
+  }
+};
+
+export const clearAppStorage = async (): Promise<void> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    appStorage.clear();
+  }
+};
+
+// Type-specific app storage functions
+export const saveNumberInAppStorage = async (key: string, value: number): Promise<void> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    appStorage.set(key, value);
+  }
+};
+
+export const saveBooleanInAppStorage = async (key: string, value: boolean): Promise<void> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    appStorage.set(key, value);
+  }
+};
+
+export const saveStringInAppStorage = async (key: string, value: string): Promise<void> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    appStorage.set(key, value);
+  }
+};
+
+export const saveConversationsToAppStorage = async (conversations: ConversationData[]): Promise<void> => {
+  if (conversations.length === 0) {
+    console.warn('Attempting to save an empty conversations array. This might be unintended');
+    return;
+  }
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    const serializedConversations = conversations.map(conv => ({
+      ...conv,
+      timestamp: conv.timestamp.toISOString()
+    }));
+    appStorage.set(CONVERSATIONS_STORAGE_KEY, serializedConversations);
+    console.log('Saving conversations to AppStorage:', serializedConversations);
+  } else {
+    console.error('AppStorage not available. Unable to save conversations.');
+  }
+};
+
+// Type-specific app storage retrieval functions
+export const getNumberFromAppStorage = async (key: string, defaultValue: number): Promise<number> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    const value = appStorage.get(key);
+    return typeof value === 'number' ? value : defaultValue;
+  }
+  return defaultValue;
+};
+
+export const getBooleanFromAppStorage = async (key: string, defaultValue: boolean): Promise<boolean> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    const value = appStorage.get(key);
+    return typeof value === 'boolean' ? value : defaultValue;
+  }
+  return defaultValue;
+};
+
+export const getOptionalBooleanFromAppStorage = async (key: string): Promise<boolean | undefined> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    const value = appStorage.get(key);
+    return typeof value === 'boolean' ? value : undefined;
+  }
+  return undefined;
+};
+
+export const getStringFromAppStorage = async (key: string, defaultValue: string): Promise<string> => {
+  const appStorage = getAppStorage();
+  if (appStorage) { 
+    await appStorage.whenHydrated();
+    const value = appStorage.get(key);
+    return typeof value === 'string' ? value : defaultValue;
+  }
+  return defaultValue;
+};
+
+export const getConversationsFromAppStorage = async (): Promise<ConversationData[]> => {
+  const appStorage = getAppStorage();
+  if (appStorage) {
+    await appStorage.whenHydrated();
+    const serializedConversations = appStorage.get(CONVERSATIONS_STORAGE_KEY);
+    if (Array.isArray(serializedConversations)) {
+      return serializedConversations.map(conv => ({
+        ...conv,
+        timestamp: new Date(conv.timestamp)
+      }));
+    }
+  }
+  return [];
+};
+
+// Add this constant to your file
+const MIGRATION_COMPLETED_KEY = 'migrationCompleted';
+
+export const migrateFromLocalStorageToAppStorage = async (): Promise<void> => {
+  const appStorage = getAppStorage()
+  if (appStorage) {
+    await appStorage.whenHydrated();
+
+    // Check if migration has already been completed
+    const migrationCompleted = await getBooleanFromAppStorage(MIGRATION_COMPLETED_KEY, false);
+    if (migrationCompleted) {
+      console.log('Migration already completed. Skipping.');
+      return;
+    }
+
+    // Check if there's anything to migrate
+    const keysToCheck = [CONVERSATIONS_STORAGE_KEY, AUTO_CLEAR_VALUE_KEY, AUTO_SAVE_SEC_KEY, AUDIO_ENABLED_KEY];
+    const hasDataToMigrate = keysToCheck.some(key => localStorage.getItem(key) !== null);
+
+    if (!hasDataToMigrate) {
+      console.log('No data to migrate. Marking migration as completed.');
+      await saveBooleanInAppStorage(MIGRATION_COMPLETED_KEY, true);
+      return;
+    }
+
+    // Perform migration
+    const conversations = loadConversationsFromLocalStorage();
+    if (conversations.length > 0) {
+      await saveConversationsInAppStorage(conversations);
+      console.log(`Migrated conversations from LocalStorage to AppStorage`);
+      localStorage.removeItem(CONVERSATIONS_STORAGE_KEY);
+    }
+
+    await migrateNumber(AUTO_CLEAR_VALUE_KEY);
+    await migrateNumber(AUTO_SAVE_SEC_KEY);
+    await migrateBoolean(AUDIO_ENABLED_KEY);
+
+    // Mark migration as completed
+    await saveBooleanInAppStorage(MIGRATION_COMPLETED_KEY, true);
+
+    console.log('Migration from LocalStorage to AppStorage complete');
+  }
+};
+
+// Helper functions remain the same
+async function migrateNumber(key: string): Promise<void> {
+  const value = localStorage.getItem(key);
+  if (value !== null) {
+    await saveNumberInAppStorage(key, Number(value));
+    localStorage.removeItem(key);
+  }
+}
+
+async function migrateBoolean(key: string): Promise<void> {
+  const value = localStorage.getItem(key);
+  if (value !== null) {
+    await saveBooleanInAppStorage(key, value === 'true');
+    localStorage.removeItem(key);
+  }
+}

@@ -13,8 +13,8 @@ export const createConversation = (transcript: string): ConversationData => {
   let uuid = uuidv4();
   return {
     id: uuid,
-    summary: transcript.slice(0, 50),
-    topic: uuid.slice(0, 4),
+    summary: '',
+    topic: '',
     transcript: transcript,
     timestamp: new Date(),
   }
