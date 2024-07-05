@@ -55,13 +55,9 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       const currentTime = Date.now()
       const idleTime = currentTime - lastActivityTimeRef.current
 
-      console.log(`Current idle time: ${idleTime / 1000}s, Threshold: ${idleThreshold}s`)
-
       if (idleTime >= idleThreshold * 1000) {
-        console.log(`Idle threshold reached! Saving conversation...`)
         saveCurrentConversation()
         lastActivityTimeRef.current = currentTime
-        console.log(`Last activity time reset to: ${new Date(currentTime).toISOString()}`)
       }
     }
 
@@ -95,7 +91,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       if (transcript) {
         setCurrentConversationParts(prevParts => [transcript.trim(), ...prevParts])
         lastActivityTimeRef.current = Date.now() // Reset idle time
-        console.log(`New transcript received. Idle time reset at: ${new Date().toISOString()}`)
       }
     } catch (error) {
       console.error('Error fetching transcript:', error)
