@@ -7,6 +7,7 @@ import ConversationsManager from '@/components/ConversationManager/ConversationM
 import { ConversationData } from '@/data/conversations'
 import {
   setAsrRealtime,
+  requestBackgroundPermission,
   setAudioSuperpowerEnabled,
   getAudioSuperPowerEnabled,
   migrateFromLocalStorageToAppStorage,
@@ -63,6 +64,10 @@ const MainPage: React.FC = () => {
   const isVisible = usePageVisibility()
   const isInitialMount = useRef(true)
 
+  useEffect(() => {
+    requestBackgroundPermission()
+  }, [])
+  
   useEffect(() => {
     const initializeApp = async () => {
       console.log('Initializing app...');

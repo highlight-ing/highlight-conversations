@@ -62,9 +62,9 @@ export const fetchUserEmail = async (): Promise<string> => {
   return await Highlight.user.getEmail();
 };
 
-// export const requestBackgroundPermission = async (): Promise<void> => {
-//   await Highlight.user.requestBackgroundPermission();
-// };
+export const requestBackgroundPermission = async (): Promise<void> => {
+  await Highlight.permissions.requestBackgroundPermission();
+};
 
 // Internal API functions
 export const getAudioSuperPowerEnabled = async (): Promise<boolean> => {
