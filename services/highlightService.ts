@@ -62,8 +62,15 @@ export const fetchUserEmail = async (): Promise<string> => {
   return await Highlight.user.getEmail();
 };
 
-export const requestBackgroundPermission = async (): Promise<void> => {
-  await Highlight.permissions.requestBackgroundPermission();
+export const requestBackgroundPermission = () => {
+  try {
+    if (typeof window !== 'undefined' && window.highlight) {
+      console
+      return Highlight.permissions.requestBackgroundPermission();
+    }
+  } catch (error) {
+    console.error('Error requesting background permission:', error);
+  }
 };
 
 // Internal API functions
