@@ -14,7 +14,7 @@ import {
   saveBooleanInAppStorage,
   getNumberFromAppStorage,
   getOptionalBooleanFromAppStorage,
-  saveConversationsToAppStorage,
+  saveConversationsInAppStorage,
   getConversationsFromAppStorage,
   AUTO_CLEAR_VALUE_KEY,
   AUTO_SAVE_SEC_KEY,
@@ -113,7 +113,7 @@ const MainPage: React.FC = () => {
       return
     }
     console.log('Saving conversations to AppStorage:', conversations);
-    saveConversationsToAppStorage(conversations)
+    saveConversationsInAppStorage(conversations)
   }, [conversations])
 
   // Set ASR Realtime effect TODO: Deprecate?
@@ -164,7 +164,7 @@ const MainPage: React.FC = () => {
     setConversations((prevConversations) => {
       const updatedConversations = [conversationWithCurrentTimestamp, ...prevConversations];
       console.log('Saving updated conversations:', updatedConversations);
-      saveConversationsToAppStorage(updatedConversations);
+      saveConversationsInAppStorage(updatedConversations);
       return updatedConversations;
     });
   }, []);
@@ -174,7 +174,7 @@ const MainPage: React.FC = () => {
     setConversations((prevConversations) => {
       const updatedConversations = prevConversations.filter((conv) => conv.id !== id)
       console.log('Saving updated conversations after deletion:', updatedConversations);
-      saveConversationsToAppStorage(updatedConversations)
+      saveConversationsInAppStorage(updatedConversations)
       return updatedConversations
     })
   }, [])

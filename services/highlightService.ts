@@ -62,6 +62,10 @@ export const fetchUserEmail = async (): Promise<string> => {
   return await Highlight.user.getEmail();
 };
 
+// export const requestBackgroundPermission = async (): Promise<void> => {
+//   await Highlight.user.requestBackgroundPermission();
+// };
+
 // Internal API functions
 export const getAudioSuperPowerEnabled = async (): Promise<boolean> => {
   return await window.highlight.internal.getAudioSuperpowerEnabled();
@@ -215,7 +219,7 @@ export const saveStringInAppStorage = async (key: string, value: string): Promis
   }
 };
 
-export const saveConversationsToAppStorage = async (conversations: ConversationData[]): Promise<void> => {
+export const saveConversationsInAppStorage = async (conversations: ConversationData[]): Promise<void> => {
   if (conversations.length === 0) {
     console.warn('Attempting to save an empty conversations array. This might be unintended');
     return;
