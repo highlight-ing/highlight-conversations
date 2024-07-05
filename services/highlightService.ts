@@ -9,7 +9,6 @@ export const CONVERSATIONS_STORAGE_KEY = 'conversations'
 export const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
 export const AUTO_SAVE_SEC_KEY = 'autoSaveSec'
 export const AUDIO_ENABLED_KEY = 'audioEnabled'
-
 declare global {
   interface Window {
     highlight: {
