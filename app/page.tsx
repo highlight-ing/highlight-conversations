@@ -1,6 +1,6 @@
 'use client'
-
 import React, { useState, useEffect, useCallback, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
 import Header from '@/components/Header/Header'
 import ConversationsManager from '@/components/ConversationManager/ConversationManager'
@@ -65,9 +65,11 @@ const MainPage: React.FC = () => {
   const isInitialMount = useRef(true)
 
   useEffect(() => {
-    requestBackgroundPermission()
+    if (typeof window !== 'undefined') {
+      requestBackgroundPermission()
+    }
   }, [])
-  
+
   useEffect(() => {
     const initializeApp = async () => {
       console.log('Initializing app...');
