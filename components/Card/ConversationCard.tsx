@@ -7,6 +7,7 @@ import { getTextPrediction } from "@/services/highlightService";
 import { GeneratedPrompt } from "@/types/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyIcon, TrashIcon } from "@radix-ui/react-icons";
+import { Button } from "@/components/ui/button";
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -100,9 +101,9 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
           <p className="px-1 select-text">{conversation.transcript}</p>
         </div>
       </div>
-      {/* <Button onClick={handlePromptClick} className="mt-auto bg-[hsl(var(--brand))] hover:bg-[hsl(var(--brand-light))] active:bg-[hsl(var(--brand-foreground))] transition-colors duration-200">
-        Attach to Highlight
-      </Button> */}
+      <Button onClick={handlePromptClick} className="mt-auto bg-brand hover:bg-brand-light active:bg-brand-foreground transition-colors duration-200">
+        Process with Highlight
+      </Button>
     </CardContent>
   </Card>
   </motion.div>
