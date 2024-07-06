@@ -6,12 +6,15 @@ import { motion } from "framer-motion";
 import { getTextPrediction } from "@/services/highlightService";
 import { GeneratedPrompt } from "@/types/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CopyIcon, TrashIcon } from "@radix-ui/react-icons";
+import { CopyIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
+import ProcessingDialog from "@/components/Dialogue/ProcessingDialog";
+import { mockProcessConversation } from "@/services/mockProcessingService";
 
 interface ConversationCardProps {
   conversation: ConversationData
   onDelete: (id: string) => void
+  onUpdate: (updatedConversation: ConversationData) => void
 }
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDelete }) => {
@@ -20,6 +23,24 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
   const [prompts, setPrompts] = useState<GeneratedPrompt[]>([]);
   const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp));
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'hiding'>('idle');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false);
+
+  const handleProcessConversation = async () => {
+    setIsProcessing(true);
+    try {
+      const processedConversation = await mockProcessConversation(conversation);
+      onUpdate(processedConversation);
+    } catch (error) {
+      console.error("Error processing conversation:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const toggleTranscript = () => {
+    setIsTranscriptExpanded(!isTranscriptExpanded);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -111,3 +132,105 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
 };
 
 export default ConversationCard;
+
+// import React, { useEffect, useRef, useState } from "react";
+// import { ConversationData } from "@/data/conversations";
+// import useScrollGradient from "@/hooks/useScrollGradient";
+// import { formatTimestamp, getRelativeTimeString } from "@/utils/dateUtils";
+// import { motion } from "framer-motion";
+// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+// import { CopyIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+// import { Button } from "@/components/ui/button";
+// import ProcessingDialog from "@/components/ProcessingDialog";
+// import { mockProcessConversation } from "@/services/mockProcessingService";
+
+// interface ConversationCardProps {
+//   conversation: ConversationData;
+//   onDelete: (id: string) => void;
+//   onUpdate: (updatedConversation: ConversationData) => void;
+// }
+
+// const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDelete, onUpdate }) => {
+//   // ... (keep existing state and refs)
+//   const [isProcessing, setIsProcessing] = useState(false);
+//   const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false);
+
+//   // ... (keep existing useEffect)
+
+//   const handleProcessConversation = async () => {
+//     setIsProcessing(true);
+//     try {
+//       const processedConversation = await mockProcessConversation(conversation);
+//       onUpdate(processedConversation);
+//     } catch (error) {
+//       console.error("Error processing conversation:", error);
+//     } finally {
+//       setIsProcessing(false);
+//     }
+//   };
+
+//   const toggleTranscript = () => {
+//     setIsTranscriptExpanded(!isTranscriptExpanded);
+//   };
+
+//   return (
+//     <motion.div
+//       initial={{ opacity: 1, scale: 1 }}
+//       exit={{ opacity: 0, scale: 0.8 }}
+//       transition={{ duration: 0.5 }}
+//     >
+//       <Card className="w-full flex flex-col relative bg-background-100">
+//         <CardHeader>
+//           {/* ... (keep existing header content) */}
+//         </CardHeader>
+//         <CardContent className="flex-grow flex flex-col">
+//           {conversation.topic && conversation.summary ? (
+//             <>
+//               <div className="mb-4">
+//                 <h3 className="font-semibold">Topic:</h3>
+//                 <p>{conversation.topic}</p>
+//               </div>
+//               <div className="mb-4">
+//                 <h3 className="font-semibold">Summary:</h3>
+//                 <p>{conversation.summary}</p>
+//               </div>
+//               <div className="mb-4">
+//                 <Button onClick={toggleTranscript} variant="outline" className="w-full">
+//                   {isTranscriptExpanded ? (
+//                     <>
+//                       Hide Transcript <ChevronUpIcon className="ml-2" />
+//                     </>
+//                   ) : (
+//                     <>
+//                       Show Transcript <ChevronDownIcon className="ml-2" />
+//                     </>
+//                   )}
+//                 </Button>
+//                 {isTranscriptExpanded && (
+//                   <div className="mt-2 max-h-64 overflow-y-auto">
+//                     <p>{conversation.transcript}</p>
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           ) : (
+//             <div className="relative mb-4 h-64">
+//               {/* ... (keep existing transcript display logic) */}
+//             </div>
+//           )}
+//           {!conversation.topic && !conversation.summary && (
+//             <Button
+//               onClick={handleProcessConversation}
+//               className="mt-auto bg-brand hover:bg-brand-light active:bg-brand-foreground transition-colors duration-200"
+//             >
+//               Process with Highlight
+//             </Button>
+//           )}
+//         </CardContent>
+//       </Card>
+//       <ProcessingDialog isOpen={isProcessing} />
+//     </motion.div>
+//   );
+// };
+
+// export default ConversationCard;

@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
 
 interface ProcessingDialogProps {
   isOpen: boolean;
@@ -13,7 +12,7 @@ const ProcessingDialog: React.FC<ProcessingDialogProps> = ({ isOpen }) => {
           <DialogTitle>Processing...</DialogTitle>
         </DialogHeader>
         <div className="flex justify-center">
-          <Spinner className="text-brand" />
+          <div className="animate-spin h-6 w-6 border-2 border-brand border-t-transparent rounded-full"></div>
         </div>
       </DialogContent>
     </Dialog>
