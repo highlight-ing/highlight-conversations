@@ -81,50 +81,79 @@ export const setAudioSuperpowerEnabled = async (enabled: boolean): Promise<void>
   await window.highlight.internal.setAudioSuperpowerEnabled(enabled);
 };
 
-export const getTextPrediction = async (conversation: string): Promise<GeneratedPrompt[]> => {
+interface ProcessedConversationData {
+  topics: string[];
+  summary: string;
+}
+
+export const getTextPredictionFromHighlight = async (transcript: string): Promise<ProcessedConversationData> => {
+  console.log("Starting getTextPrediction");
   const messages: LLMMessage[] = [
     { 
       role: "system", 
-      content: "Using the following conversation recorded through a computer microphone, generate 5 insightful and diverse prompts or questions that could be used to further explore or analyze the main topics discussed. These prompts should be suitable for processing by a language model to gain deeper insights into the conversation. Format each prompt as a numbered list item."
+      content: "Analyze the following conversation transcript and generate a JSON object containing the following fields: 'topics' (an array of main topics discussed), and 'summary' (a brief summary of the conversation). Ensure the output is valid JSON."
     },
     { 
       role: "user", 
-      content: conversation 
+      content: transcript 
     }
   ];
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let accumulatedText = '';
     
-    const predictionId = window.highlight.internal.getTextPrediction(messages);
+    console.log("Calling getTextPrediction");
+    const predictionId = await window.highlight.internal.getTextPrediction(messages);
+    console.log("Prediction ID:", predictionId);
 
     const updateListener = (event: any) => {
+      console.log("Update event received:", event);
       if (event.id === predictionId) {
-        console.log('prediction:' + event.text);
+        console.log('Prediction chunk:', event.text);
         accumulatedText += event.text;
       }
     };
 
     const doneListener = (event: any) => {
+      console.log("Done event received:", event);
       if (event.id === predictionId) {
+        console.log("Prediction complete. Accumulated text:", accumulatedText);
         Highlight.removeEventListener('onTextPredictionUpdate', updateListener);
         Highlight.removeEventListener('onTextPredictionDone', doneListener);
         
-        // Parse the accumulated text into individual prompts
-        const parsedPrompts = parsePrompts(accumulatedText);
-        resolve(parsedPrompts);
+        try {
+          // Parse the accumulated text as JSON
+          const jsonStr = accumulatedText.replace(/^```json|```$/g, '').trim();
+          const parsedData: ProcessedConversationData = JSON.parse(jsonStr);
+          console.log("Parsed data:", parsedData);
+          resolve(parsedData);
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          reject(new Error('Failed to parse LLM output as JSON'));
+        }
       }
     };
 
+    console.log("Adding event listeners");
     Highlight.addEventListener('onTextPredictionUpdate', updateListener);
     Highlight.addEventListener('onTextPredictionDone', doneListener);
 
     // Optional: Add a timeout
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
+      console.log("Timeout reached");
       Highlight.removeEventListener('onTextPredictionUpdate', updateListener);
       Highlight.removeEventListener('onTextPredictionDone', doneListener);
       reject(new Error('Text prediction timed out'));
-    }, 30000); // 30 second timeout
+    }, 60000); // 60 second timeout
+
+    // Clear timeout if prediction completes successfully
+    const clearTimeoutOnCompletion = (event: any) => {
+      if (event.id === predictionId) {
+        clearTimeout(timeoutId);
+        Highlight.removeEventListener('onTextPredictionDone', clearTimeoutOnCompletion);
+      }
+    };
+    Highlight.addEventListener('onTextPredictionDone', clearTimeoutOnCompletion);
   });
 };
 

@@ -12,6 +12,7 @@ interface ConversationGridProps {
   nextTranscriptIn: number
   onDeleteConversation: (id: string) => void
   onSave: () => void
+  onUpdate: (updatedConversation: ConversationData) => void
 }
 
 const ConversationGrid: React.FC<ConversationGridProps> = ({
@@ -22,6 +23,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   nextTranscriptIn,
   onDeleteConversation,
   onSave,
+  onUpdate
 }) => {
   return (
     <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -44,6 +46,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
           <ConversationCard 
           key={conversation.id} 
           conversation={conversation}
+          onUpdate={onUpdate}
           onDelete={onDeleteConversation} 
           />
         </motion.div>

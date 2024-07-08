@@ -3,7 +3,7 @@ import { ConversationData } from "@/data/conversations";
 import useScrollGradient from "@/hooks/useScrollGradient";
 import { formatTimestamp, getRelativeTimeString } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
-import { getTextPrediction } from "@/services/highlightService";
+import { getTextPredictionFromHighlight } from "@/services/highlightService";
 import { GeneratedPrompt } from "@/types/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
@@ -17,7 +17,7 @@ interface ConversationCardProps {
   onUpdate: (updatedConversation: ConversationData) => void
 }
 
-const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDelete }) => {
+const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
   const [prompts, setPrompts] = useState<GeneratedPrompt[]>([]);
@@ -27,6 +27,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
   const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false);
 
   const handleProcessConversation = async () => {
+    console.log("Processing started");
     setIsProcessing(true);
     try {
       const processedConversation = await mockProcessConversation(conversation);
@@ -34,6 +35,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
     } catch (error) {
       console.error("Error processing conversation:", error);
     } finally {
+      console.log("Processing finished");
       setIsProcessing(false);
     }
   };
@@ -50,18 +52,18 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
     return () => clearInterval(timer);
   }, [conversation.timestamp]);
 
-  const handlePromptClick = async () => {
-    console.log("Starting text prediction...");
+  // const handlePromptClick = async () => {
+  //   console.log("Starting text prediction...");
     
-    try {
-      const generatedPrompts = await getTextPrediction(conversation.
-      transcript);
-      console.log("Generated prompts:", generatedPrompts);
-      setPrompts(generatedPrompts);
-    } catch (error) {
-      console.error("Error in prompt generation:", error);
-    }
-  };
+  //   try {
+  //     const generatedPrompts = await getTextPrediction(conversation.
+  //     transcript);
+  //     console.log("Generated prompts:", generatedPrompts);
+  //     setPrompts(generatedPrompts);
+  //   } catch (error) {
+  //     console.error("Error in prompt generation:", error);
+  //   }
+  // };
 
   const handleCopyTranscript = () => {
     navigator.clipboard.writeText(conversation.transcript)
@@ -108,7 +110,37 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
       <CardDescription>{formatTimestamp(conversation.timestamp)}</CardDescription>
     </CardHeader>
     <CardContent className="flex-grow flex flex-col">
-      <div className="relative mb-4 h-64">
+      {conversation.topic && conversation.summary ? (
+        <>
+            <div className="mb-4">
+                <h3 className="font-semibold">Topic:</h3>
+                <p>{conversation.topic}</p>
+              </div>
+              <div className="mb-4">
+                <h3 className="font-semibold">Summary:</h3>
+                <p>{conversation.summary}</p>
+              </div>
+              <div className="mb-4">
+                <Button onClick={toggleTranscript} variant="outline" className="w-full">
+                  {isTranscriptExpanded ? (
+                    <>
+                      Hide Transcript <ChevronUpIcon className="ml-2" />
+                    </>
+                  ) : (
+                    <>
+                      Show Transcript <ChevronDownIcon className="ml-2" />
+                    </>
+                  )}
+                </Button>
+                {isTranscriptExpanded && (
+                  <div className="mt-2 max-h-64 overflow-y-auto">
+                    <p>{conversation.transcript}</p>
+                  </div>
+                )}
+              </div>
+        </>
+      ) : (
+        <div className="relative mb-4 h-64">
         {showTopGradient && (
           <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none" />
         )}
@@ -122,11 +154,18 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDel
           <p className="px-1 select-text">{conversation.transcript}</p>
         </div>
       </div>
-      <Button onClick={handlePromptClick} className="mt-auto bg-brand hover:bg-brand-light active:bg-brand-foreground transition-colors duration-200">
-        Process with Highlight
-      </Button>
+      )}
+          {!conversation.topic && !conversation.summary && (
+            <Button
+              onClick={handleProcessConversation}
+              className="mt-auto bg-brand hover:bg-brand-light active:bg-brand-foreground transition-colors duration-200"
+            >
+              Process with Highlight
+            </Button>
+          )}
     </CardContent>
   </Card>
+  <ProcessingDialog isProcessing={isProcessing} />
   </motion.div>
 );
 };

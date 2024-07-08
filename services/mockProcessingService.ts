@@ -1,13 +1,20 @@
 import { ConversationData } from "@/data/conversations";
+import { getTextPredictionFromHighlight } from "./highlightService";
 
-export const mockProcessConversation = (conversation: ConversationData): Promise<ConversationData> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ...conversation,
-        topic: `Mock Topic for ${conversation.id}`,
-        summary: `This is a mock summary for the conversation. It was processed at ${new Date().toLocaleString()}.`,
-      });
-    }, 2500);
-  });
+export const mockProcessConversation = async (conversation: ConversationData): Promise<ConversationData> => {
+  console.log("Starting mockProcessConversation");
+try {
+console.log("Calling getTextPrediction");
+const processedData = await getTextPredictionFromHighlight(conversation.transcript);
+console.log("Processed data received:", processedData);
+return {
+...conversation,
+topic: processedData.topics.join(', '), // Join topics into a single string
+summary: processedData.summary
+};
+} catch (error) {
+console.error("Error in mockProcessConversation:", error);
+// Return the original conversation data if there's an error
+return conversation;
+}
 };

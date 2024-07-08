@@ -14,6 +14,7 @@ interface ConversationsManagerProps {
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
+  onUpdateConversation: (updatedConversation: ConversationData) => void
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
@@ -24,6 +25,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
+  onUpdateConversation
 
 }) => {
   const [currentConversationParts, setCurrentConversationParts] = useState<string[]>([])
@@ -148,6 +150,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       nextTranscriptIn={nextTranscriptIn}
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
+      onUpdate={onUpdateConversation}
     />
   )
 }

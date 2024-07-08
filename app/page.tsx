@@ -159,6 +159,14 @@ const MainPage: React.FC = () => {
     setIdleTimerValue(value)
     await saveNumberInAppStorage(AUTO_SAVE_SEC_KEY, value)
   }
+  const handleUpdateConversation = (updatedConversation: ConversationData) => {
+    setConversations((prevConversations) => {
+      const index = prevConversations.findIndex((conv) => conv.id === updatedConversation.id)
+      const updatedConversations = [...prevConversations]
+      updatedConversations[index] = updatedConversation
+      return updatedConversations
+    })
+  }
 
   const addConversation = useCallback(async (newConversation: Omit<ConversationData, 'timestamp'>) => {
     const conversationWithCurrentTimestamp = {
@@ -206,6 +214,7 @@ const MainPage: React.FC = () => {
             onMicActivityChange={handleMicActivityChange}
             addConversation={addConversation}
             onDeleteConversation={deleteConversation}
+            onUpdateConversation={handleUpdateConversation}
           />
         </AnimatePresence>
       </main>
