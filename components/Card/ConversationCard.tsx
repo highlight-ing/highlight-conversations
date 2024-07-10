@@ -10,7 +10,7 @@ import { mockProcessConversation } from '@/services/mockProcessingService'
 import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
 import { ArrowRightIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge";
-import UnsummarizedViewTranscriptDialog from "@/components/Dialogue/UnsummarizedViewTranscriptDialog"
+import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -40,7 +40,6 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
 
   return (
     <motion.div initial={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
-      {/* w-64 p-4 bg-neutral-800 rounded-lg shadow flex flex-col gap-4 */}
       <Card className="flex w-full flex-col rounded-lg bg-background-100 p-0 shadow">
         <ConversationCardHeader conversation={conversation} onDelete={onDelete} />
         <CardContent className="flex flex-grow flex-col px-4 pb-4 pt-0">
@@ -62,7 +61,13 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         </CardFooter>
       </Card>
       <ProcessingDialog isProcessing={isProcessing} />
-      <UnsummarizedViewTranscriptDialog isOpen={isViewTranscriptOpen} onClose={() => setIsViewTranscriptOpen(false)} conversation={conversation} onDelete={onDelete} onSummarize={handleSummarize} />
+      <ViewTranscriptDialog 
+        isOpen={isViewTranscriptOpen} 
+        onClose={() => setIsViewTranscriptOpen(false)} 
+        conversation={conversation} 
+        onDelete={onDelete} 
+        onSummarize={handleSummarize} 
+      />
     </motion.div>
   )
 }
