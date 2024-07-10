@@ -7,6 +7,7 @@ export interface ConversationData {
   timestamp: Date
   topic: string
   transcript: string
+  summarized: boolean
 }
 
 export const createConversation = (transcript: string): ConversationData => {
@@ -17,6 +18,7 @@ export const createConversation = (transcript: string): ConversationData => {
     topic: '',
     transcript: transcript,
     timestamp: new Date(),
+    summarized: false,
   }
 }
 

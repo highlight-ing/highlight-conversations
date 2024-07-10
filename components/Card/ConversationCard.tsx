@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 import { getTextPredictionFromHighlight } from "@/services/highlightService";
 import { GeneratedPrompt } from "@/types/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CopyIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import ProcessingDialog from "@/components/Dialogue/ProcessingDialog";
 import { mockProcessConversation } from "@/services/mockProcessingService";
+import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -52,19 +52,6 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
     return () => clearInterval(timer);
   }, [conversation.timestamp]);
 
-  // const handlePromptClick = async () => {
-  //   console.log("Starting text prediction...");
-    
-  //   try {
-  //     const generatedPrompts = await getTextPrediction(conversation.
-  //     transcript);
-  //     console.log("Generated prompts:", generatedPrompts);
-  //     setPrompts(generatedPrompts);
-  //   } catch (error) {
-  //     console.error("Error in prompt generation:", error);
-  //   }
-  // };
-
   const handleCopyTranscript = () => {
     navigator.clipboard.writeText(conversation.transcript)
       .then(() => {
@@ -86,26 +73,38 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
     <Card className="w-full flex flex-col relative bg-background-100">
     <CardHeader>
     <div className="absolute top-4 right-4 flex space-x-3 items-center">
-      <div className="relative">
-        <button
-          onClick={handleCopyTranscript}
-          className="text-muted-foreground hover:text-brand transition-colors duration-200"
-        >
-          <CopyIcon className="w-4 h-4" />
-        </button>
-        <div
-          className={`absolute -top-8 left-1/2 transform -translate-x-1/2 bg-background text-muted-foreground text-xs py-1 px-2 rounded shadow-md pointer-events-none transition-opacity duration-200 ${copyState === 'copied' ? 'animate-fadeIn opacity-100' : copyState === 'hiding' ? 'animate-fadeOut opacity-0' : 'opacity-0'}`}
-        >
-          Copied
+          <button
+            onClick={handleCopyTranscript}
+            className="text-foreground hover:text-brand transition-colors duration-200 relative"
+          >
+            <ClipboardIcon
+              width={20}
+              height={20}
+              className="border border-brand"
+            />
+            <div
+              className={`absolute -top-8 left-1/2 transform -translate-x-1/2 bg-background text-muted-foreground text-xs py-1 px-2 rounded shadow-md pointer-events-none transition-opacity duration-200 ${
+                copyState === 'copied'
+                  ? 'animate-fadeIn opacity-100'
+                  : copyState === 'hiding'
+                  ? 'animate-fadeOut opacity-0'
+                  : 'opacity-0'
+              }`}
+            >
+              Copied
+            </div>
+          </button>
+          <button
+            onClick={() => onDelete(conversation.id)}
+            className="text-foreground hover:text-destructive transition-colors duration-200"
+          >
+            <TrashIcon
+              width={20}
+              height={20}
+              className="border border-brand"
+            />
+          </button>
         </div>
-      </div>
-      <button
-        onClick={() => onDelete(conversation.id)}
-        className="text-muted-foreground hover:text-destructive transition-colors duration-200"
-      >
-        <TrashIcon className="w-[20px] h-[20px] transform translate-y-[-2px]" />
-      </button>
-    </div>
       <CardTitle>{relativeTime || 'Untitled Conversation'}</CardTitle>
       <CardDescription>{formatTimestamp(conversation.timestamp)}</CardDescription>
     </CardHeader>
@@ -171,105 +170,3 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
 };
 
 export default ConversationCard;
-
-// import React, { useEffect, useRef, useState } from "react";
-// import { ConversationData } from "@/data/conversations";
-// import useScrollGradient from "@/hooks/useScrollGradient";
-// import { formatTimestamp, getRelativeTimeString } from "@/utils/dateUtils";
-// import { motion } from "framer-motion";
-// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-// import { CopyIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
-// import { Button } from "@/components/ui/button";
-// import ProcessingDialog from "@/components/ProcessingDialog";
-// import { mockProcessConversation } from "@/services/mockProcessingService";
-
-// interface ConversationCardProps {
-//   conversation: ConversationData;
-//   onDelete: (id: string) => void;
-//   onUpdate: (updatedConversation: ConversationData) => void;
-// }
-
-// const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onDelete, onUpdate }) => {
-//   // ... (keep existing state and refs)
-//   const [isProcessing, setIsProcessing] = useState(false);
-//   const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false);
-
-//   // ... (keep existing useEffect)
-
-//   const handleProcessConversation = async () => {
-//     setIsProcessing(true);
-//     try {
-//       const processedConversation = await mockProcessConversation(conversation);
-//       onUpdate(processedConversation);
-//     } catch (error) {
-//       console.error("Error processing conversation:", error);
-//     } finally {
-//       setIsProcessing(false);
-//     }
-//   };
-
-//   const toggleTranscript = () => {
-//     setIsTranscriptExpanded(!isTranscriptExpanded);
-//   };
-
-//   return (
-//     <motion.div
-//       initial={{ opacity: 1, scale: 1 }}
-//       exit={{ opacity: 0, scale: 0.8 }}
-//       transition={{ duration: 0.5 }}
-//     >
-//       <Card className="w-full flex flex-col relative bg-background-100">
-//         <CardHeader>
-//           {/* ... (keep existing header content) */}
-//         </CardHeader>
-//         <CardContent className="flex-grow flex flex-col">
-//           {conversation.topic && conversation.summary ? (
-//             <>
-//               <div className="mb-4">
-//                 <h3 className="font-semibold">Topic:</h3>
-//                 <p>{conversation.topic}</p>
-//               </div>
-//               <div className="mb-4">
-//                 <h3 className="font-semibold">Summary:</h3>
-//                 <p>{conversation.summary}</p>
-//               </div>
-//               <div className="mb-4">
-//                 <Button onClick={toggleTranscript} variant="outline" className="w-full">
-//                   {isTranscriptExpanded ? (
-//                     <>
-//                       Hide Transcript <ChevronUpIcon className="ml-2" />
-//                     </>
-//                   ) : (
-//                     <>
-//                       Show Transcript <ChevronDownIcon className="ml-2" />
-//                     </>
-//                   )}
-//                 </Button>
-//                 {isTranscriptExpanded && (
-//                   <div className="mt-2 max-h-64 overflow-y-auto">
-//                     <p>{conversation.transcript}</p>
-//                   </div>
-//                 )}
-//               </div>
-//             </>
-//           ) : (
-//             <div className="relative mb-4 h-64">
-//               {/* ... (keep existing transcript display logic) */}
-//             </div>
-//           )}
-//           {!conversation.topic && !conversation.summary && (
-//             <Button
-//               onClick={handleProcessConversation}
-//               className="mt-auto bg-brand hover:bg-brand-light active:bg-brand-foreground transition-colors duration-200"
-//             >
-//               Process with Highlight
-//             </Button>
-//           )}
-//         </CardContent>
-//       </Card>
-//       <ProcessingDialog isOpen={isProcessing} />
-//     </motion.div>
-//   );
-// };
-
-// export default ConversationCard;
