@@ -5,7 +5,7 @@ import { ClipboardIcon, TrashIcon } from '@/components/ui/icons';
 import { LightningBoltIcon } from "@radix-ui/react-icons";
 import useScrollGradient from '@/hooks/useScrollGradient';
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
-import { ConversationData } from '@/data/conversations';
+import { ConversationData, formatTranscript } from '@/data/conversations';
 
 interface UnsummarizedViewTranscriptDialogProps {
   isOpen: boolean;
@@ -77,7 +77,7 @@ const UnsummarizedViewTranscriptDialog: React.FC<UnsummarizedViewTranscriptDialo
           )}
           <div ref={scrollRef} className="scrollbar-hide h-full overflow-y-auto">
             <p className="text-sm font-regular text-white/80 whitespace-pre-wrap leading-relaxed">
-              {conversation.transcript}
+              {formatTranscript(conversation.transcript, "DialogueTranscript")}
             </p>
           </div>
         </div>

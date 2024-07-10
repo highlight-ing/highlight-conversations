@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ConversationData } from '@/data/conversations'
+import { ConversationData, formatTranscript, FormatType } from '@/data/conversations'
 import useScrollGradient from '@/hooks/useScrollGradient'
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { motion } from 'framer-motion'
@@ -113,7 +113,6 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
           <button
             onClick={handleCopyTranscript}
             className = "text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
-            // className="relative h-5 w-5 text-white/60 transition-colors duration-200 hover:text-white"
           >
             <ClipboardIcon width={24} height={24} />
             {copyState !== 'idle' && (
@@ -152,9 +151,8 @@ const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, o
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-100 h-24 bg-gradient-to-t from-background-100 to-transparent" />
         )}
         <div ref={scrollRef} className="scrollbar-hide h-full overflow-y-auto p-0">
-          <p className="select-text pb-8 text-[15px] leading-normal text-foreground/80">
-            {' '}
-            {transcript}
+          <p className="select-text pb-0 text-[15px] text-foreground/80 leading-relaxed whitespace-pre-wrap">
+            {formatTranscript(transcript, "CardTranscript")}
           </p>
         </div>
       </div>
