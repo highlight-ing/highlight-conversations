@@ -191,21 +191,21 @@ export const removeTextPredictionDoneListener = (listener: (event: any) => void)
   Highlight.removeEventListener('onTextPredictionDone', listener);
 };
 
-export const addSleepListener = (listener: () => void): void => {
-  Highlight.addEventListener('onSleep', listener);
-};
+// export const addSleepListener = (listener: () => void): void => {
+//   Highlight.addEventListener('onSleep', listener);
+// };
 
-export const removeSleepListener = (listener: () => void): void => {
-  Highlight.removeEventListener('onSleep', listener);
-};
+// export const removeSleepListener = (listener: () => void): void => {
+//   Highlight.removeEventListener('onSleep', listener);
+// };
 
-export const addWakeListener = (listener: () => void): void => {
-  Highlight.addEventListener('onWake', listener);
-};
+// export const addWakeListener = (listener: () => void): void => {
+//   Highlight.addEventListener('onWake', listener);
+// };
 
-export const removeWakeListener = (listener: () => void): void => {
-  Highlight.removeEventListener('onWake', listener);
-};
+// export const removeWakeListener = (listener: () => void): void => {
+//   Highlight.removeEventListener('onWake', listener);
+// };
 
 // App Storage functions
 const isBrowser = typeof window !== 'undefined';
