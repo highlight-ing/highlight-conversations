@@ -3,8 +3,6 @@ import { ConversationData } from '@/data/conversations'
 import useScrollGradient from '@/hooks/useScrollGradient'
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { motion } from 'framer-motion'
-import { getTextPredictionFromHighlight } from '@/services/highlightService'
-import { GeneratedPrompt } from '@/types/types'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import ProcessingDialog from '@/components/Dialogue/ProcessingDialog'
@@ -12,6 +10,7 @@ import { mockProcessConversation } from '@/services/mockProcessingService'
 import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
 import { ArrowRightIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge";
+import UnsummarizedViewTranscriptDialog from "@/components/Dialogue/UnsummarizedViewTranscriptDialog"
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -21,6 +20,7 @@ interface ConversationCardProps {
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete }) => {
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isViewTranscriptOpen, setIsViewTranscriptOpen] = useState(false)
 
   const handleSummarize = async () => {
     setIsProcessing(true)
@@ -35,7 +35,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
   }
 
   const handleOnViewTranscript = async () => {
-
+    setIsViewTranscriptOpen(true)
   }
 
   return (
@@ -62,6 +62,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         </CardFooter>
       </Card>
       <ProcessingDialog isProcessing={isProcessing} />
+      <UnsummarizedViewTranscriptDialog isOpen={isViewTranscriptOpen} onClose={() => setIsViewTranscriptOpen(false)} conversation={conversation} onDelete={onDelete} onSummarize={handleSummarize} />
     </motion.div>
   )
 }
