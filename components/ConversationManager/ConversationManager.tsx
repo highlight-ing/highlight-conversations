@@ -11,9 +11,11 @@ interface ConversationsManagerProps {
   minCharacters: number
   conversations: ConversationData[]
   isAudioEnabled: boolean
+  isSleeping: boolean
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
+  onUpdateConversation: (updatedConversation: ConversationData) => void
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
@@ -21,9 +23,11 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   minCharacters,
   conversations,
   isAudioEnabled,
+  isSleeping,
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
+  onUpdateConversation
 
 }) => {
   const [currentConversationParts, setCurrentConversationParts] = useState<string[]>([])
@@ -51,6 +55,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
   // Check last known mic activity and trigger save if past idle threshold 
   useEffect(() => {
+    if (isSleeping) { return }
+
     const checkIdleTime = () => {
       const currentTime = Date.now()
       const idleTime = currentTime - lastActivityTimeRef.current
@@ -66,10 +72,11 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     return () => {
       clearInterval(idleCheckInterval)
     }
-  }, [idleThreshold, saveCurrentConversation])
+  }, [isSleeping, idleThreshold, saveCurrentConversation])
 
   // Poll Mic Activity and make time stamp of last mic activity
   const pollMicActivity = useCallback(async () => {
+    if (isSleeping) return;
     const activity = await fetchMicActivity(300)
     setMicActivity(activity)
     onMicActivityChange(activity)
@@ -77,7 +84,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     if (activity > 1) {
       lastActivityTimeRef.current = Date.now()
     }
-  }, [onMicActivityChange])
+  }, [isSleeping, onMicActivityChange])
 
   const handleSave = useCallback((didTapSaveButton: boolean = false) => {
     setCurrentConversationParts(currentConversationParts)
@@ -86,6 +93,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
   // Poll Highlight api for transcripts
   const pollTranscription = useCallback(async () => {
+    if (isSleeping) return;
     try {
       const transcript = await fetchTranscript()
       if (transcript) {
@@ -97,7 +105,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     } finally {
       setNextTranscriptIn(POLL_TRANSCRIPT_INTERVAL / 1000) // Reset countdown
     }
-  }, [])
+  }, [isSleeping])
 
   // Effect for polling mic activity
   useEffect(() => {
@@ -148,6 +156,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       nextTranscriptIn={nextTranscriptIn}
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
+      onUpdate={onUpdateConversation}
     />
   )
 }

@@ -1,6 +1,6 @@
 'use client'
+
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
 import Header from '@/components/Header/Header'
 import ConversationsManager from '@/components/ConversationManager/ConversationManager'
@@ -20,6 +20,10 @@ import {
   AUTO_CLEAR_VALUE_KEY,
   AUTO_SAVE_SEC_KEY,
   AUDIO_ENABLED_KEY,
+  addSleepListener,
+  removeSleepListener,
+  addWakeListener,
+  removeWakeListener
   
 } from '@/services/highlightService'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
@@ -61,15 +65,35 @@ const MainPage: React.FC = () => {
   const [isAudioEnabled, setIsAudioEnabled] = useState<boolean | null>(null)
   const [characterCount, setCharacterCount] = useState(MIN_CHARACTER_COUNT)
   const [idleTimerValue, setIdleTimerValue] = useState(AUTO_SAVE_SEC)
+  const [isSleeping, setIsSleeping] = useState(false)
   const isVisible = usePageVisibility()
   const isInitialMount = useRef(true)
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      requestBackgroundPermission()
-    }
-  }, [])
+    const handleSleep = () => {
+      console.log('System is going to sleep');
+      setIsSleeping(true)
+    };
+  
+    const handleWake = () => {
+      console.log('System is waking up');
+      setIsSleeping(false)
+    };
+  
+    addSleepListener(handleSleep);
+    addWakeListener(handleWake);
+  
+    // Cleanup
+    return () => {
+      removeSleepListener(handleSleep);
+      removeWakeListener(handleWake);
+    };
+  }, []);
 
+  useEffect(() => {
+    requestBackgroundPermission()
+  }, [])
+  
   useEffect(() => {
     const initializeApp = async () => {
       console.log('Initializing app...');
@@ -161,6 +185,14 @@ const MainPage: React.FC = () => {
     setIdleTimerValue(value)
     await saveNumberInAppStorage(AUTO_SAVE_SEC_KEY, value)
   }
+  const handleUpdateConversation = (updatedConversation: ConversationData) => {
+    setConversations((prevConversations) => {
+      const index = prevConversations.findIndex((conv) => conv.id === updatedConversation.id)
+      const updatedConversations = [...prevConversations]
+      updatedConversations[index] = updatedConversation
+      return updatedConversations
+    })
+  }
 
   const addConversation = useCallback(async (newConversation: Omit<ConversationData, 'timestamp'>) => {
     const conversationWithCurrentTimestamp = {
@@ -205,9 +237,11 @@ const MainPage: React.FC = () => {
             idleThreshold={idleTimerValue}
             minCharacters={characterCount}
             isAudioEnabled={isAudioEnabled ?? false}
+            isSleeping={isSleeping}
             onMicActivityChange={handleMicActivityChange}
             addConversation={addConversation}
             onDeleteConversation={deleteConversation}
+            onUpdateConversation={handleUpdateConversation}
           />
         </AnimatePresence>
       </main>
