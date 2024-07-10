@@ -3,6 +3,7 @@
 export { default as Icon } from '../Icon'
 export { default as ClipboardIcon } from './ClipboardIcon'
 export { default as TrashIcon } from './TrashIcon';
+export { default as RightChevronIcon } from './RightChevronIcon'
 // export { default as DownloadIcon } from './DownloadIcon';
 // ... export other icon components
 
