@@ -81,17 +81,21 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
   }, [conversation.timestamp])
 
   const handleCopyTranscript = () => {
+    const clipboardContent = conversation.summarized
+      ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
+      : conversation.transcript;
+  
     navigator.clipboard
-      .writeText(conversation.transcript)
+      .writeText(clipboardContent)
       .then(() => {
-        setCopyState('copied')
-        setTimeout(() => setCopyState('hiding'), 1500)
-        setTimeout(() => setCopyState('idle'), 1700)
+        setCopyState('copied');
+        setTimeout(() => setCopyState('hiding'), 1500);
+        setTimeout(() => setCopyState('idle'), 1700);
       })
       .catch((error) => {
-        console.error('Failed to copy transcript:', error)
-      })
-  }
+        console.error('Failed to copy transcript:', error);
+      });
+  };
 
   return (
     <div className="flex flex-col gap-0.5 px-4 pt-4">
