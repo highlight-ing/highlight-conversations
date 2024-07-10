@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ConversationData } from '@/data/conversations'
+import { ConversationData, formatTranscript, FormatType } from '@/data/conversations'
 import useScrollGradient from '@/hooks/useScrollGradient'
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { motion } from 'framer-motion'
-import { getTextPredictionFromHighlight } from '@/services/highlightService'
-import { GeneratedPrompt } from '@/types/types'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import ProcessingDialog from '@/components/Dialogue/ProcessingDialog'
@@ -12,6 +10,8 @@ import { mockProcessConversation } from '@/services/mockProcessingService'
 import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
 import { ArrowRightIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge";
+import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
+import Tooltip from "@/components/Tooltip/Tooltip"
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -21,6 +21,7 @@ interface ConversationCardProps {
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete }) => {
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isViewTranscriptOpen, setIsViewTranscriptOpen] = useState(false)
 
   const handleSummarize = async () => {
     setIsProcessing(true)
@@ -35,12 +36,11 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
   }
 
   const handleOnViewTranscript = async () => {
-
+    setIsViewTranscriptOpen(true)
   }
 
   return (
     <motion.div initial={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
-      {/* w-64 p-4 bg-neutral-800 rounded-lg shadow flex flex-col gap-4 */}
       <Card className="flex w-full flex-col rounded-lg bg-background-100 p-0 shadow">
         <ConversationCardHeader conversation={conversation} onDelete={onDelete} />
         <CardContent className="flex flex-grow flex-col px-4 pb-4 pt-0">
@@ -62,6 +62,13 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         </CardFooter>
       </Card>
       <ProcessingDialog isProcessing={isProcessing} />
+      <ViewTranscriptDialog 
+        isOpen={isViewTranscriptOpen} 
+        onClose={() => setIsViewTranscriptOpen(false)} 
+        conversation={conversation} 
+        onDelete={onDelete} 
+        onSummarize={handleSummarize} 
+      />
     </motion.div>
   )
 }
@@ -71,7 +78,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
   onDelete
 }) => {
   const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'hiding'>('idle')
+  const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -85,6 +92,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
       ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
       : conversation.transcript;
   
+    setCopyState('copying');
     navigator.clipboard
       .writeText(clipboardContent)
       .then(() => {
@@ -94,6 +102,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
       })
       .catch((error) => {
         console.error('Failed to copy transcript:', error);
+        setCopyState('idle');
       });
   };
 
@@ -109,18 +118,15 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
           </CardDescription>
         </div>
         <div className="flex gap-[5px]">
+          <div className='relative'>
           <button
             onClick={handleCopyTranscript}
             className = "text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
-            // className="relative h-5 w-5 text-white/60 transition-colors duration-200 hover:text-white"
           >
             <ClipboardIcon width={24} height={24} />
-            {copyState !== 'idle' && (
-              <span className="absolute -top-8 left-1/2 -translate-x-1/2 transform rounded bg-neutral-700 px-2 py-1 text-xs text-white shadow-md">
-                Copied
-              </span>
-            )}
+            <Tooltip message="Copied" state={copyState} />
           </button>
+          </div>
           <button
             onClick={() => onDelete(conversation.id)}
             className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
@@ -151,9 +157,8 @@ const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, o
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-100 h-24 bg-gradient-to-t from-background-100 to-transparent" />
         )}
         <div ref={scrollRef} className="scrollbar-hide h-full overflow-y-auto p-0">
-          <p className="select-text pb-8 text-[15px] leading-normal text-foreground/80">
-            {' '}
-            {transcript}
+          <p className="select-text pb-0 text-[15px] text-foreground/80 leading-relaxed whitespace-pre-wrap">
+            {formatTranscript(transcript, "CardTranscript")}
           </p>
         </div>
       </div>
@@ -224,5 +229,3 @@ const ViewTranscriptButton: React.FC<ViewTranscriptButtonProps> = ({ onViewTrans
 );
 
 export default ConversationCard
-
-
