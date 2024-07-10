@@ -20,10 +20,10 @@ import {
   AUTO_CLEAR_VALUE_KEY,
   AUTO_SAVE_SEC_KEY,
   AUDIO_ENABLED_KEY,
-  addSleepListener,
-  removeSleepListener,
-  addWakeListener,
-  removeWakeListener
+  // addSleepListener,
+  // removeSleepListener,
+  // addWakeListener,
+  // removeWakeListener
   
 } from '@/services/highlightService'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
@@ -69,26 +69,26 @@ const MainPage: React.FC = () => {
   const isVisible = usePageVisibility()
   const isInitialMount = useRef(true)
 
-  useEffect(() => {
-    const handleSleep = () => {
-      console.log('System is going to sleep');
-      setIsSleeping(true)
-    };
+  // useEffect(() => {
+  //   const handleSleep = () => {
+  //     console.log('System is going to sleep');
+  //     setIsSleeping(true)
+  //   };
   
-    const handleWake = () => {
-      console.log('System is waking up');
-      setIsSleeping(false)
-    };
+  //   const handleWake = () => {
+  //     console.log('System is waking up');
+  //     setIsSleeping(false)
+  //   };
   
-    addSleepListener(handleSleep);
-    addWakeListener(handleWake);
+  //   addSleepListener(handleSleep);
+  //   addWakeListener(handleWake);
   
-    // Cleanup
-    return () => {
-      removeSleepListener(handleSleep);
-      removeWakeListener(handleWake);
-    };
-  }, []);
+  //   // Cleanup
+  //   return () => {
+  //     removeSleepListener(handleSleep);
+  //     removeWakeListener(handleWake);
+  //   };
+  // }, []);
 
   useEffect(() => {
     requestBackgroundPermission()
