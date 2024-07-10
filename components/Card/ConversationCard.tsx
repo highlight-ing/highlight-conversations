@@ -77,7 +77,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
   onDelete
 }) => {
   const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'hiding'>('idle')
+  const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -91,6 +91,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
       ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
       : conversation.transcript;
   
+    setCopyState('copying');
     navigator.clipboard
       .writeText(clipboardContent)
       .then(() => {
@@ -100,6 +101,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
       })
       .catch((error) => {
         console.error('Failed to copy transcript:', error);
+        setCopyState('idle');
       });
   };
 
@@ -115,17 +117,23 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
           </CardDescription>
         </div>
         <div className="flex gap-[5px]">
+          <div className='relative'>
           <button
             onClick={handleCopyTranscript}
             className = "text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
           >
             <ClipboardIcon width={24} height={24} />
-            {copyState !== 'idle' && (
-              <span className="absolute -top-8 left-1/2 -translate-x-1/2 transform rounded bg-neutral-700 px-2 py-1 text-xs text-white shadow-md">
-                Copied
-              </span>
-            )}
+            <span 
+              className={`absolute -top-8 left-1/2 -translate-x-1/2 transform rounded bg-neutral-700 px-2 py-1 text-xs text-white shadow-md z-10 transition-opacity duration-200 ${
+                copyState === 'copying' ? 'opacity-0' :
+                copyState === 'copied' ? 'opacity-100' : 
+                copyState === 'hiding' ? 'opacity-0' : 'hidden'
+              }`}
+            >
+              Copied
+            </span>
           </button>
+          </div>
           <button
             onClick={() => onDelete(conversation.id)}
             className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
@@ -228,5 +236,3 @@ const ViewTranscriptButton: React.FC<ViewTranscriptButtonProps> = ({ onViewTrans
 );
 
 export default ConversationCard
-
-
