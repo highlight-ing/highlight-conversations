@@ -11,6 +11,7 @@ import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
 import { ArrowRightIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge";
 import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
+import Tooltip from "@/components/Tooltip/Tooltip"
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -123,15 +124,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
             className = "text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
           >
             <ClipboardIcon width={24} height={24} />
-            <span 
-              className={`absolute -top-8 left-1/2 -translate-x-1/2 transform rounded bg-neutral-700 px-2 py-1 text-xs text-white shadow-md z-10 transition-opacity duration-200 ${
-                copyState === 'copying' ? 'opacity-0' :
-                copyState === 'copied' ? 'opacity-100' : 
-                copyState === 'hiding' ? 'opacity-0' : 'hidden'
-              }`}
-            >
-              Copied
-            </span>
+            <Tooltip message="Copied" state={copyState} />
           </button>
           </div>
           <button

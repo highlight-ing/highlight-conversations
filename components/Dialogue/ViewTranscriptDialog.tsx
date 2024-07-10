@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,7 @@ import { LightningBoltIcon } from "@radix-ui/react-icons";
 import useScrollGradient from '@/hooks/useScrollGradient';
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
 import { ConversationData, formatTranscript } from '@/data/conversations';
+import Tooltip from '@/components/Tooltip/Tooltip'
 
 export const ViewTranscriptDialog: React.FC<{
     isOpen: boolean;
@@ -55,17 +56,35 @@ export const ViewTranscriptDialog: React.FC<{
   }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
-  
+    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
+    const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
+
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setRelativeTime(getRelativeTimeString(conversation.timestamp))
+      }, 60000)
+      return () => clearInterval(timer)
+    }, [conversation.timestamp])
+
     const handleCopyTranscript = () => {
-      navigator.clipboard.writeText(conversation.transcript)
+      const clipboardContent = conversation.summarized
+        ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
+        : conversation.transcript;
+    
+      setCopyState('copying');
+      navigator.clipboard
+        .writeText(clipboardContent)
         .then(() => {
-          // Handle successful copy (e.g., show a tooltip)
+          setCopyState('copied');
+          setTimeout(() => setCopyState('hiding'), 1500);
+          setTimeout(() => setCopyState('idle'), 1700);
         })
         .catch((error) => {
           console.error('Failed to copy transcript:', error);
+          setCopyState('idle');
         });
     };
-  
+
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-[80vw] max-w-[1200px]">
@@ -79,12 +98,15 @@ export const ViewTranscriptDialog: React.FC<{
               </p>
             </div>
             <div className="flex items-center space-x-4">
+              <div className='relative'>
               <button
                 onClick={handleCopyTranscript}
                 className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
               >
                 <ClipboardIcon width={24} height={24} />
+                <Tooltip message="Copied" state={copyState} />
               </button>
+              </div>
               <button
                 onClick={() => onDelete(conversation.id)}
                 className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
@@ -135,15 +157,32 @@ export const ViewTranscriptDialog: React.FC<{
     const summaryScrollRef = useRef<HTMLDivElement>(null);
     const transcriptGradient = useScrollGradient(transcriptScrollRef);
     const summaryGradient = useScrollGradient(summaryScrollRef);
-  
+    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
+    const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
+
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setRelativeTime(getRelativeTimeString(conversation.timestamp))
+      }, 60000)
+      return () => clearInterval(timer)
+    }, [conversation.timestamp])
+
     const handleCopyTranscript = () => {
-      const content = `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`;
-      navigator.clipboard.writeText(content)
+      const clipboardContent = conversation.summarized
+        ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
+        : conversation.transcript;
+    
+      setCopyState('copying');
+      navigator.clipboard
+        .writeText(clipboardContent)
         .then(() => {
-          // Handle successful copy (e.g., show a tooltip)
+          setCopyState('copied');
+          setTimeout(() => setCopyState('hiding'), 1500);
+          setTimeout(() => setCopyState('idle'), 1700);
         })
         .catch((error) => {
-          console.error('Failed to copy content:', error);
+          console.error('Failed to copy transcript:', error);
+          setCopyState('idle');
         });
     };
   
@@ -163,12 +202,15 @@ export const ViewTranscriptDialog: React.FC<{
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <div className='relative'>
               <button
                 onClick={handleCopyTranscript}
                 className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
               >
                 <ClipboardIcon width={24} height={24} />
+                <Tooltip message="Copied" state={copyState} />
               </button>
+              </div>
               <button
                 onClick={() => onDelete(conversation.id)}
                 className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
