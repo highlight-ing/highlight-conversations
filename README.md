@@ -1,42 +1,47 @@
-# highlight-conversations-app
+# Highlight Conversations
 
-Capture your conversations with transcripts and intelligence.
+Highlight Conversations is an example NextJS application that demonstrates how to build apps using the Highlight app runtime. This project showcases the capabilities of local Automatic Speech Recognition (ASR) and Highlight's built-in Language Model (LLM) while prioritizing user privacy.
 
-## Instructions
+## Features
 
-Run the following commands to get started:
+- **Local Speech-to-Text Conversion**: Utilizes local ASR to convert speech to text from both audio input and system audio.
+- **Automatic Transcription**: Delivers new transcripts every 30 seconds and saves them automatically after 30 seconds of inactivity.
+- **Privacy-Focused**: Ensures all audio data is processed and stored locally, demonstrating Highlight's commitment to user privacy.
+- **AI-Powered Summaries**: Uses Highlight's built-in LLM to generate summaries and topics from conversations upon user request.
+- **Highlight Runtime API**: Showcases the Highlight Runtime API, enabling developers to easily interact with the Highlight runtime and context.
 
-```bash
-npm install && npm run dev
-```
+## Getting Started
 
-### You'll need to be running the main Highlight app for this app to work.
-### Make sure that `@highlight-ai/app-runtime` package is at least `0.0.23`
-### Fetching transcripts have changed slightly with latest (06/27) build on highlight, will need to adjust in this app -- Auto clear conversations is set to minutes not specified days (for easier testing) if you see your cards disappear quickly
+To run Highlight Conversations, follow these steps:
 
-## Triage
+1. Install dependencies: `npm install`
+2. Ensure Highlight app is running:
+- Launch the Highlight app
+- Select "Local Development" option
+- This will configure Highlight to listen on `localhost:3000`
 
-### Must haves for release
+Note: Conversations must run inside the Highlight app to utilize the Highlight runtime API.
 
-- ~~Auto clear conversations~~
-- ~~Mic activity feedback~~
-- ~~Skeleton for incoming transcript~~
-- ~~LocalStorage~~
-- ~~Toggle for microphone superpower~~
-- Prompt conversations (Julian is in progress)
-- Modal Welcome screen (disablable, explain everything is local and private)
-- ~~Figure out title of conversations~~
-- Run app in background
-- UI Cleanup:
-  - **HOLD** Smaller past conversation cards
-  - ~~Trashcan icon and delete conversation card~~
-  - ~~Additional branding touchup (gradients, textures, etc...) (Jamie in progress)~~
+3. Start the development server: `npm run dev`
 
-### Nice to haves
+Conversations should now be running and accessible through the Highlight app.
 
-- Tap to expand card to see full conversations (might be useless without topic/summary)
-- End point to store session audio to do full retranscript for increased accuracy
-- Tap to expand conversation
-- Diarization (will require some UI to setup nicely, as well as fuller transcript per Karthick's explanation)
-- Select Multiple Cards for deletion/sharing
-- Sharing conversation (probably useless without topic and summary)
+## Contributing
+
+We welcome contributions to Highlight Conversations! If you'd like to contribute, please follow these steps:
+
+1. Fork the repository
+2. Create a new branch for your feature or bug fix e.g. `git checkout -b feature/my-awesome-feature` or `git checkout -b fix/squash-the-bug`
+3. Make your changes and commit them with clear, descriptive messages
+4. Push your changes to your fork
+5. Submit a pull request to the main repository
+
+Please ensure your code adheres to our coding standards and includes appropriate tests.
+
+## Support
+
+If you need help or have any questions, [join our Discord community!](https://discord.gg/qzbxtnF6) We're here to assist you and discuss all things Highlight.
+
+## License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
