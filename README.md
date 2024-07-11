@@ -40,7 +40,9 @@ Please ensure your code adheres to our coding standards and includes appropriate
 
 ## Support
 
-If you need help or have any questions, [join our Discord community!](https://discord.gg/qzbxtnF6) We're here to assist you and discuss all things Highlight.
+[Highlight Developer Documentation](https://docs.highlight.ing/documentation/introduction)
+
+[Join our Discord community!](https://discord.gg/qzbxtnF6) We're here to assist you and discuss all things Highlight.
 
 ## License
 
