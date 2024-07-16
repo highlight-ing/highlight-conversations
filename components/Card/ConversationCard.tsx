@@ -123,7 +123,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
             onClick={handleCopyTranscript}
             className = "text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
           >
-            <ClipboardIcon width={24} height={24} />
+            <ClipboardIcon width={24} height={24} className="" />
             <Tooltip message="Copied" state={copyState} />
           </button>
           </div>

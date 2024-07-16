@@ -4,10 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
-import { FaSave } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClipboardIcon, SaveIcon } from '@/components/ui/icons'
-import { CopyIcon, TrashIcon } from "@radix-ui/react-icons";
 
 interface CurrentConversationCardProps {
   transcript: string;
@@ -82,18 +80,19 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
 
   return (
     <Card className={`w-full border-2 ${borderClass} transition-all duration-300 bg-background-100 relative`}>
-      <CardHeader>
-        <div className="absolute top-4 right-4 flex space-x-3 items-center">
+      <CardHeader className="flex flex-row items-baseline">
+        <CardTitle>Current Conversation</CardTitle>
+        <div className="flex space-x-1">
           <div className="relative">
             <button
               onClick={handleCopyTranscript}
               className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
                 ${isSaveDisabled
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'hover:text-[hsl(var(--brand))]'
+                  ? 'text-muted-foreground/40 cursor-not-allowed'
+                  : 'hover:text-brand'
                 }`}
             >
-              <ClipboardIcon width={24} height={24} />
+              <ClipboardIcon width={24} height={24} className="" />
             </button>
             <div
               className={`absolute -top-8 left-1/2 transform -translate-x-1/2 bg-background text-brand text-xs py-1 px-2 rounded shadow-md pointer-events-none transition-opacity duration-200 ${copyState === 'copied' ? 'animate-fadeIn opacity-100' : copyState === 'hiding' ? 'animate-fadeOut opacity-0' : 'opacity-0'}`}
@@ -105,12 +104,11 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             onClick={onSave}
             disabled={isSaveDisabled}
             className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
-              ${isSaveDisabled ? 'text-gray-400 cursor-not-allowed' : 'hover:text-brand'}`}
+              ${isSaveDisabled ? 'text-muted-foreground/40 cursor-not-allowed' : 'hover:text-brand'}`}
           >
-            <SaveIcon width={20} height={20} />
+            <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" />
           </button>
         </div>
-        <CardTitle>Current Conversation</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">
         {isAudioEnabled ? (
