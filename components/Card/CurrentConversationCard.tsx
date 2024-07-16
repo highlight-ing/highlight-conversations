@@ -6,6 +6,7 @@ import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
 import { FaSave } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { ClipboardIcon, SaveIcon } from '@/components/ui/icons'
 import { CopyIcon, TrashIcon } from "@radix-ui/react-icons";
 
 interface CurrentConversationCardProps {
@@ -92,7 +93,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
                   : 'hover:text-[hsl(var(--brand))]'
                 }`}
             >
-              <CopyIcon className="w-4 h-4" />
+              <ClipboardIcon width={24} height={24} />
             </button>
             <div
               className={`absolute -top-8 left-1/2 transform -translate-x-1/2 bg-background text-brand text-xs py-1 px-2 rounded shadow-md pointer-events-none transition-opacity duration-200 ${copyState === 'copied' ? 'animate-fadeIn opacity-100' : copyState === 'hiding' ? 'animate-fadeOut opacity-0' : 'opacity-0'}`}
@@ -106,7 +107,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
               ${isSaveDisabled ? 'text-gray-400 cursor-not-allowed' : 'hover:text-brand'}`}
           >
-            <FaSave size={18} />
+            <SaveIcon width={20} height={20} />
           </button>
         </div>
         <CardTitle>Current Conversation</CardTitle>

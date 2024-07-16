@@ -110,10 +110,10 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
     <div className="flex flex-col gap-0.5 px-4 pt-4">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex flex-col">
-          <CardTitle className="text-xl font-semibold leading-normal text-white">
+          <CardTitle className="text-xl font-bold leading-normal text-white">
             {relativeTime || 'Moments ago'}
           </CardTitle>
-          <CardDescription className="text-sm leading-normal text-white/60">
+          <CardDescription className="text-[0.825rem] leading-relaxed text-white/50 font-medium">
             {formatTimestamp(conversation.timestamp)}
           </CardDescription>
         </div>
