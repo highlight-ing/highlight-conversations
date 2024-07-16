@@ -49,9 +49,12 @@ export const ViewTranscriptDialog: React.FC<{
       return (
         <SummarizedViewTranscriptDialog
           isOpen={isOpen}
-          onClose={onClose}
           conversation={conversation}
+          relativeTime={relativeTime}
+          copyState={copyState}
+          onClose={onClose}
           onDelete={onDelete}
+          onCopy={handleCopyTranscript}
         />
       );
     } else {
@@ -138,50 +141,28 @@ export const ViewTranscriptDialog: React.FC<{
 
   // Summarized Dialog
   interface SummarizedViewTranscriptDialogProps {
-    isOpen: boolean;
-    onClose: () => void;
-    conversation: ConversationData;
-    onDelete: (id: string) => void;
+    isOpen: boolean
+    conversation: ConversationData
+    relativeTime: string
+    copyState: CopyState
+    onClose: () => void
+    onDelete: (id: string) => void
+    onCopy: () => void
   }
   
   const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogProps> = ({
     isOpen,
-    onClose,
     conversation,
-    onDelete
+    relativeTime,
+    copyState,
+    onClose,
+    onDelete,
+    onCopy
   }) => {
     const transcriptScrollRef = useRef<HTMLDivElement>(null);
     const summaryScrollRef = useRef<HTMLDivElement>(null);
     const transcriptGradient = useScrollGradient(transcriptScrollRef);
     const summaryGradient = useScrollGradient(summaryScrollRef);
-    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
-    const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
-
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setRelativeTime(getRelativeTimeString(conversation.timestamp))
-      }, 60000)
-      return () => clearInterval(timer)
-    }, [conversation.timestamp])
-
-    const handleCopyTranscript = () => {
-      const clipboardContent = conversation.summarized
-        ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
-        : conversation.transcript;
-    
-      setCopyState('copying');
-      navigator.clipboard
-        .writeText(clipboardContent)
-        .then(() => {
-          setCopyState('copied');
-          setTimeout(() => setCopyState('hiding'), 1500);
-          setTimeout(() => setCopyState('idle'), 1700);
-        })
-        .catch((error) => {
-          console.error('Failed to copy transcript:', error);
-          setCopyState('idle');
-        });
-    };
   
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -189,7 +170,7 @@ export const ViewTranscriptDialog: React.FC<{
           <DialogHeader className="flex flex-row items-center justify-between">
             <div className="flex flex-col">
               <h2 className="text-xl font-semibold leading-normal text-white">
-                {getRelativeTimeString(conversation.timestamp) || 'Moments ago'}
+                {relativeTime || 'Moments ago'}
               </h2>
               <div className="flex items-center space-x-2">
                 <p className="text-sm leading-normal text-white/60">
@@ -199,21 +180,8 @@ export const ViewTranscriptDialog: React.FC<{
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className='relative'>
-              <button
-                onClick={handleCopyTranscript}
-                className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
-              >
-                <ClipboardIcon width={24} height={24} />
-                <Tooltip message="Copied" state={copyState} />
-              </button>
-              </div>
-              <button
-                onClick={() => onDelete(conversation.id)}
-                className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
-              >
-                <TrashIcon width={24} height={24} />
-              </button>
+              <CopyButton onClick={onCopy} copyState={copyState} />
+              <DeleteButton onClick={() => onDelete(conversation.id)} />
             </div>
           </DialogHeader>
           <div className="h-px bg-white/10 my-0" /> {/* Horizontal divider */}
