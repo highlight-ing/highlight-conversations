@@ -9,3 +9,5 @@ export interface GeneratedPrompt {
     content: string;
     role: "system" | "user";
   }
+
+  export type CopyState = 'idle' | 'copying' | 'copied' | 'hiding';

@@ -8,6 +8,7 @@ import useScrollGradient from '@/hooks/useScrollGradient';
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
 import { ConversationData, formatTranscript } from '@/data/conversations';
 import Tooltip from '@/components/Tooltip/Tooltip'
+import { CopyState } from '@/types/types'
 
 export const ViewTranscriptDialog: React.FC<{
     isOpen: boolean;
@@ -16,56 +17,16 @@ export const ViewTranscriptDialog: React.FC<{
     onDelete: (id: string) => void;
     onSummarize: () => void;
   }> = ({ isOpen, onClose, conversation, onDelete, onSummarize }) => {
-    if (conversation.summarized) {
-      return (
-        <SummarizedViewTranscriptDialog
-          isOpen={isOpen}
-          onClose={onClose}
-          conversation={conversation}
-          onDelete={onDelete}
-        />
-      );
-    } else {
-      return (
-        <UnsummarizedViewTranscriptDialog
-          isOpen={isOpen}
-          onClose={onClose}
-          conversation={conversation}
-          onDelete={onDelete}
-          onSummarize={onSummarize}
-        />
-      );
-    }
-  };
-
-  //Unsummarized Dialog
-  interface UnsummarizedViewTranscriptDialogProps {
-    isOpen: boolean;
-    onClose: () => void;
-    conversation: ConversationData;
-    onDelete: (id: string) => void;
-    onSummarize: () => void;
-  }
+    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp));
+    const [copyState, setCopyState] = useState<CopyState>('idle');
   
-  const UnsummarizedViewTranscriptDialog: React.FC<UnsummarizedViewTranscriptDialogProps> = ({
-    isOpen,
-    onClose,
-    conversation,
-    onDelete,
-    onSummarize
-  }) => {
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
-    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
-    const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
-
     useEffect(() => {
       const timer = setInterval(() => {
-        setRelativeTime(getRelativeTimeString(conversation.timestamp))
-      }, 60000)
-      return () => clearInterval(timer)
-    }, [conversation.timestamp])
-
+        setRelativeTime(getRelativeTimeString(conversation.timestamp));
+      }, 60000);
+      return () => clearInterval(timer);
+    }, [conversation.timestamp]);
+  
     const handleCopyTranscript = () => {
       const clipboardContent = conversation.summarized
         ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
@@ -84,6 +45,55 @@ export const ViewTranscriptDialog: React.FC<{
           setCopyState('idle');
         });
     };
+    if (conversation.summarized) {
+      return (
+        <SummarizedViewTranscriptDialog
+          isOpen={isOpen}
+          onClose={onClose}
+          conversation={conversation}
+          onDelete={onDelete}
+        />
+      );
+    } else {
+      return (
+        <UnsummarizedViewTranscriptDialog
+          conversation={conversation}
+          relativeTime={relativeTime}
+          copyState={copyState}
+          isOpen={isOpen}
+          onClose={onClose}
+          onDelete={onDelete}
+          onSummarize={onSummarize}
+          onCopy={handleCopyTranscript}
+        />
+      );
+    }
+  };
+
+  //Unsummarized Dialog
+  interface UnsummarizedViewTranscriptDialogProps {
+    isOpen: boolean
+    conversation: ConversationData
+    relativeTime: string
+    copyState: CopyState
+    onClose: () => void
+    onDelete: (id: string) => void
+    onSummarize: () => void
+    onCopy: () => void
+  }
+  
+  const UnsummarizedViewTranscriptDialog: React.FC<UnsummarizedViewTranscriptDialogProps> = ({
+    isOpen,
+    conversation,
+    relativeTime,
+    copyState,
+    onClose,
+    onDelete,
+    onSummarize,
+    onCopy
+  }) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
 
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -91,28 +101,15 @@ export const ViewTranscriptDialog: React.FC<{
           <DialogHeader className="flex flex-row items-center justify-between">
             <div className="flex flex-col">
               <h2 className="text-xl font-semibold leading-normal text-white">
-                {getRelativeTimeString(conversation.timestamp) || 'Moments ago'}
+                {relativeTime || 'Moments ago'}
               </h2>
               <p className="text-sm leading-normal text-white/60">
                 {formatTimestamp(conversation.timestamp)}
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <div className='relative'>
-              <button
-                onClick={handleCopyTranscript}
-                className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
-              >
-                <ClipboardIcon width={24} height={24} />
-                <Tooltip message="Copied" state={copyState} />
-              </button>
-              </div>
-              <button
-                onClick={() => onDelete(conversation.id)}
-                className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
-              >
-                <TrashIcon width={24} height={24} />
-              </button>
+              <CopyButton onClick={onCopy} copyState={copyState} />
+              <DeleteButton onClick={() => onDelete(conversation.id)} />
               <div className="h-10 w-px bg-white/10" /> {/* Vertical divider */}
               <Button onClick={onSummarize} variant="outline" className="flex items-center">
                 <LightningBoltIcon className="mr-2 h-4 w-4" />
@@ -254,3 +251,33 @@ export const ViewTranscriptDialog: React.FC<{
       </Dialog>
     );
   };
+
+interface CopyButtonProps {
+  onClick: () => void;
+  copyState: 'idle' | 'copying' | 'copied' | 'hiding';
+}
+
+export const CopyButton: React.FC<CopyButtonProps> = ({ onClick, copyState }) => (
+  <div className='relative'>
+    <button
+      onClick={onClick}
+      className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
+    >
+      <ClipboardIcon width={24} height={24} />
+      <Tooltip message="Copied" state={copyState} />
+    </button>
+  </div>
+);
+
+interface DeleteButtonProps {
+  onClick: () => void;
+}
+
+export const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick }) => (
+  <button
+    onClick={onClick}
+    className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
+  >
+    <TrashIcon width={24} height={24} />
+  </button>
+);
