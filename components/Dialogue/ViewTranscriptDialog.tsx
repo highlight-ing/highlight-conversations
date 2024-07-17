@@ -50,6 +50,11 @@ export const ViewTranscriptDialog: React.FC<{
       setDeleteTooltipState('success');
       setTimeout(() => setDeleteTooltipState('hiding'), 1500);
       setTimeout(() => setDeleteTooltipState('idle'), 1700);
+      
+      // Add a slight delay before closing the dialog to allow the delete animation to play
+      setTimeout(() => {
+        onClose();
+      }, 300);
     }
     if (conversation.summarized) {
       return (
@@ -128,7 +133,7 @@ export const ViewTranscriptDialog: React.FC<{
                 {formatTimestamp(conversation.timestamp)}
               </p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 mr-12">
               <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
               <DeleteButton onClick={() => onDelete(conversation.id)} deleteState={deleteState} setDeleteTooltipState={setDeleteTooltipState} />
               <div className="h-10 w-px bg-white/10" /> {/* Vertical divider */}
@@ -201,7 +206,7 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
               <Badge>Summarized</Badge>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 mr-12">
             <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
             <DeleteButton onClick={() => onDelete(conversation.id)} deleteState={deleteState} setDeleteTooltipState={setDeleteTooltipState} />
           </div>
@@ -209,8 +214,6 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
         <div className="h-px bg-white/10 my-2 w-full flex-shrink-0" />
         <div className="flex flex-col flex-grow overflow-hidden">
           <div className="flex-shrink-0 mb-4">
-            {/* <h3 className="text-md text-white/90 font-semibold mb-2 text-white">Topic</h3>
-            <p className="text-sm text-white/80 mb-4">{conversation.topic}</p> */}
             <h3 className="text-lg font-semibold mb-2 text-white">Summary</h3>
             <p className="text-sm text-white/80">{conversation.summary}</p>
           </div>
