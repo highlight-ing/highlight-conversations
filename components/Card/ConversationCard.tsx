@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button'
 import ProcessingDialog from '@/components/Dialogue/ProcessingDialog'
 import { mockProcessConversation } from '@/services/mockProcessingService'
 import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
-import { ArrowRightIcon } from "@radix-ui/react-icons"
+import { ArrowRightIcon, LightningBoltIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge";
 import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
-import Tooltip from "@/components/Tooltip/Tooltip"
+import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip"
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -51,14 +51,23 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
           )}
         </CardContent>
         <CardFooter className="px-4 pb-4 pt-0">
-          {!conversation.summarized && (
-            <Button
-              onClick={handleSummarize}
-              className="hover:bg-brand-light w-full items-center justify-center rounded-lg bg-background p-1.5 text-[15px] font-semibold text-foreground/80 transition-colors duration-200 hover:text-brand"
-            >
-              Summarize
-            </Button>
-          )}
+          <Button
+            onClick={conversation.summarized ? handleOnViewTranscript : handleSummarize}
+            className={`w-full flex items-center justify-between rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 ${
+              conversation.summarized
+                ? "bg-background/20 text-foreground hover:bg-background/30"
+                : "bg-background text-foreground hover:bg-brand-light hover:text-brand"
+            }`}
+          >
+            <span className="flex items-center">
+              {conversation.summarized ? "View Conversation" : "Summarize"}
+            </span>
+            {conversation.summarized ? (
+              <ArrowRightIcon className="ml-0 h-5 w-5" />
+            ) : (
+              <LightningBoltIcon className="ml-0 h-5 w-5" />
+            )}
+          </Button>
         </CardFooter>
       </Card>
       <ProcessingDialog isProcessing={isProcessing} />
@@ -78,7 +87,8 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
   onDelete
 }) => {
   const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
-  const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
+  const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
+  const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -92,28 +102,34 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
       ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
       : conversation.transcript;
   
-    setCopyState('copying');
     navigator.clipboard
       .writeText(clipboardContent)
       .then(() => {
-        setCopyState('copied');
-        setTimeout(() => setCopyState('hiding'), 1500);
-        setTimeout(() => setCopyState('idle'), 1700);
+        setCopyTooltipState('success');
+        setTimeout(() => setCopyTooltipState('hiding'), 1500);
+        setTimeout(() => setCopyTooltipState('idle'), 1700);
       })
       .catch((error) => {
         console.error('Failed to copy transcript:', error);
-        setCopyState('idle');
+        setCopyTooltipState('idle');
       });
+  };
+
+  const handleDelete = () => {
+    onDelete(conversation.id);
+    setDeleteTooltipState('success');
+    setTimeout(() => setDeleteTooltipState('hiding'), 1500);
+    setTimeout(() => setDeleteTooltipState('idle'), 1700);
   };
 
   return (
     <div className="flex flex-col gap-0.5 px-4 pt-4">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex flex-col">
-          <CardTitle className="text-xl font-semibold leading-normal text-white">
+          <CardTitle className="text-xl font-bold leading-normal text-white">
             {relativeTime || 'Moments ago'}
           </CardTitle>
-          <CardDescription className="text-sm leading-normal text-white/60">
+          <CardDescription className="text-[0.825rem] leading-relaxed text-white/50 font-medium">
             {formatTimestamp(conversation.timestamp)}
           </CardDescription>
         </div>
@@ -121,18 +137,25 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
           <div className='relative'>
           <button
             onClick={handleCopyTranscript}
-            className = "text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
+            onMouseEnter={() => setCopyTooltipState('active')}
+            onMouseLeave={() => setCopyTooltipState('idle')}
+            className = "text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
           >
-            <ClipboardIcon width={24} height={24} />
-            <Tooltip message="Copied" state={copyState} />
+            <ClipboardIcon width={24} height={24} className="" />
+            <Tooltip type="copy" state={copyTooltipState} />
           </button>
           </div>
+          <div className='relative'>
           <button
-            onClick={() => onDelete(conversation.id)}
-            className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
+            onClick={handleDelete}
+            onMouseEnter={() => setDeleteTooltipState('active')}
+            onMouseLeave={() => setDeleteTooltipState('idle')}
+            className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
           >
             <TrashIcon width={24} height={24} className='group-hover:text-destructive' />
+            <Tooltip type="delete" state={deleteTooltipState} />
           </button>
+          </div>
         </div>
       </div>
     </div>
@@ -181,7 +204,7 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
       <Badge className="mb-2">
         Summarized
       </Badge>
-      <div className="relative h-[210px]">
+      <div className="relative h-[225px]">
         {showTopGradient && (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background-100 to-transparent" />
         )}
@@ -189,15 +212,15 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-100 h-24 bg-gradient-to-t from-background-100 to-transparent" />
         )}
         <div ref={scrollRef} className="scrollbar-hide h-full overflow-y-auto p-0">
-          <h3 className="text-sm font-semibold text-white/60 mb-1">Topic:</h3>
-          <p className="text-sm text-white mb-4">{conversation.topic}</p>
+          {/* <h3 className="text-sm font-semibold text-white/60 mb-1">Topic:</h3>
+          <p className="text-sm text-white mb-4">{conversation.topic}</p> */}
           <h3 className="text-sm font-semibold text-white/60 mb-1">Summary:</h3>
           <p className="select-text text-[15px] leading-normal text-white">
             {conversation.summary}
           </p>
         </div>
       </div>
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <Button
           onClick={onViewTranscript}
           variant="ghost"
@@ -206,7 +229,7 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
           View Conversation
           <ArrowRightIcon className="ml-0 h-5 w-5" />
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -220,7 +243,7 @@ const ViewTranscriptButton: React.FC<ViewTranscriptButtonProps> = ({ onViewTrans
     <Button
       onClick={onViewTranscript}
       variant="ghost"
-      className="w-full justify-between items-center rounded-lg bg-background/20 p-2 text-[15px] font-semibold text-white backdrop-blur-sm transition-colors duration-200 hover:text-white hover:bg-background/30 hover:backdrop-blur-sm"
+      className="w-full justify-between items-center rounded-lg bg-background/20 p-2 text-[15px] font-semibold text-foreground backdrop-blur-sm transition-colors duration-200 hover:text-white hover:bg-background/30 hover:backdrop-blur-sm"
     >
       View Conversation
       <ArrowRightIcon className="ml-0 h-5 w-5" />

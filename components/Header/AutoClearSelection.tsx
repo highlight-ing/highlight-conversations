@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from '@/components/ui/label'
+import { InfoTooltip, InfoTooltipType } from './InfoTooltip'
+import { TOOLTIP_CONTENT } from '@/constants/tooltipConstants'
 
 interface AutoClearSelectionProps {
   value: number;
@@ -40,6 +42,7 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
     <div>
       <div className="flex flex-row items-center px-4">
         <Label className="mr-2 text-muted-foreground" htmlFor="autoClearSelection">Auto Clear</Label>
+        <InfoTooltip type='AUTO_CLEAR' content={TOOLTIP_CONTENT.AUTO_CLEAR} />
         <Select
           onValueChange={(selectedValue) => onChange(parseInt(selectedValue))}
           value={value.toString()}

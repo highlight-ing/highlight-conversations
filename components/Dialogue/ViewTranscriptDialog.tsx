@@ -7,7 +7,7 @@ import { LightningBoltIcon } from "@radix-ui/react-icons";
 import useScrollGradient from '@/hooks/useScrollGradient';
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
 import { ConversationData, formatTranscript } from '@/data/conversations';
-import Tooltip from '@/components/Tooltip/Tooltip'
+import { Tooltip, TooltipState, TooltipType } from '@/components/Tooltip/Tooltip'
 
 export const ViewTranscriptDialog: React.FC<{
     isOpen: boolean;
@@ -16,23 +16,75 @@ export const ViewTranscriptDialog: React.FC<{
     onDelete: (id: string) => void;
     onSummarize: () => void;
   }> = ({ isOpen, onClose, conversation, onDelete, onSummarize }) => {
+    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp));
+    const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
+    const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle');
+  
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setRelativeTime(getRelativeTimeString(conversation.timestamp));
+      }, 60000);
+      return () => clearInterval(timer);
+    }, [conversation.timestamp]);
+  
+    const handleCopyTranscript = () => {
+      const clipboardContent = conversation.summarized
+        ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
+        : conversation.transcript;
+    
+      navigator.clipboard
+        .writeText(clipboardContent)
+        .then(() => {
+          setCopyTooltipState('success');
+          setTimeout(() => setCopyTooltipState('hiding'), 1500);
+          setTimeout(() => setCopyTooltipState('idle'), 1700);
+        })
+        .catch((error) => {
+          console.error('Failed to copy transcript:', error);
+          setCopyTooltipState('idle');
+        });
+    };
+
+    const handleDeleteTranscript = () => {
+      onDelete(conversation.id);
+      setDeleteTooltipState('success');
+      setTimeout(() => setDeleteTooltipState('hiding'), 1500);
+      setTimeout(() => setDeleteTooltipState('idle'), 1700);
+      
+      // Add a slight delay before closing the dialog to allow the delete animation to play
+      setTimeout(() => {
+        onClose();
+      }, 300);
+    }
     if (conversation.summarized) {
       return (
         <SummarizedViewTranscriptDialog
           isOpen={isOpen}
-          onClose={onClose}
           conversation={conversation}
-          onDelete={onDelete}
+          relativeTime={relativeTime}
+          copyState={copyTooltipState}
+          deleteState={deleteTooltipState}
+          setCopyTooltipState={setCopyTooltipState}
+          setDeleteTooltipState={setDeleteTooltipState}
+          onClose={onClose}
+          onDelete={handleDeleteTranscript}
+          onCopy={handleCopyTranscript}
         />
       );
     } else {
       return (
         <UnsummarizedViewTranscriptDialog
+          conversation={conversation}
+          relativeTime={relativeTime}
+          copyState={copyTooltipState}
+          deleteState={deleteTooltipState}
+          setCopyTooltipState={setCopyTooltipState}
+          setDeleteTooltipState={setDeleteTooltipState}
           isOpen={isOpen}
           onClose={onClose}
-          conversation={conversation}
-          onDelete={onDelete}
+          onDelete={handleDeleteTranscript}
           onSummarize={onSummarize}
+          onCopy={handleCopyTranscript}
         />
       );
     }
@@ -40,50 +92,34 @@ export const ViewTranscriptDialog: React.FC<{
 
   //Unsummarized Dialog
   interface UnsummarizedViewTranscriptDialogProps {
-    isOpen: boolean;
-    onClose: () => void;
-    conversation: ConversationData;
-    onDelete: (id: string) => void;
-    onSummarize: () => void;
+    isOpen: boolean
+    conversation: ConversationData
+    relativeTime: string
+    copyState: TooltipState
+    deleteState: TooltipState
+    setCopyTooltipState: (state: TooltipState) => void
+    setDeleteTooltipState: (state: TooltipState) => void
+    onClose: () => void
+    onDelete: (id: string) => void
+    onSummarize: () => void
+    onCopy: () => void
   }
   
   const UnsummarizedViewTranscriptDialog: React.FC<UnsummarizedViewTranscriptDialogProps> = ({
     isOpen,
-    onClose,
     conversation,
+    relativeTime,
+    copyState,
+    deleteState,
+    setCopyTooltipState,
+    setDeleteTooltipState,
+    onClose,
     onDelete,
-    onSummarize
+    onSummarize,
+    onCopy
   }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
-    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
-    const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
-
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setRelativeTime(getRelativeTimeString(conversation.timestamp))
-      }, 60000)
-      return () => clearInterval(timer)
-    }, [conversation.timestamp])
-
-    const handleCopyTranscript = () => {
-      const clipboardContent = conversation.summarized
-        ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
-        : conversation.transcript;
-    
-      setCopyState('copying');
-      navigator.clipboard
-        .writeText(clipboardContent)
-        .then(() => {
-          setCopyState('copied');
-          setTimeout(() => setCopyState('hiding'), 1500);
-          setTimeout(() => setCopyState('idle'), 1700);
-        })
-        .catch((error) => {
-          console.error('Failed to copy transcript:', error);
-          setCopyState('idle');
-        });
-    };
 
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -91,28 +127,15 @@ export const ViewTranscriptDialog: React.FC<{
           <DialogHeader className="flex flex-row items-center justify-between">
             <div className="flex flex-col">
               <h2 className="text-xl font-semibold leading-normal text-white">
-                {getRelativeTimeString(conversation.timestamp) || 'Moments ago'}
+                {relativeTime || 'Moments ago'}
               </h2>
               <p className="text-sm leading-normal text-white/60">
                 {formatTimestamp(conversation.timestamp)}
               </p>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className='relative'>
-              <button
-                onClick={handleCopyTranscript}
-                className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
-              >
-                <ClipboardIcon width={24} height={24} />
-                <Tooltip message="Copied" state={copyState} />
-              </button>
-              </div>
-              <button
-                onClick={() => onDelete(conversation.id)}
-                className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
-              >
-                <TrashIcon width={24} height={24} />
-              </button>
+            <div className="flex items-center space-x-4 mr-12">
+              <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
+              <DeleteButton onClick={() => onDelete(conversation.id)} deleteState={deleteState} setDeleteTooltipState={setDeleteTooltipState} />
               <div className="h-10 w-px bg-white/10" /> {/* Vertical divider */}
               <Button onClick={onSummarize} variant="outline" className="flex items-center">
                 <LightningBoltIcon className="mr-2 h-4 w-4" />
@@ -141,116 +164,118 @@ export const ViewTranscriptDialog: React.FC<{
 
   // Summarized Dialog
   interface SummarizedViewTranscriptDialogProps {
-    isOpen: boolean;
-    onClose: () => void;
-    conversation: ConversationData;
-    onDelete: (id: string) => void;
+    isOpen: boolean
+    conversation: ConversationData
+    relativeTime: string
+    copyState: TooltipState
+    setCopyTooltipState: (state: TooltipState) => void
+    deleteState: TooltipState
+    setDeleteTooltipState: (state: TooltipState) => void
+    onClose: () => void
+    onDelete: (id: string) => void
+    onCopy: () => void
   }
   
-  const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogProps> = ({
-    isOpen,
-    onClose,
-    conversation,
-    onDelete
-  }) => {
-    const transcriptScrollRef = useRef<HTMLDivElement>(null);
-    const summaryScrollRef = useRef<HTMLDivElement>(null);
-    const transcriptGradient = useScrollGradient(transcriptScrollRef);
-    const summaryGradient = useScrollGradient(summaryScrollRef);
-    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
-    const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
+const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogProps> = ({
+  isOpen,
+  conversation,
+  relativeTime,
+  copyState,
+  setCopyTooltipState,
+  deleteState,
+  setDeleteTooltipState,
+  onClose,
+  onDelete,
+  onCopy
+}) => {
+  const transcriptScrollRef = useRef<HTMLDivElement>(null);
+  const { showTopGradient, showBottomGradient } = useScrollGradient(transcriptScrollRef);
 
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setRelativeTime(getRelativeTimeString(conversation.timestamp))
-      }, 60000)
-      return () => clearInterval(timer)
-    }, [conversation.timestamp])
-
-    const handleCopyTranscript = () => {
-      const clipboardContent = conversation.summarized
-        ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
-        : conversation.transcript;
-    
-      setCopyState('copying');
-      navigator.clipboard
-        .writeText(clipboardContent)
-        .then(() => {
-          setCopyState('copied');
-          setTimeout(() => setCopyState('hiding'), 1500);
-          setTimeout(() => setCopyState('idle'), 1700);
-        })
-        .catch((error) => {
-          console.error('Failed to copy transcript:', error);
-          setCopyState('idle');
-        });
-    };
-  
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-[80vw] max-w-[1200px]">
-          <DialogHeader className="flex flex-row items-center justify-between">
-            <div className="flex flex-col">
-              <h2 className="text-xl font-semibold leading-normal text-white">
-                {getRelativeTimeString(conversation.timestamp) || 'Moments ago'}
-              </h2>
-              <div className="flex items-center space-x-2">
-                <p className="text-sm leading-normal text-white/60">
-                  {formatTimestamp(conversation.timestamp)}
-                </p>
-                <Badge>Summarized</Badge>
-              </div>
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="w-[80vw] max-w-[1200px] h-[80vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0 flex flex-row items-center justify-between">
+          <div className="flex flex-col">
+            <h2 className="text-xl font-semibold leading-normal text-white">
+              {relativeTime || 'Moments ago'}
+            </h2>
+            <div className="flex items-center space-x-2">
+              <p className="text-sm leading-normal text-white/60">
+                {formatTimestamp(conversation.timestamp)}
+              </p>
+              <Badge>Summarized</Badge>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className='relative'>
-              <button
-                onClick={handleCopyTranscript}
-                className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
-              >
-                <ClipboardIcon width={24} height={24} />
-                <Tooltip message="Copied" state={copyState} />
-              </button>
-              </div>
-              <button
-                onClick={() => onDelete(conversation.id)}
-                className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
-              >
-                <TrashIcon width={24} height={24} />
-              </button>
-            </div>
-          </DialogHeader>
-          <div className="h-px bg-white/10 my-0" /> {/* Horizontal divider */}
-          <div className="flex h-[400px] space-x-0"> {/* Adjust height as needed */}
-            <div className="w-1/2 relative bg-black/50 p-2">
-              {transcriptGradient.showTopGradient && (
-                <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background-200 to-transparent" />
+          </div>
+          <div className="flex items-center space-x-4 mr-12">
+            <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
+            <DeleteButton onClick={() => onDelete(conversation.id)} deleteState={deleteState} setDeleteTooltipState={setDeleteTooltipState} />
+          </div>
+        </DialogHeader>
+        <div className="h-px bg-white/10 my-2 w-full flex-shrink-0" />
+        <div className="flex flex-col flex-grow overflow-hidden">
+          <div className="flex-shrink-0 mb-4">
+            <h3 className="text-lg font-semibold mb-2 text-white">Summary</h3>
+            <p className="text-sm text-white/80">{conversation.summary}</p>
+          </div>
+          <div className="h-px bg-white/10 my-2 w-full flex-shrink-0" />
+          <div className="flex-grow flex flex-col min-h-0">
+            <h3 className="text-lg font-semibold mb-2 text-white flex-shrink-0">Transcript</h3>
+            <div className="relative flex-grow overflow-hidden">
+              {showTopGradient && (
+                <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background to-transparent" />
               )}
-              {transcriptGradient.showBottomGradient && (
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-background-200 to-transparent" />
+              {showBottomGradient && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-background to-transparent" />
               )}
-              <h3 className="text-md font-semibold mb-2 text-white/80">Transcript:</h3>
-              <div ref={transcriptScrollRef} className="scrollbar-hide h-[calc(100%-2rem)] overflow-y-auto">
+              <div ref={transcriptScrollRef} className="scrollbar-hide absolute inset-0 overflow-y-auto">
                 <p className="select-text text-sm font-regular text-white/60 whitespace-pre-wrap leading-relaxed">
                   {formatTranscript(conversation.transcript, "DialogueTranscript")}
                 </p>
               </div>
             </div>
-            <div className="w-1/2 relative bg-background p-2">
-              {summaryGradient.showTopGradient && (
-                <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background-300 to-transparent" />
-              )}
-              {summaryGradient.showBottomGradient && (
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-background-300 to-transparent" />
-              )}
-              <div ref={summaryScrollRef} className="scrollbar-hide h-full overflow-y-auto">
-                <h3 className="text-md font-semibold mb-2 text-white/80">Topic:</h3>
-                <p className="text-sm text-white/80 mb-4">{conversation.topic}</p>
-                <h3 className="text-md font-semibold mb-2 text-white/80">Summary:</h3>
-                <p className="text-sm text-white/80">{conversation.summary}</p>
-              </div>
-            </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    );
-  };
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface CopyButtonProps {
+  onClick: () => void
+  copyState: TooltipState
+  setCopyTooltipState: (state: TooltipState) => void
+}
+
+export const CopyButton: React.FC<CopyButtonProps> = ({ onClick, copyState, setCopyTooltipState }) => (
+  <div className='relative'>
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setCopyTooltipState('active')}
+      onMouseLeave={() => setCopyTooltipState('idle')}
+      className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
+    >
+      <ClipboardIcon width={24} height={24} />
+      <Tooltip type='copy' state={copyState} />
+    </button>
+  </div>
+);
+
+interface DeleteButtonProps {
+  onClick: () => void;
+  deleteState: TooltipState
+  setDeleteTooltipState: (state: TooltipState) => void
+}
+
+export const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick, deleteState, setDeleteTooltipState }) => (
+  <div className='relative'>
+  <button
+    onClick={onClick}
+    onMouseEnter={() => setDeleteTooltipState('active')}
+    onMouseLeave={() => setDeleteTooltipState('idle')}
+    className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
+  >
+    <TrashIcon width={24} height={24} />
+    <Tooltip type='delete' state={deleteState} />
+  </button>
+  </div>
+);

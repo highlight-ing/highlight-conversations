@@ -8,7 +8,7 @@ const TrashIcon: React.FC<IconProps> = (props) => (
       stroke="currentColor" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
-      strokeOpacity="0.4" 
+      strokeOpacity="1.0" 
       strokeWidth="1.5"
     />
     <path 
@@ -16,7 +16,7 @@ const TrashIcon: React.FC<IconProps> = (props) => (
       stroke="currentColor" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
-      strokeOpacity="0.4" 
+      strokeOpacity="1.0" 
       strokeWidth="1.5"
     />
     <path 
@@ -24,7 +24,7 @@ const TrashIcon: React.FC<IconProps> = (props) => (
       stroke="currentColor" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
-      strokeOpacity="0.4" 
+      strokeOpacity="1.0" 
       strokeWidth="1.5"
     />
     <path 
@@ -32,7 +32,7 @@ const TrashIcon: React.FC<IconProps> = (props) => (
       stroke="currentColor" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
-      strokeOpacity="0.4" 
+      strokeOpacity="1.0" 
       strokeWidth="1.5"
     />
     <path 
@@ -40,7 +40,7 @@ const TrashIcon: React.FC<IconProps> = (props) => (
       stroke="currentColor" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
-      strokeOpacity="0.4" 
+      strokeOpacity="1.0" 
       strokeWidth="1.5"
     />
   </Icon>

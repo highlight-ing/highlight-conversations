@@ -4,9 +4,10 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
-import { FaSave } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { CopyIcon, TrashIcon } from "@radix-ui/react-icons";
+import { ClipboardIcon, SaveIcon } from '@/components/ui/icons'
+import { CopyState } from "@/types/types"
+import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip"
 
 interface CurrentConversationCardProps {
   transcript: string;
@@ -64,52 +65,63 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
     };
   }, [micActivity]);
 
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'hiding'>('idle');
+  const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
+  const [saveTooltipState, setSaveTooltipState] = useState<TooltipState>('idle');
 
   const handleCopyTranscript = () => {
     if (isSaveDisabled) return
     navigator.clipboard.writeText(transcript)
       .then(() => {
-        setCopyState('copied');
-        setTimeout(() => setCopyState('hiding'), 1500); // Start hiding after 1.5s
-        setTimeout(() => setCopyState('idle'), 1700); // Set to idle after fade out
+        setCopyTooltipState('success');
+        setTimeout(() => setCopyTooltipState('hiding'), 1500); // Start hiding after 1.5s
+        setTimeout(() => setCopyTooltipState('idle'), 1700); // Set to idle after fade out
       })
       .catch((error) => {
         console.error("Failed to copy transcript:", error);
       });
   };
 
+  const handleSaveTranscript = () => {
+    onSave()
+    setSaveTooltipState('success');
+    setTimeout(() => setSaveTooltipState('hiding'), 1500); // Start hiding after 1.5s
+    setTimeout(() => setSaveTooltipState('idle'), 1700); // Set to idle after fade out
+  }
+
   return (
     <Card className={`w-full border-2 ${borderClass} transition-all duration-300 bg-background-100 relative`}>
-      <CardHeader>
-        <div className="absolute top-4 right-4 flex space-x-3 items-center">
+      <CardHeader className="flex flex-row items-baseline">
+        <CardTitle>Current Conversation</CardTitle>
+        <div className="flex space-x-1">
           <div className="relative">
             <button
               onClick={handleCopyTranscript}
+              onMouseEnter={() => setCopyTooltipState('active')}
+              onMouseLeave={() => setCopyTooltipState('idle')}
               className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
                 ${isSaveDisabled
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'hover:text-[hsl(var(--brand))]'
+                  ? 'text-muted-foreground/40 cursor-not-allowed'
+                  : 'hover:text-brand'
                 }`}
             >
-              <CopyIcon className="w-4 h-4" />
+              <ClipboardIcon width={24} height={24} className="" />
             </button>
-            <div
-              className={`absolute -top-8 left-1/2 transform -translate-x-1/2 bg-background text-brand text-xs py-1 px-2 rounded shadow-md pointer-events-none transition-opacity duration-200 ${copyState === 'copied' ? 'animate-fadeIn opacity-100' : copyState === 'hiding' ? 'animate-fadeOut opacity-0' : 'opacity-0'}`}
-            >
-              Copied
-            </div>
+            <Tooltip type="copy" state={copyTooltipState} />
           </div>
+          <div className="relative">
           <button
-            onClick={onSave}
+            onClick={handleSaveTranscript}
+            onMouseEnter={() => setSaveTooltipState('active')}
+            onMouseLeave={() => setSaveTooltipState('idle')}
             disabled={isSaveDisabled}
             className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
-              ${isSaveDisabled ? 'text-gray-400 cursor-not-allowed' : 'hover:text-brand'}`}
+              ${isSaveDisabled ? 'text-muted-foreground/40 cursor-not-allowed' : 'hover:text-brand'}`}
           >
-            <FaSave size={18} />
+            <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" />
+            <Tooltip type="save" state={saveTooltipState} />
           </button>
+          </div>
         </div>
-        <CardTitle>Current Conversation</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">
         {isAudioEnabled ? (
