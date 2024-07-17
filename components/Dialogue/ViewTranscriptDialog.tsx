@@ -7,8 +7,7 @@ import { LightningBoltIcon } from "@radix-ui/react-icons";
 import useScrollGradient from '@/hooks/useScrollGradient';
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
 import { ConversationData, formatTranscript } from '@/data/conversations';
-import Tooltip from '@/components/Tooltip/Tooltip'
-import { CopyState } from '@/types/types'
+import { Tooltip, TooltipState, TooltipType } from '@/components/Tooltip/Tooltip'
 
 export const ViewTranscriptDialog: React.FC<{
     isOpen: boolean;
@@ -18,7 +17,8 @@ export const ViewTranscriptDialog: React.FC<{
     onSummarize: () => void;
   }> = ({ isOpen, onClose, conversation, onDelete, onSummarize }) => {
     const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp));
-    const [copyState, setCopyState] = useState<CopyState>('idle');
+    const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
+    const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle');
   
     useEffect(() => {
       const timer = setInterval(() => {
@@ -32,28 +32,37 @@ export const ViewTranscriptDialog: React.FC<{
         ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
         : conversation.transcript;
     
-      setCopyState('copying');
       navigator.clipboard
         .writeText(clipboardContent)
         .then(() => {
-          setCopyState('copied');
-          setTimeout(() => setCopyState('hiding'), 1500);
-          setTimeout(() => setCopyState('idle'), 1700);
+          setCopyTooltipState('success');
+          setTimeout(() => setCopyTooltipState('hiding'), 1500);
+          setTimeout(() => setCopyTooltipState('idle'), 1700);
         })
         .catch((error) => {
           console.error('Failed to copy transcript:', error);
-          setCopyState('idle');
+          setCopyTooltipState('idle');
         });
     };
+
+    const handleDeleteTranscript = () => {
+      onDelete(conversation.id);
+      setDeleteTooltipState('success');
+      setTimeout(() => setDeleteTooltipState('hiding'), 1500);
+      setTimeout(() => setDeleteTooltipState('idle'), 1700);
+    }
     if (conversation.summarized) {
       return (
         <SummarizedViewTranscriptDialog
           isOpen={isOpen}
           conversation={conversation}
           relativeTime={relativeTime}
-          copyState={copyState}
+          copyState={copyTooltipState}
+          deleteState={deleteTooltipState}
+          setCopyTooltipState={setCopyTooltipState}
+          setDeleteTooltipState={setDeleteTooltipState}
           onClose={onClose}
-          onDelete={onDelete}
+          onDelete={handleDeleteTranscript}
           onCopy={handleCopyTranscript}
         />
       );
@@ -62,10 +71,13 @@ export const ViewTranscriptDialog: React.FC<{
         <UnsummarizedViewTranscriptDialog
           conversation={conversation}
           relativeTime={relativeTime}
-          copyState={copyState}
+          copyState={copyTooltipState}
+          deleteState={deleteTooltipState}
+          setCopyTooltipState={setCopyTooltipState}
+          setDeleteTooltipState={setDeleteTooltipState}
           isOpen={isOpen}
           onClose={onClose}
-          onDelete={onDelete}
+          onDelete={handleDeleteTranscript}
           onSummarize={onSummarize}
           onCopy={handleCopyTranscript}
         />
@@ -78,7 +90,10 @@ export const ViewTranscriptDialog: React.FC<{
     isOpen: boolean
     conversation: ConversationData
     relativeTime: string
-    copyState: CopyState
+    copyState: TooltipState
+    deleteState: TooltipState
+    setCopyTooltipState: (state: TooltipState) => void
+    setDeleteTooltipState: (state: TooltipState) => void
     onClose: () => void
     onDelete: (id: string) => void
     onSummarize: () => void
@@ -90,6 +105,9 @@ export const ViewTranscriptDialog: React.FC<{
     conversation,
     relativeTime,
     copyState,
+    deleteState,
+    setCopyTooltipState,
+    setDeleteTooltipState,
     onClose,
     onDelete,
     onSummarize,
@@ -111,8 +129,8 @@ export const ViewTranscriptDialog: React.FC<{
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <CopyButton onClick={onCopy} copyState={copyState} />
-              <DeleteButton onClick={() => onDelete(conversation.id)} />
+              <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
+              <DeleteButton onClick={() => onDelete(conversation.id)} deleteState={deleteState} setDeleteTooltipState={setDeleteTooltipState} />
               <div className="h-10 w-px bg-white/10" /> {/* Vertical divider */}
               <Button onClick={onSummarize} variant="outline" className="flex items-center">
                 <LightningBoltIcon className="mr-2 h-4 w-4" />
@@ -144,7 +162,10 @@ export const ViewTranscriptDialog: React.FC<{
     isOpen: boolean
     conversation: ConversationData
     relativeTime: string
-    copyState: CopyState
+    copyState: TooltipState
+    setCopyTooltipState: (state: TooltipState) => void
+    deleteState: TooltipState
+    setDeleteTooltipState: (state: TooltipState) => void
     onClose: () => void
     onDelete: (id: string) => void
     onCopy: () => void
@@ -155,6 +176,9 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
   conversation,
   relativeTime,
   copyState,
+  setCopyTooltipState,
+  deleteState,
+  setDeleteTooltipState,
   onClose,
   onDelete,
   onCopy
@@ -178,8 +202,8 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <CopyButton onClick={onCopy} copyState={copyState} />
-            <DeleteButton onClick={() => onDelete(conversation.id)} />
+            <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
+            <DeleteButton onClick={() => onDelete(conversation.id)} deleteState={deleteState} setDeleteTooltipState={setDeleteTooltipState} />
           </div>
         </DialogHeader>
         <div className="h-px bg-white/10 my-2 w-full flex-shrink-0" />
@@ -214,31 +238,41 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
 };
 
 interface CopyButtonProps {
-  onClick: () => void;
-  copyState: 'idle' | 'copying' | 'copied' | 'hiding';
+  onClick: () => void
+  copyState: TooltipState
+  setCopyTooltipState: (state: TooltipState) => void
 }
 
-export const CopyButton: React.FC<CopyButtonProps> = ({ onClick, copyState }) => (
+export const CopyButton: React.FC<CopyButtonProps> = ({ onClick, copyState, setCopyTooltipState }) => (
   <div className='relative'>
     <button
       onClick={onClick}
-      className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
+      onMouseEnter={() => setCopyTooltipState('active')}
+      onMouseLeave={() => setCopyTooltipState('idle')}
+      className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
     >
       <ClipboardIcon width={24} height={24} />
-      <Tooltip message="Copied" state={copyState} />
+      <Tooltip type='copy' state={copyState} />
     </button>
   </div>
 );
 
 interface DeleteButtonProps {
   onClick: () => void;
+  deleteState: TooltipState
+  setDeleteTooltipState: (state: TooltipState) => void
 }
 
-export const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick }) => (
+export const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick, deleteState, setDeleteTooltipState }) => (
+  <div className='relative'>
   <button
     onClick={onClick}
-    className="text-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
+    onMouseEnter={() => setDeleteTooltipState('active')}
+    onMouseLeave={() => setDeleteTooltipState('idle')}
+    className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
   >
     <TrashIcon width={24} height={24} />
+    <Tooltip type='delete' state={deleteState} />
   </button>
+  </div>
 );

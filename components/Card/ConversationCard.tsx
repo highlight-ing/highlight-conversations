@@ -11,7 +11,7 @@ import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
 import { ArrowRightIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge";
 import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
-import Tooltip from "@/components/Tooltip/Tooltip"
+import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip"
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -78,7 +78,8 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
   onDelete
 }) => {
   const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
-  const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'hiding'>('idle')
+  const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
+  const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -92,18 +93,24 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
       ? `Topic: ${conversation.topic}\n\nSummary: ${conversation.summary}\n\nTranscript: ${conversation.transcript}`
       : conversation.transcript;
   
-    setCopyState('copying');
     navigator.clipboard
       .writeText(clipboardContent)
       .then(() => {
-        setCopyState('copied');
-        setTimeout(() => setCopyState('hiding'), 1500);
-        setTimeout(() => setCopyState('idle'), 1700);
+        setCopyTooltipState('success');
+        setTimeout(() => setCopyTooltipState('hiding'), 1500);
+        setTimeout(() => setCopyTooltipState('idle'), 1700);
       })
       .catch((error) => {
         console.error('Failed to copy transcript:', error);
-        setCopyState('idle');
+        setCopyTooltipState('idle');
       });
+  };
+
+  const handleDelete = () => {
+    onDelete(conversation.id);
+    setDeleteTooltipState('success');
+    setTimeout(() => setDeleteTooltipState('hiding'), 1500);
+    setTimeout(() => setDeleteTooltipState('idle'), 1700);
   };
 
   return (
@@ -121,18 +128,25 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
           <div className='relative'>
           <button
             onClick={handleCopyTranscript}
+            onMouseEnter={() => setCopyTooltipState('active')}
+            onMouseLeave={() => setCopyTooltipState('idle')}
             className = "text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
           >
             <ClipboardIcon width={24} height={24} className="" />
-            <Tooltip message="Copied" state={copyState} />
+            <Tooltip type="copy" state={copyTooltipState} />
           </button>
           </div>
+          <div className='relative'>
           <button
-            onClick={() => onDelete(conversation.id)}
+            onClick={handleDelete}
+            onMouseEnter={() => setDeleteTooltipState('active')}
+            onMouseLeave={() => setDeleteTooltipState('idle')}
             className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
           >
             <TrashIcon width={24} height={24} className='group-hover:text-destructive' />
+            <Tooltip type="delete" state={deleteTooltipState} />
           </button>
+          </div>
         </div>
       </div>
     </div>
