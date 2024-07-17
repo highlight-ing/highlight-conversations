@@ -9,6 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from '@/components/ui/label'
+import InfoTooltip from './InfoTooltip'
+import { TOOLTIP_CONTENT } from '@/constants/tooltipConstants'
 
 interface IdleTimerSelectionProps {
   value: number;
@@ -35,6 +37,7 @@ const IdleTimerSelection: React.FC<IdleTimerSelectionProps> = ({
     <div>
       <div className="flex flex-row items-center px-4">
         <Label className="mr-2 text-muted-foreground" htmlFor="idleTimerSelection">Auto Save</Label>
+        <InfoTooltip type='AUTO_SAVE' content={TOOLTIP_CONTENT.AUTO_SAVE} />
         <Select
           onValueChange={(selectedValue) => onIdleTimerChange(parseInt(selectedValue))}
           value={value?.toString() ?? ''}

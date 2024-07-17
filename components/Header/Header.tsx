@@ -3,17 +3,16 @@ import React from 'react'
 import AutoClearSelection from './AutoClearSelection'
 import AudioSwitch from './AudioSwitch'
 import AutoSaveSelection from './AutoSaveSelection'
-import InfoTooltip from './InfoTooltip'
-import { TOOLTIP_CONTENT } from '@/constants/tooltipConstants'
+import DeleteAllButton from './DeleteAllButton'
 
 interface HeaderProps {
   autoClearValue: number
   isAudioOn: boolean
-  characterCount: number
   autoSaveValue: number
   onAutoClearValueChange: (value: number) => void
   onAudioSwitch: (isOn: boolean) => void
   onAutoSaveChange: (value: number) => void
+  onDeleteAllConversations: () => void
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -22,23 +21,18 @@ const Header: React.FC<HeaderProps> = ({
   autoSaveValue,
   onAutoClearValueChange,
   onAudioSwitch,
-  onAutoSaveChange
+  onAutoSaveChange,
+  onDeleteAllConversations
 }) => {
   return (
     <div className="w-full border-b">
       <div className="flex items-center justify-between p-4">
-        <div className="flex items-center">
-          <AudioSwitch isAudioOn={isAudioOn} onSwitch={onAudioSwitch} />
-          <InfoTooltip content={TOOLTIP_CONTENT.AUDIO_SWITCH} />
-        </div>
-        <div className="flex items-center">
+        <AudioSwitch isAudioOn={isAudioOn} onSwitch={onAudioSwitch} />
+        <div className="flex-1 flex items-center justify-center space-x-4">
           <AutoSaveSelection value={autoSaveValue} onIdleTimerChange={onAutoSaveChange} />
-          <InfoTooltip content={TOOLTIP_CONTENT.AUTO_SAVE} />
+          <DeleteAllButton onDeleteAllConversations={onDeleteAllConversations} />
         </div>
-        <div className="flex items-center">
-          <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
-          <InfoTooltip content={TOOLTIP_CONTENT.AUTO_CLEAR} />
-        </div>
+        <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
       </div>
     </div>
   )

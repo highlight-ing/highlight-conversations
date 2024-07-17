@@ -147,11 +147,6 @@ const MainPage: React.FC = () => {
     saveConversationsInAppStorage(conversations)
   }, [conversations])
 
-  // Set ASR Realtime effect TODO: Deprecate?
-  useEffect(() => {
-    setAsrRealtime(false)
-  }, [])
-
   useEffect(() => {
     const clearConversations = () => {
       const updatedConversations = clearOldConversations(conversations, autoClearValue, IS_TEST_MODE)
@@ -194,6 +189,11 @@ const MainPage: React.FC = () => {
     })
   }
 
+  const handleDeleteAllConversations = async () => {
+    setConversations([])
+    await saveConversationsInAppStorage([])
+  }
+
   const addConversation = useCallback(async (newConversation: Omit<ConversationData, 'timestamp'>) => {
     const conversationWithCurrentTimestamp = {
       ...newConversation,
@@ -223,9 +223,9 @@ const MainPage: React.FC = () => {
       <WelcomeDialog />
       <Header
         autoClearValue={autoClearValue}
-        characterCount={characterCount}
         autoSaveValue={idleTimerValue}
         isAudioOn={isAudioEnabled ?? false}
+        onDeleteAllConversations={handleDeleteAllConversations}
         onAutoClearValueChange={handleAutoClearValueChange}
         onAudioSwitch={handleAudioToggle}
         onAutoSaveChange={handleAutoSaveChange}
