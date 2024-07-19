@@ -12,6 +12,7 @@ import { ArrowRightIcon, LightningBoltIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge";
 import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
 import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip"
+import HighlightIcon from '@/components/ui/icons/HighlightIcon'
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -52,6 +53,13 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         </CardContent>
         <CardFooter className="px-4 pb-4 pt-0">
           <Button
+            onClick={handleOnViewTranscript}
+            className="w-full flex items-center justify-between rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
+          >
+            Prompt
+            <HighlightIcon viewBox='0 0 24 24' />
+          </Button>
+          {/* <Button
             onClick={conversation.summarized ? handleOnViewTranscript : handleSummarize}
             className={`w-full flex items-center justify-between rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 ${
               conversation.summarized
@@ -67,7 +75,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
             ) : (
               <LightningBoltIcon className="ml-0 h-5 w-5" />
             )}
-          </Button>
+          </Button> */}
         </CardFooter>
       </Card>
       <ProcessingDialog isProcessing={isProcessing} />
@@ -243,10 +251,9 @@ const ViewTranscriptButton: React.FC<ViewTranscriptButtonProps> = ({ onViewTrans
     <Button
       onClick={onViewTranscript}
       variant="ghost"
-      className="w-full justify-between items-center rounded-lg bg-background/20 p-2 text-[15px] font-semibold text-foreground backdrop-blur-sm transition-colors duration-200 hover:text-white hover:bg-background/30 hover:backdrop-blur-sm"
+      className="tems-center rounded-lg bg-background/10 p-2 text-[13px] font-medium text-muted-foreground backdrop-blur-sm transition-colors duration-200 hover:text-foreground hover:bg-background/20 hover:backdrop-blur-sm px-4"
     >
-      View Conversation
-      <ArrowRightIcon className="ml-0 h-5 w-5" />
+      View
     </Button>
   </div>
 );
