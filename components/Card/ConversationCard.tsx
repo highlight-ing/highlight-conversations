@@ -13,6 +13,7 @@ import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog
 import { Tooltip, TooltipState } from "@/components/Tooltip/Tooltip"
 import HighlightIcon from '@/components/ui/icons/HighlightIcon'
 import { sendAttachmentAndOpen } from '@/services/highlightService'
+import { EyeOpenIcon } from "@radix-ui/react-icons";
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -225,16 +226,18 @@ interface ViewTranscriptButtonProps {
   onViewTranscript: () => void;
 }
 
-const ViewTranscriptButton: React.FC<ViewTranscriptButtonProps> = ({ onViewTranscript }) => (
-  <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center">
-    <Button
-      onClick={onViewTranscript}
-      variant="ghost"
-      className="tems-center rounded-lg bg-background/10 p-2 text-[13px] font-medium text-muted-foreground backdrop-blur-sm transition-colors duration-200 hover:text-foreground hover:bg-background/20 hover:backdrop-blur-sm px-4"
-    >
-      View
-    </Button>
-  </div>
-);
+const ViewTranscriptButton: React.FC<ViewTranscriptButtonProps> = ({ onViewTranscript }) => {
+  return (
+    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center">
+      <Button
+        onClick={onViewTranscript}
+        className="w-full flex items-center justify-between rounded-lg bg-background/10 p-2 text-[15px] font-semibold text-foreground backdrop-blur-sm transition-colors duration-200 hover:text-white hover:bg-background/20 hover:backdrop-blur-sm px-2"
+      >
+        View
+        <EyeOpenIcon className="w-6 h-6" />
+      </Button>
+    </div>
+  );
+};
 
 export default ConversationCard
