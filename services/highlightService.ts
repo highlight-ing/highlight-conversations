@@ -83,7 +83,15 @@ export const setAudioSuperpowerEnabled = async (enabled: boolean): Promise<void>
   await window.highlight.internal.setAudioSuperpowerEnabled(enabled)
 }
 
-export const openExternalApp = async (): Promise<void> => {
+export const sendAttachmentAndOpen = async (
+  targetAppId: string,
+  attachment: string
+): Promise<void> => {
+  await openExternalApp()
+  await sendAttachment(targetAppId, attachment)
+}
+
+const openExternalApp = async (): Promise<void> => {
   if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
     try {
       await Highlight.app.openApp('highlightchat')
@@ -96,7 +104,7 @@ export const openExternalApp = async (): Promise<void> => {
   }
 }
 
-export const sendAttachment = async (
+const sendAttachment = async (
   targetAppId: string,
   attachment: string
 ): Promise<void> => {

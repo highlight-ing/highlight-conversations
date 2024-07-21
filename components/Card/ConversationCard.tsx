@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ConversationData, formatTranscript, FormatType } from '@/data/conversations'
+import { ConversationData, formatTranscript } from '@/data/conversations'
 import useScrollGradient from '@/hooks/useScrollGradient'
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { motion } from 'framer-motion'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardFooter, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import ProcessingDialog from '@/components/Dialogue/ProcessingDialog'
 import { mockProcessConversation } from '@/services/mockProcessingService'
 import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
-import { ArrowRightIcon, LightningBoltIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge";
 import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
-import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip"
+import { Tooltip, TooltipState } from "@/components/Tooltip/Tooltip"
 import HighlightIcon from '@/components/ui/icons/HighlightIcon'
-import { sendAttachment, CONVERSATIONS_STORAGE_KEY } from '@/services/highlightService'
+import { sendAttachmentAndOpen } from '@/services/highlightService'
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -43,10 +42,8 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
 
   const handleAttachment = async () => {
     let toAppId = 'highlightchat'
-    let attachmentAppId = 'dev'
-    let attachmentAppStorageKey = CONVERSATIONS_STORAGE_KEY
     let transcript = conversation.transcript
-    await sendAttachment(toAppId, transcript)
+    await sendAttachmentAndOpen(toAppId, transcript)
   }
 
   return (
@@ -68,23 +65,6 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
             Prompt
             <HighlightIcon viewBox='0 0 24 24' />
           </Button>
-          {/* <Button
-            onClick={conversation.summarized ? handleOnViewTranscript : handleSummarize}
-            className={`w-full flex items-center justify-between rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 ${
-              conversation.summarized
-                ? "bg-background/20 text-foreground hover:bg-background/30"
-                : "bg-background text-foreground hover:bg-brand-light hover:text-brand"
-            }`}
-          >
-            <span className="flex items-center">
-              {conversation.summarized ? "View Conversation" : "Summarize"}
-            </span>
-            {conversation.summarized ? (
-              <ArrowRightIcon className="ml-0 h-5 w-5" />
-            ) : (
-              <LightningBoltIcon className="ml-0 h-5 w-5" />
-            )}
-          </Button> */}
         </CardFooter>
       </Card>
       <ProcessingDialog isProcessing={isProcessing} />
@@ -237,16 +217,6 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
           </p>
         </div>
       </div>
-      {/* <div className="mt-4">
-        <Button
-          onClick={onViewTranscript}
-          variant="ghost"
-          className="w-full justify-between items-center rounded-lg bg-background/20 p-2 text-[15px] font-semibold text-white backdrop-blur-sm transition-colors duration-200 hover:text-white hover:bg-background/30 hover:backdrop-blur-sm"
-        >
-          View Conversation
-          <ArrowRightIcon className="ml-0 h-5 w-5" />
-        </Button>
-      </div> */}
     </div>
   );
 };
