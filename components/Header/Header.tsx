@@ -4,6 +4,8 @@ import AutoClearSelection from './AutoClearSelection'
 import AudioSwitch from './AudioSwitch'
 import AutoSaveSelection from './AutoSaveSelection'
 import DeleteAllButton from './DeleteAllButton'
+import { Button } from '@/components/ui/button'
+import { openExternalApp } from '@/services/highlightService'
 
 interface HeaderProps {
   autoClearValue: number
@@ -31,6 +33,9 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex-1 flex items-center justify-center space-x-4">
           <AutoSaveSelection value={autoSaveValue} onIdleTimerChange={onAutoSaveChange} />
           <DeleteAllButton onDeleteAllConversations={onDeleteAllConversations} />
+          <Button onClick={() => openExternalApp()}>
+            Test OpenApp
+          </Button>
         </div>
         <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
       </div>

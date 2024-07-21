@@ -11,7 +11,7 @@
     "format:fix": "prettier --write --ignore-path .gitignore ."
   },
   "dependencies": {
-    "@highlight-ai/app-runtime": "^0.0.35",
+    "@highlight-ai/app-runtime": "^0.0.39",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -28,15 +28,15 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "deepmerge": "^4.3.1",
-    "framer-motion": "^11.3.6",
+    "framer-motion": "^11.3.8",
     "geist": "^1.3.1",
-    "lucide-react": "^0.408.0",
+    "lucide-react": "^0.411.0",
     "next": "14.2.5",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
-    "styled-components": "^6.1.11",
+    "styled-components": "^6.1.12",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^10.0.0"

@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
 import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip"
 import HighlightIcon from '@/components/ui/icons/HighlightIcon'
+import { sendAttachment, CONVERSATIONS_STORAGE_KEY } from '@/services/highlightService'
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -40,6 +41,14 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
     setIsViewTranscriptOpen(true)
   }
 
+  const handleAttachment = async () => {
+    let toAppId = 'highlightchat'
+    let attachmentAppId = 'dev'
+    let attachmentAppStorageKey = CONVERSATIONS_STORAGE_KEY
+    let transcript = conversation.transcript
+    await sendAttachment(toAppId, transcript)
+  }
+
   return (
     <motion.div initial={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
       <Card className="flex w-full flex-col rounded-lg bg-background-100 p-0 shadow">
@@ -53,7 +62,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         </CardContent>
         <CardFooter className="px-4 pb-4 pt-0">
           <Button
-            onClick={handleOnViewTranscript}
+            onClick={handleAttachment}
             className="w-full flex items-center justify-between rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
           >
             Prompt
