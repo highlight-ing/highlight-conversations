@@ -136,10 +136,10 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             </div>
             <div className="relative h-56">
               {transcript && showTopGradient && (
-                <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-100 pointer-events-none"></div>
               )}
               {transcript && showBottomGradient && (
-                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-100 pointer-events-none"></div>
               )}
               <AnimatePresence mode="wait">
                 {!transcript ? (

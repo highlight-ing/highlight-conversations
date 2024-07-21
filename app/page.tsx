@@ -6,7 +6,6 @@ import Header from '@/components/Header/Header'
 import ConversationsManager from '@/components/ConversationManager/ConversationManager'
 import { ConversationData } from '@/data/conversations'
 import {
-  setAsrRealtime,
   requestBackgroundPermission,
   setAudioSuperpowerEnabled,
   getAudioSuperPowerEnabled,
@@ -66,7 +65,6 @@ const MainPage: React.FC = () => {
   const [characterCount, setCharacterCount] = useState(MIN_CHARACTER_COUNT)
   const [idleTimerValue, setIdleTimerValue] = useState(AUTO_SAVE_SEC)
   const [isSleeping, setIsSleeping] = useState(false)
-  const isVisible = usePageVisibility()
   const isInitialMount = useRef(true)
 
   // useEffect(() => {
