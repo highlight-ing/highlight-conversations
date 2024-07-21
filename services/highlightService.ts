@@ -88,6 +88,10 @@ export const sendAttachmentAndOpen = async (
   attachment: string
 ): Promise<void> => {
   await openExternalApp()
+  
+  // Add a 2-second delay
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  
   await sendAttachment(targetAppId, attachment)
 }
 
