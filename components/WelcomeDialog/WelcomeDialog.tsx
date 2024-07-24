@@ -39,7 +39,6 @@ const WelcomeDialog: React.FC = () => {
             <li>Transcripts generated locally</li>
             <li>Data saved only on your device</li>
           </ul>
-          <p className="text-muted-foreground italic">Coming soon: Attach conversations to Highlight for further processing.</p>
         </DialogDescription>
         <div className="flex items-center space-x-2 justify-center mt-4">
           <Checkbox

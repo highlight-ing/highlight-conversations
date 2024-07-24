@@ -210,8 +210,6 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-100 h-24 bg-gradient-to-t from-background-100 to-transparent" />
         )}
         <div ref={scrollRef} className="scrollbar-hide h-full overflow-y-auto p-0">
-          {/* <h3 className="text-sm font-semibold text-white/60 mb-1">Topic:</h3>
-          <p className="text-sm text-white mb-4">{conversation.topic}</p> */}
           <h3 className="text-sm font-semibold text-white/60 mb-1">Summary:</h3>
           <p className="select-text text-[15px] leading-normal text-white">
             {conversation.summary}
