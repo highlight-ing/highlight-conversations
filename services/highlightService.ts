@@ -18,6 +18,7 @@ declare global {
         getTextPrediction: (messages: LLMMessage[]) => Promise<string>
         openApp: (appId: string) => void
         sendConversationAsAttachment: (targetAppId: string, attachment: string) => Promise<void>
+        requestAudioPermissionEvents: () => Promise<void>
       }
       appStorage: {
         isHydrated: () => boolean
@@ -238,6 +239,35 @@ export const removeTextPredictionDoneListener = (listener: (event: any) => void)
   Highlight.removeEventListener('onTextPredictionDone', listener)
 }
 
+export const addAudioPermissionListener = (listener: (event: any) => void): void => {
+  Highlight.app.addListener('onAudioPermissionUpdate', listener)
+}
+
+export const requestAudioPermissionEvents = async (): Promise<void> => {
+  if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
+    try {
+      await window.highlight.internal.requestAudioPermissionEvents()
+      console.log('Audio permission events requested successfully')
+    } catch (error) {
+      console.error('Error sending audio permission request:', error)
+      throw error
+    }
+  } else {
+    throw new Error('request audio permission is not available')
+  }
+}
+
+export const setupSimpleAudioPermissionListener = () => {
+  console.log('Setting up simple audio permission listener');
+  Highlight.app.addListener('onAudioPermissionUpdate', (event: any) => {
+    console.log('Audio permission event received:', event);
+    // If you know the exact structure of the event, you can log specific properties
+    // For example, if there's a hasPermission property:
+    // console.log('Audio permission changed:', event.hasPermission);
+  });
+};
+
+
 // export const addSleepListener = (listener: () => void): void => {
 //   Highlight.addEventListener('onSleep', listener);
 // };
@@ -355,16 +385,6 @@ export const getBooleanFromAppStorage = async (key: string, defaultValue: boolea
     return typeof value === 'boolean' ? value : defaultValue
   }
   return defaultValue
-}
-
-export const getOptionalBooleanFromAppStorage = async (key: string): Promise<boolean | undefined> => {
-  const appStorage = getAppStorage()
-  if (appStorage) {
-    await appStorage.whenHydrated()
-    const value = appStorage.get(key)
-    return typeof value === 'boolean' ? value : undefined
-  }
-  return undefined
 }
 
 export const getStringFromAppStorage = async (key: string, defaultValue: string): Promise<string> => {

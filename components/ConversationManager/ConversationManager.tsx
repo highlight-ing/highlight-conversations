@@ -8,7 +8,6 @@ const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
 const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
 interface ConversationsManagerProps {
   idleThreshold: number
-  minCharacters: number
   conversations: ConversationData[]
   isAudioEnabled: boolean
   isSleeping: boolean
@@ -20,7 +19,6 @@ interface ConversationsManagerProps {
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   idleThreshold,
-  minCharacters,
   conversations,
   isAudioEnabled,
   isSleeping,
@@ -46,12 +44,12 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
   const saveCurrentConversation = useCallback((forceSave: boolean = false) => {
     const conversationString = getCurrentConversationString(false) // Get in chronological order
-    if (forceSave || conversationString.trim().length >= minCharacters) {
+    if (forceSave || conversationString.trim().length >= 1) {
       const newConversation = createConversation(conversationString)
       addConversation(newConversation)
       setCurrentConversationParts([]) // Clear the current conversation
     }
-  }, [getCurrentConversationString, addConversation, minCharacters])
+  }, [getCurrentConversationString, addConversation])
 
   // Check last known mic activity and trigger save if past idle threshold 
   useEffect(() => {

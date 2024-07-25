@@ -9,13 +9,16 @@ import {
   requestBackgroundPermission,
   setAudioSuperpowerEnabled,
   getAudioSuperPowerEnabled,
+  addAudioPermissionListener,
+  requestAudioPermissionEvents,
   migrateFromLocalStorageToAppStorage,
   saveNumberInAppStorage,
   saveBooleanInAppStorage,
   getNumberFromAppStorage,
-  getOptionalBooleanFromAppStorage,
+  getBooleanFromAppStorage,
   saveConversationsInAppStorage,
   getConversationsFromAppStorage,
+  setupSimpleAudioPermissionListener,
   AUTO_CLEAR_VALUE_KEY,
   AUTO_SAVE_SEC_KEY,
   AUDIO_ENABLED_KEY,
@@ -34,7 +37,6 @@ import AudioPermissionDialog from '@/components/Dialogue/AudioPermissionDialog'
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
 const AUTO_CLEAR_POLL = 60000
-const USER_AUDIO_PREFERENCE_KEY = 'userAudioPreference';
 
 const clearOldConversations = (
   conversations: ConversationData[],
@@ -62,11 +64,13 @@ const MainPage: React.FC = () => {
   const [autoClearValue, setAutoClearValue] = useState<number>(AUTO_CLEAR_DAYS)
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
-  const [isAudioEnabled, setIsAudioEnabled] = useState<boolean | null>(null)
+  const [isAudioEnabled, setIsAudioEnabled] = useState<boolean>(true)
   const [characterCount, setCharacterCount] = useState(MIN_CHARACTER_COUNT)
   const [idleTimerValue, setIdleTimerValue] = useState(AUTO_SAVE_SEC)
   const [isSleeping, setIsSleeping] = useState(false)
   const isInitialMount = useRef(true)
+  const [isAudioPermissionEnabled, setIsAudioPermissionEnabled] = useState<boolean | null>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
 
   // useEffect(() => {
   //   const handleSleep = () => {
@@ -101,22 +105,10 @@ const MainPage: React.FC = () => {
       await migrateFromLocalStorageToAppStorage()
       console.log('Migration completed');
 
-      const initializeAudioState = async () => {
-        const electronSetting = await getAudioSuperPowerEnabled();
-        const userPreference = await getOptionalBooleanFromAppStorage(USER_AUDIO_PREFERENCE_KEY);
-        console.log('Audio settings:', { electronSetting, userPreference });
-    
-        if (userPreference === undefined) {
-          console.log('Using electron setting for audio:', electronSetting);
-          setIsAudioEnabled(electronSetting);
-        } else {
-          console.log('Using user preference for audio:', userPreference);
-          setIsAudioEnabled(userPreference);
-        }
-      };
-
       // Initialize audio state
-      await initializeAudioState();
+      await initializeAudioSuperPower();
+      await initializeAudioEnabled();
+      await requestAudioPermissionEvents()
 
       // Load values from AppStorage
       const storedAutoClearValue = await getNumberFromAppStorage(AUTO_CLEAR_VALUE_KEY, AUTO_CLEAR_DAYS);
@@ -130,10 +122,37 @@ const MainPage: React.FC = () => {
       const storedConversations = await getConversationsFromAppStorage()
       console.log('Loaded conversations:', storedConversations);
       setConversations(storedConversations)
+      setIsInitialized(true)
+
+      setupSimpleAudioPermissionListener()
+
+      // // Set up audio permission listener
+      // addAudioPermissionListener((event: { hasPermission: any }) => {
+      //   // setIsAudioPermissionEnabled(event.hasPermission);
+      //   console.log('Audio permission changed:', event.hasPermission);
+      // });
+
+      // Clean up function
+      return () => {
+        // If there's no way to remove the listener, you can leave this empty
+        // or add any other cleanup code you might need
+      };
     }
 
     initializeApp()
   }, [])
+
+  const initializeAudioSuperPower = async () => {
+    const audioPermission = await getAudioSuperPowerEnabled();
+    console.log('Initial audio permission:', audioPermission);
+    setIsAudioPermissionEnabled(audioPermission);
+  };
+
+  const initializeAudioEnabled = async () => {
+    const audioEnabled = await getBooleanFromAppStorage(AUDIO_ENABLED_KEY, true);
+    console.log('Audio enabled:', audioEnabled);
+    setIsAudioEnabled(audioEnabled);
+  };
 
   // Save conversations to AppStorage whenever they change
   useEffect(() => {
@@ -217,9 +236,15 @@ const MainPage: React.FC = () => {
     })
   }, [])
 
+  if (!isInitialized) {
+    return null;
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
-      <AudioPermissionDialog isAudioPermissionGranted={false} />
+      {isAudioPermissionEnabled !== null && (
+        <AudioPermissionDialog isAudioPermissionGranted={isAudioPermissionEnabled} />
+      )}
       <WelcomeDialog />
       <Header
         autoClearValue={autoClearValue}
@@ -235,8 +260,7 @@ const MainPage: React.FC = () => {
           <ConversationsManager
             conversations={conversations}
             idleThreshold={idleTimerValue}
-            minCharacters={characterCount}
-            isAudioEnabled={isAudioEnabled ?? false}
+            isAudioEnabled={isAudioEnabled}
             isSleeping={isSleeping}
             onMicActivityChange={handleMicActivityChange}
             addConversation={addConversation}
