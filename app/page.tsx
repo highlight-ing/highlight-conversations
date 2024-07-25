@@ -32,6 +32,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { CrossCircledIcon } from "@radix-ui/react-icons"
 import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
+import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
 
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
@@ -71,6 +72,7 @@ const MainPage: React.FC = () => {
   const [isAudioPermissionEnabled, setIsAudioPermissionEnabled] = useState<boolean | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [showOnboarding, setShowOnboarding] = useState(true)
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conversation => {
@@ -173,7 +175,7 @@ const MainPage: React.FC = () => {
     setMicActivity(activity)
   }
 
-  const handleAutoClearValueChange = async (value: number) => {
+  const handleAutoClearValueChange = async (value: number): Promise<void> => {
     setAutoClearValue(value)
     await saveNumberInAppStorage(AUTO_CLEAR_VALUE_KEY, value)
   }
@@ -222,6 +224,10 @@ const MainPage: React.FC = () => {
 
   if (!isInitialized) {
     return null;
+  }
+
+  if (showOnboarding) {
+    return <OnboardingFlow onComplete={() => setShowOnboarding(false)} />;
   }
 
   return (
