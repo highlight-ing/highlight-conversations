@@ -14,10 +14,8 @@ const AudioPermissionDialog: React.FC<AudioPermissionDialogProps> = ({ isAudioPe
 
     useEffect(() => {
         if (isAudioPermissionGranted === false) {
-            console.log('Audio permission not granted, showing alert');
             setIsOpen(true);
         } else if (isAudioPermissionGranted === true) {
-            console.log('Audio permission granted, closing alert');
             setIsOpen(false);
         }
     }, [isAudioPermissionGranted]);

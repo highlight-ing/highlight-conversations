@@ -96,8 +96,8 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
           <div className="relative">
             <button
               onClick={handleCopyTranscript}
-              onMouseEnter={() => setCopyTooltipState('active')}
-              onMouseLeave={() => setCopyTooltipState('idle')}
+              onMouseEnter={() => !isSaveDisabled && setCopyTooltipState('active')}
+              onMouseLeave={() => !isSaveDisabled && setCopyTooltipState('idle')}
               className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
                 ${isSaveDisabled
                   ? 'text-muted-foreground/40 cursor-not-allowed'
@@ -106,7 +106,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             >
               <ClipboardIcon width={24} height={24} className="" />
             </button>
-            <Tooltip type="copy" state={copyTooltipState} />
+            {!isSaveDisabled && <Tooltip type="copy" state={copyTooltipState} />}
           </div>
           <div className="relative">
           <button
