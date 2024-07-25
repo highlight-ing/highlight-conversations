@@ -33,6 +33,10 @@ import { usePageVisibility } from '@/hooks/usePageVisibility'
 import WelcomeDialog from '@/components/WelcomeDialog/WelcomeDialog'
 import { MIN_CHARACTER_COUNT, AUTO_SAVE_SEC, AUTO_CLEAR_DAYS } from '@/constants/appConstants'
 import AudioPermissionDialog from '@/components/Dialogue/AudioPermissionDialog'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { CrossCircledIcon } from "@radix-ui/react-icons"
+import debounce from 'lodash/debounce'
 
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
@@ -71,6 +75,23 @@ const MainPage: React.FC = () => {
   const isInitialMount = useRef(true)
   const [isAudioPermissionEnabled, setIsAudioPermissionEnabled] = useState<boolean | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showNoResults, setShowNoResults] = useState(false)
+
+  const debouncedSetShowNoResults = useCallback(
+    debounce((value: boolean) => {
+      setShowNoResults(value)
+    }, 300),
+    []
+  )
+
+  useEffect(() => {
+    const filteredConversations = conversations.filter(conversation =>
+      conversation.transcript.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conversation.summary.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    debouncedSetShowNoResults(filteredConversations.length === 0)
+  }, [conversations, searchQuery, debouncedSetShowNoResults])
 
   // useEffect(() => {
   //   const handleSleep = () => {
@@ -256,9 +277,31 @@ const MainPage: React.FC = () => {
         onAutoSaveChange={handleAutoSaveChange}
       />
       <main className="flex-grow p-4">
+      <div className="relative mb-4">
+      <Input
+        type="text"
+        placeholder="Search conversations..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="pr-8"
+      />
+      {searchQuery && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-2 top-1/2 -translate-y-1/2"
+          onClick={() => setSearchQuery('')}
+        >
+          <CrossCircledIcon className="h-4 w-4" />
+        </Button>
+          )}
+        </div>
         <AnimatePresence>
           <ConversationsManager
-            conversations={conversations}
+            conversations={conversations.filter(conversation =>
+              conversation.transcript.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              conversation.summary.toLowerCase().includes(searchQuery.toLowerCase())
+            )}
             idleThreshold={idleTimerValue}
             isAudioEnabled={isAudioEnabled}
             isSleeping={isSleeping}
@@ -266,6 +309,7 @@ const MainPage: React.FC = () => {
             addConversation={addConversation}
             onDeleteConversation={deleteConversation}
             onUpdateConversation={handleUpdateConversation}
+            showNoResults={showNoResults}
           />
         </AnimatePresence>
       </main>
