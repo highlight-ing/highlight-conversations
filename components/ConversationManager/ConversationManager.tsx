@@ -11,7 +11,6 @@ interface ConversationsManagerProps {
   conversations: ConversationData[]
   isAudioEnabled: boolean
   isSleeping: boolean
-  showNoResults: boolean
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
@@ -23,7 +22,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   conversations,
   isAudioEnabled,
   isSleeping,
-  showNoResults,
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
@@ -154,7 +152,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       micActivity={micActivity}
       isAudioEnabled={isAudioEnabled}
       nextTranscriptIn={nextTranscriptIn}
-      showNoResults={showNoResults}
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
       onUpdate={onUpdateConversation}
