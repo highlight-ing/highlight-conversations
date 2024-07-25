@@ -4,15 +4,19 @@ import { useEffect, useState } from "react";
 import { Lock1 } from "iconsax-react";
 
 interface AudioPermissionDialogProps {
-    isAudioPermissionGranted: boolean
+    isAudioPermissionGranted: boolean | null
 }
 
 const AudioPermissionDialog: React.FC<AudioPermissionDialogProps> = ({ isAudioPermissionGranted }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        if (!isAudioPermissionGranted) {
+        if (isAudioPermissionGranted === false) {
+            console.log('Audio permission not granted, showing alert');
             setIsOpen(true);
+        } else if (isAudioPermissionGranted === true) {
+            console.log('Audio permission granted, closing alert');
+            setIsOpen(false);
         }
     }, [isAudioPermissionGranted]);
 

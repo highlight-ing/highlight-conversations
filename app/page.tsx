@@ -109,13 +109,18 @@ const MainPage: React.FC = () => {
       setConversations(storedConversations)
       setIsInitialized(true)
 
-      setupSimpleAudioPermissionListener()
+      // Set up audio permission listener
+      const removeListener = addAudioPermissionListener((event: 'locked' | 'detect' | 'attach') => {
+        console.log('Audio permission update:', event);
+        const newPermissionState = event === 'attach';
+        setIsAudioPermissionEnabled(newPermissionState);
+        console.log('New audio permission state:', newPermissionState);
+      });
 
-      // Clean up function
-      return () => {
-        // If there's no way to remove the listener, you can leave this empty
-        // or add any other cleanup code you might need
-      };
+      // // Clean up function
+      // return () => {
+      //   removeListener();
+      // };
     }
 
     initializeApp()
@@ -196,24 +201,24 @@ const MainPage: React.FC = () => {
       ...newConversation,
       timestamp: new Date()
     };
-    console.log('Adding new conversation:', conversationWithCurrentTimestamp);
     setConversations((prevConversations) => {
       const updatedConversations = [conversationWithCurrentTimestamp, ...prevConversations];
-      console.log('Saving updated conversations:', updatedConversations);
       saveConversationsInAppStorage(updatedConversations);
       return updatedConversations;
     });
   }, []);
 
   const deleteConversation = useCallback((id: string) => {
-    console.log('Deleting conversation with id:', id);
     setConversations((prevConversations) => {
       const updatedConversations = prevConversations.filter((conv) => conv.id !== id)
-      console.log('Saving updated conversations after deletion:', updatedConversations);
       saveConversationsInAppStorage(updatedConversations)
       return updatedConversations
     })
   }, [])
+
+  useEffect(() => {
+    console.log('isAudioPermissionEnabled updated:', isAudioPermissionEnabled);
+  }, [isAudioPermissionEnabled]);
 
   if (!isInitialized) {
     return null;
