@@ -2,6 +2,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Lock1 } from "iconsax-react";
+import { setAudioSuperpowerEnabled } from "@/services/highlightService"
+import { error } from "console";
 
 interface AudioPermissionDialogProps {
     isAudioPermissionGranted: boolean | null
@@ -21,8 +23,11 @@ const AudioPermissionDialog: React.FC<AudioPermissionDialogProps> = ({ isAudioPe
     }, [isAudioPermissionGranted]);
 
     const handleEnableAudioTranscript = () => {
-        // Implement the logic to enable audio transcript here
-        console.log("Enable Audio Transcript Detection clicked");
+        try { 
+            setAudioSuperpowerEnabled(true)
+        } catch (error) {
+            console.log('Error handle Enable Audio Transcript: ', error)
+        }
     };
 
     return (
