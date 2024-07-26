@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Lock1 } from "iconsax-react";
 import { setAudioSuperpowerEnabled } from "@/services/highlightService"
-import { error } from "console";
 
 interface AudioPermissionDialogProps {
     isAudioPermissionGranted: boolean | null
