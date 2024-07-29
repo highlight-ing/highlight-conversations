@@ -105,15 +105,12 @@ const MainPage: React.FC = () => {
       const storedAutoClearValue = await getNumberFromAppStorage(AUTO_CLEAR_VALUE_KEY, AUTO_CLEAR_DAYS);
       const storedIdleTimerValue = await getNumberFromAppStorage(AUTO_SAVE_SEC_KEY, AUTO_SAVE_SEC);
       const hasSeenOnboarding = await getBooleanFromAppStorage(HAS_SEEN_ONBOARDING_KEY, false);
-      console.log('Loaded settings:', { autoClearValue: storedAutoClearValue, idleTimerValue: storedIdleTimerValue, hasSeenOnboarding: hasSeenOnboarding });
       setAutoClearValue(storedAutoClearValue);
       setIdleTimerValue(storedIdleTimerValue);
       setShowOnboarding(!hasSeenOnboarding);
 
       // Load conversations
-      console.log('Loading conversations from AppStorage...');
       const storedConversations = await getConversationsFromAppStorage()
-      console.log('Loaded conversations');
       setConversations(storedConversations)
       setIsInitialized(true)
 
@@ -149,11 +146,9 @@ const MainPage: React.FC = () => {
   // Save conversations to AppStorage whenever they change
   useEffect(() => {
     if (isInitialMount.current) {
-      console.log('Initial mount, skipping save');
       isInitialMount.current = false
       return
     }
-    console.log('Saving conversations to AppStorage:', conversations);
     saveConversationsInAppStorage(conversations)
   }, [conversations])
 
@@ -172,7 +167,6 @@ const MainPage: React.FC = () => {
   }, [conversations, autoClearValue])
 
   const handleAudioToggle = async (isOn: boolean) => {
-    await setAudioSuperpowerEnabled(isOn)
     setIsAudioEnabled(isOn)
     await saveBooleanInAppStorage(AUDIO_ENABLED_KEY, isOn)
   }

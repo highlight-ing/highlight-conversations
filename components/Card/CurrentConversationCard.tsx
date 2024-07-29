@@ -89,7 +89,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   }
 
   return (
-    <Card className={`w-full h-full border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
+    <Card className={`w-full h-[432px] border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
       <CardHeader className="flex flex-row items-baseline">
         <CardTitle>Current Conversation</CardTitle>
         <div className="flex space-x-1">
@@ -123,10 +123,10 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col flex-grow">
+      <CardContent className="flex-grow overflow-hidden p-0">
         {isAudioEnabled ? (
-          <>
-            <div className="space-y-2 mb-2">
+          <div className="flex flex-col h-full">
+            <div className="space-y-2 mb-2 px-6">
               {!transcript && <p className="text-sm font-medium">Listening ...</p>}
               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                 <p>Next transcript in {nextTranscriptIn}s</p>
@@ -135,45 +135,45 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
               {transcript && <Skeleton className={`h-4 w-full ${skeletonCorner}`} />}
             </div>
             <div className="relative flex-grow overflow-hidden">
-              {transcript && showTopGradient && (
-                <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-100 pointer-events-none"></div>
+              {showTopGradient && (
+                <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none"></div>
               )}
-              {transcript && showBottomGradient && (
-                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-100 pointer-events-none"></div>
+              {showBottomGradient && (
+                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none"></div>
               )}
-              <AnimatePresence mode="wait">
-                {!transcript ? (
-                  <motion.div
-                    key="listening"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="space-y-2 h-full flex flex-col justify-center"
-                  >
-                    <Skeleton className={`h-24 w-full ${skeletonCorner}`} />
-                    <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
-                    <Skeleton className={`h-4 w-[80%] ${skeletonCorner}`} />
-                    <Skeleton className={`h-4 w-[60%] ${skeletonCorner}`} />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key={`transcript-${transcriptKey}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="h-full overflow-y-auto scrollbar-hide"
-                    ref={scrollRef}
-                  >
-                    <p className="px-1">{transcript}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="h-full overflow-y-auto scrollbar-hide px-6" ref={scrollRef}>
+                <AnimatePresence mode="wait">
+                  {!transcript ? (
+                    <motion.div
+                      key="listening"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-2 h-full flex flex-col justify-center"
+                    >
+                      <Skeleton className={`h-24 w-full ${skeletonCorner}`} />
+                      <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
+                      <Skeleton className={`h-4 w-[80%] ${skeletonCorner}`} />
+                      <Skeleton className={`h-4 w-[60%] ${skeletonCorner}`} />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key={`transcript-${transcriptKey}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <p>{transcript}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          </>
+          </div>
         ) : (
-          <div className="flex items-center justify-center flex-grow">
+          <div className="flex items-center justify-center h-full px-6">
             <p className="text-center text-muted-foreground max-w-sm">
               Microphone input is disabled. Please enable it to receive transcripts of your conversations.
             </p>
