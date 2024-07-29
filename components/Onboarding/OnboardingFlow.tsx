@@ -1,31 +1,23 @@
 import React from 'react';
 import WelcomeScreen from './WelcomeScreen';
 import PermissionsScreen from './PermissionsScreen';
-import ExplanationScreen from './ExplanationScreen';
-import FinalScreen from './FinalScreen';
 
 type OnboardingFlowProps = {
-    onComplete: (dontShowAgain: boolean) => void;
+    onComplete: () => void;
 };
 
-const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
+const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = React.useState(0);
-  const [audioPermissionEnabled, setAudioPermissionEnabled] = React.useState(false);
 
   const steps = [
     <WelcomeScreen key="welcome" onNext={() => setCurrentStep(1)} />,
-    <PermissionsScreen 
+    <PermissionsScreen
       key="permissions"
       onPermissionGranted={() => {
-        setAudioPermissionEnabled(false);
-        setCurrentStep(2);
-      }} 
-    />,
-    <ExplanationScreen key="explanation" onNext={() => setCurrentStep(3)} />,
-    <FinalScreen key="final" onComplete={(dontShowAgain: boolean) => {
-      // Handle completion logic here
-      console.log('Onboarding completed, don\'t show again:', dontShowAgain);
-    }} />
+        console.log('onPermissionGranted callback')
+        onComplete();
+      }}
+    />
   ];
 
   return (
@@ -35,4 +27,4 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   );
 };
 
-export default OnboardingFlow
+export default OnboardingFlow;

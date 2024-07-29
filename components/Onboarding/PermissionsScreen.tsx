@@ -68,7 +68,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
             <Lock1 className="text-destructive mr-2" size="32" />
           )}
           <h2 className="text-3xl font-bold text-center">
-            {isPermissionEnabled ? "Audio Permissions Enabled" : "Grant Audio Permission"}
+            {isPermissionEnabled ? "Permissions Enabled" : "Grant Audio Permission"}
           </h2>
         </div>
         <p className="text-xl mt-4 mb-4 text-foreground-muted text-center font-regular leading-relaxed">

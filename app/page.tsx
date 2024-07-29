@@ -18,15 +18,17 @@ import {
   getBooleanFromAppStorage,
   saveConversationsInAppStorage,
   getConversationsFromAppStorage,
-  setupSimpleAudioPermissionListener,
   AUTO_CLEAR_VALUE_KEY,
   AUTO_SAVE_SEC_KEY,
   AUDIO_ENABLED_KEY,
 } from '@/services/highlightService'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
-import { usePageVisibility } from '@/hooks/usePageVisibility'
-import WelcomeDialog from '@/components/WelcomeDialog/WelcomeDialog'
-import { MIN_CHARACTER_COUNT, AUTO_SAVE_SEC, AUTO_CLEAR_DAYS } from '@/constants/appConstants'
+import { 
+  AUTO_SAVE_SEC, 
+  AUTO_CLEAR_DAYS,
+  ONBOARDING_HEADER,
+  ONBOARDING_SEARCH,
+} from '@/constants/appConstants'
 import AudioPermissionDialog from '@/components/Dialogue/AudioPermissionDialog'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -65,7 +67,6 @@ const MainPage: React.FC = () => {
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
   const [isAudioEnabled, setIsAudioEnabled] = useState<boolean>(true)
-  const [characterCount, setCharacterCount] = useState(MIN_CHARACTER_COUNT)
   const [idleTimerValue, setIdleTimerValue] = useState(AUTO_SAVE_SEC)
   const [isSleeping, setIsSleeping] = useState(false)
   const isInitialMount = useRef(true)
@@ -222,12 +223,18 @@ const MainPage: React.FC = () => {
     console.log('isAudioPermissionEnabled updated:', isAudioPermissionEnabled);
   }, [isAudioPermissionEnabled]);
 
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    setShowOnboardingTooltips(true);
+    console.log('showOnboardingTooltips: ', showOnboardingTooltips);
+  };
+
   if (!isInitialized) {
     return null;
   }
 
   if (showOnboarding) {
-    return <OnboardingFlow onComplete={() => setShowOnboarding(false)} />;
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
   }
 
   return (
@@ -235,18 +242,19 @@ const MainPage: React.FC = () => {
       {isAudioPermissionEnabled !== null && (
         <AudioPermissionDialog isAudioPermissionGranted={isAudioPermissionEnabled} />
       )}
-      <WelcomeDialog />
-      <Header
-        autoClearValue={autoClearValue}
-        autoSaveValue={idleTimerValue}
-        isAudioOn={isAudioEnabled ?? false}
-        onDeleteAllConversations={handleDeleteAllConversations}
-        onAutoClearValueChange={handleAutoClearValueChange}
-        onAudioSwitch={handleAudioToggle}
-        onAutoSaveChange={handleAutoSaveChange}
-      />
+      <div id={`${ONBOARDING_HEADER}`}>
+        <Header
+          autoClearValue={autoClearValue}
+          autoSaveValue={idleTimerValue}
+          isAudioOn={isAudioEnabled ?? false}
+          onDeleteAllConversations={handleDeleteAllConversations}
+          onAutoClearValueChange={handleAutoClearValueChange}
+          onAudioSwitch={handleAudioToggle}
+          onAutoSaveChange={handleAutoSaveChange}
+        />
+      </div>
       <main className="flex-grow p-4">
-        <div className="relative mb-4">
+        <div id={`${ONBOARDING_SEARCH}`} className="relative mb-4">
           <Input
             type="text"
             placeholder="Search conversations..."

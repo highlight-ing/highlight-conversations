@@ -3,6 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import ConversationCard from "./ConversationCard";
 import CurrentConversationCard from "./CurrentConversationCard";
 import { ConversationData } from "@/data/conversations";
+import { 
+  ONBOARDING_CURRENT_CARD,
+  ONBOARDING_SAVED_CARD
+} from "@/constants/appConstants"
 
 interface ConversationGridProps {
   currentConversation: string
@@ -27,13 +31,15 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
 }) => {
   return (
     <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      <CurrentConversationCard
-        transcript={currentConversation}
-        micActivity={micActivity}
-        isAudioEnabled={isAudioEnabled}
-        nextTranscriptIn={nextTranscriptIn}
-        onSave={onSave}
-      />
+      <div id={ONBOARDING_CURRENT_CARD}>
+        <CurrentConversationCard
+          transcript={currentConversation}
+          micActivity={micActivity}
+          isAudioEnabled={isAudioEnabled}
+          nextTranscriptIn={nextTranscriptIn}
+          onSave={onSave}
+        />
+      </div>
       <AnimatePresence>
         {conversations.map((conversation) => (
           <motion.div
@@ -43,11 +49,13 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.3 }}
           >
-            <ConversationCard 
-              conversation={conversation}
-              onUpdate={onUpdate}
-              onDelete={onDeleteConversation} 
-            />
+            <div id={ONBOARDING_SAVED_CARD}>
+              <ConversationCard 
+                conversation={conversation}
+                onUpdate={onUpdate}
+                onDelete={onDeleteConversation} 
+              />
+            </div>
           </motion.div>
         ))}
       </AnimatePresence>
