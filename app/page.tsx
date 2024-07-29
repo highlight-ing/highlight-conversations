@@ -28,6 +28,8 @@ import {
   AUTO_CLEAR_DAYS,
   ONBOARDING_HEADER,
   ONBOARDING_SEARCH,
+  ONBOARDING_CURRENT_CARD,
+  ONBOARDING_SAVED_CARD,
 } from '@/constants/appConstants'
 import AudioPermissionDialog from '@/components/Dialogue/AudioPermissionDialog'
 import { Input } from "@/components/ui/input"
@@ -35,6 +37,7 @@ import { Button } from "@/components/ui/button"
 import { CrossCircledIcon } from "@radix-ui/react-icons"
 import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
+import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
 
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
@@ -74,6 +77,7 @@ const MainPage: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [showOnboarding, setShowOnboarding] = useState(true)
+  const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conversation => {
@@ -226,7 +230,10 @@ const MainPage: React.FC = () => {
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
     setShowOnboardingTooltips(true);
-    console.log('showOnboardingTooltips: ', showOnboardingTooltips);
+  };
+
+  const handleTooltipsComplete = () => {
+    setShowOnboardingTooltips(false);
   };
 
   if (!isInitialized) {
@@ -289,6 +296,7 @@ const MainPage: React.FC = () => {
           />
         </AnimatePresence>
       </main>
+      {showOnboardingTooltips && <OnboardingTooltips onComplete={handleTooltipsComplete} />}
     </div>
   )
 }
