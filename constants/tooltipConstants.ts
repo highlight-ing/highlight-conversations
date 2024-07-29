@@ -7,8 +7,7 @@ export const TOOLTIP_CONTENT = {
 
   AUTO_CLEAR: 'Automatically clears your saved conversations after the specified duration.',
 
-  CHARACTER_COUNT:
-    'Sets the minimum number of characters \nin a Current Conversation transcript required to trigger an auto-save.',
+  CHARACTER_COUNT: 'Sets the minimum number of characters \nin a Current Conversation transcript required to trigger an auto-save.',
 
   AUTO_SAVE: `Defines the duration of no microphone activity before a Current Conversation transcript is automatically saved.
   `

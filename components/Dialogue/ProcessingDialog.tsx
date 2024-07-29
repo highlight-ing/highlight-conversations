@@ -8,7 +8,6 @@ const ProcessingDialog: React.FC<ProcessingDialogProps> = ({ isProcessing }) => 
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        console.log("isProcessing changed:", isProcessing); // Add this line
         setIsOpen(isProcessing);
       }, [isProcessing]);
 
