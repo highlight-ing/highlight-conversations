@@ -21,6 +21,7 @@ import {
   AUTO_CLEAR_VALUE_KEY,
   AUTO_SAVE_SEC_KEY,
   AUDIO_ENABLED_KEY,
+  HAS_SEEN_ONBOARDING_KEY,
 } from '@/services/highlightService'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
 import { 
@@ -28,8 +29,6 @@ import {
   AUTO_CLEAR_DAYS,
   ONBOARDING_HEADER,
   ONBOARDING_SEARCH,
-  ONBOARDING_CURRENT_CARD,
-  ONBOARDING_SAVED_CARD,
 } from '@/constants/appConstants'
 import AudioPermissionDialog from '@/components/Dialogue/AudioPermissionDialog'
 import { Input } from "@/components/ui/input"
@@ -76,7 +75,7 @@ const MainPage: React.FC = () => {
   const [isAudioPermissionEnabled, setIsAudioPermissionEnabled] = useState<boolean | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  const [showOnboarding, setShowOnboarding] = useState(true)
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
 
   const filteredConversations = useMemo(() => {
@@ -105,9 +104,11 @@ const MainPage: React.FC = () => {
       // Load values from AppStorage
       const storedAutoClearValue = await getNumberFromAppStorage(AUTO_CLEAR_VALUE_KEY, AUTO_CLEAR_DAYS);
       const storedIdleTimerValue = await getNumberFromAppStorage(AUTO_SAVE_SEC_KEY, AUTO_SAVE_SEC);
-      console.log('Loaded settings:', { autoClearValue: storedAutoClearValue, idleTimerValue: storedIdleTimerValue });
+      const hasSeenOnboarding = await getBooleanFromAppStorage(HAS_SEEN_ONBOARDING_KEY, false);
+      console.log('Loaded settings:', { autoClearValue: storedAutoClearValue, idleTimerValue: storedIdleTimerValue, hasSeenOnboarding: hasSeenOnboarding });
       setAutoClearValue(storedAutoClearValue);
       setIdleTimerValue(storedIdleTimerValue);
+      setShowOnboarding(!hasSeenOnboarding);
 
       // Load conversations
       console.log('Loading conversations from AppStorage...');
@@ -232,8 +233,9 @@ const MainPage: React.FC = () => {
     setShowOnboardingTooltips(true);
   };
 
-  const handleTooltipsComplete = () => {
+  const handleTooltipsComplete = async () => {
     setShowOnboardingTooltips(false);
+    await saveBooleanInAppStorage(HAS_SEEN_ONBOARDING_KEY, true);
   };
 
   if (!isInitialized) {

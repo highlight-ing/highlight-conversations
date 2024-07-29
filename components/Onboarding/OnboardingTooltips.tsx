@@ -18,14 +18,14 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
 
   const tooltips = useMemo(() => [
     { id: ONBOARDING_HEADER, content: 'Adjust settings like audio input, auto-save, and auto-clear here.' },
-    { id: ONBOARDING_SEARCH, content: 'Search through your transcripts to find specific conversations.' },
-    { id: ONBOARDING_CURRENT_CARD, content: 'This is the live feed of your transcriptions. The border animates to show audio input.' },
-    { id: ONBOARDING_SAVED_CARD, content: 'View, copy, or delete your saved conversations here.' },
+    { id: ONBOARDING_SEARCH, content: 'Search through your conversations to find specific conversations.' },
+    { id: ONBOARDING_CURRENT_CARD, content: 'This is the live feed of your transcriptions. The border animates to show audio input. Conversations will use both your microphone and system audio to generate transcriptions. You can manually save and copy the current conversation once there is text available.' },
+    { id: ONBOARDING_SAVED_CARD, content: 'View, copy, delete, or prompt with Highlight your saved conversations here.' },
   ], []);
 
   const addHighlight = useCallback((element: HTMLElement) => {
     if (element.id === ONBOARDING_CURRENT_CARD) {
-      element.classList.add('ring-4', 'ring-brand', 'ring-opacity-50');
+      element.classList.add('shadow-[0_0_0_4px_rgba(var(--brand-rgb),0.5)]');
     } else {
       element.classList.add('border-4', 'border-brand');
     }
@@ -36,7 +36,8 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
     const previousElement = document.getElementById(`${tooltips[currentTooltip].id}`);
     if (previousElement) {
       previousElement.classList.remove(
-        'border-4', 'border-brand', 'ring-4', 'ring-brand', 'ring-opacity-50',
+        'border-4', 'border-brand', 
+        'shadow-[0_0_0_4px_rgba(var(--brand-rgb),0.5)]',
         'rounded-lg', 'transition-all', 'duration-300'
       );
     }
