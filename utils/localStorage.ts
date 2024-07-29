@@ -27,7 +27,6 @@ export const saveConversations = (conversations: ConversationData[]): void => {
 export const loadConversations = (): ConversationData[] => {
   const storedConversations = localStorage.getItem(CONVERSATIONS_STORAGE_KEY)
   if (!storedConversations) {
-    console.log('No stored conversations found')
     return []
   }
 
