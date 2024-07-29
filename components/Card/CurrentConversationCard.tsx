@@ -165,7 +165,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <p>{transcript}</p>
+                      <p className="select-text">{transcript}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
