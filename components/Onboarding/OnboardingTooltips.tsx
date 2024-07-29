@@ -1,5 +1,5 @@
 // components/Onboarding/OnboardingTooltips.tsx
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -23,25 +23,16 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
     { id: ONBOARDING_SAVED_CARD, content: 'View, copy, or delete your saved conversations here.' },
   ], []);
 
-  const handleNextTooltip = () => {
-    removeHighlight();
-    if (currentTooltip < tooltips.length - 1) {
-      setCurrentTooltip(currentTooltip + 1);
-    } else {
-      onComplete();
-    }
-  };
-
-  const addHighlight = (element: HTMLElement) => {
+  const addHighlight = useCallback((element: HTMLElement) => {
     if (element.id === ONBOARDING_CURRENT_CARD) {
       element.classList.add('ring-4', 'ring-brand', 'ring-opacity-50');
     } else {
       element.classList.add('border-4', 'border-brand');
     }
     element.classList.add('rounded-lg', 'transition-all', 'duration-300');
-  };
+  }, []);
 
-  const removeHighlight = () => {
+  const removeHighlight = useCallback(() => {
     const previousElement = document.getElementById(`${tooltips[currentTooltip].id}`);
     if (previousElement) {
       previousElement.classList.remove(
@@ -49,7 +40,16 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
         'rounded-lg', 'transition-all', 'duration-300'
       );
     }
-  };
+  }, [currentTooltip, tooltips]);
+
+  const handleNextTooltip = useCallback(() => {
+    removeHighlight();
+    if (currentTooltip < tooltips.length - 1) {
+      setCurrentTooltip(currentTooltip + 1);
+    } else {
+      onComplete();
+    }
+  }, [currentTooltip, tooltips, removeHighlight, onComplete]);
 
   useEffect(() => {
     const targetElement = document.getElementById(`${tooltips[currentTooltip].id}`);
@@ -59,7 +59,7 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
     }
 
     return () => removeHighlight();
-  }, [currentTooltip, tooltips]);
+  }, [currentTooltip, tooltips, removeHighlight, addHighlight]);
 
   const currentTooltipData = tooltips[currentTooltip];
   const targetElement = document.getElementById(`${currentTooltipData.id}`);
