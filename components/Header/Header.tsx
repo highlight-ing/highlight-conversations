@@ -30,9 +30,9 @@ const Header: React.FC<HeaderProps> = ({
         <AudioSwitch isAudioOn={isAudioOn} onSwitch={onAudioSwitch} />
         <div className="flex-1 flex items-center justify-center space-x-4">
           <AutoSaveSelection value={autoSaveValue} onIdleTimerChange={onAutoSaveChange} />
-          <DeleteAllButton onDeleteAllConversations={onDeleteAllConversations} />
+          <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
         </div>
-        <AutoClearSelection value={autoClearValue} onChange={onAutoClearValueChange} />
+        <DeleteAllButton onDeleteAllConversations={onDeleteAllConversations} />
       </div>
     </div>
   )

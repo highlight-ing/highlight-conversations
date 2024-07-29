@@ -111,7 +111,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     } finally {
       setNextTranscriptIn(POLL_TRANSCRIPT_INTERVAL / 1000) // Reset countdown
     }
-  }, [isSleeping])
+  }, [isSleeping, isAudioEnabled])
 
   // Effect for polling mic activity
   useEffect(() => {
