@@ -77,7 +77,7 @@ const MainPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
-  const [debugOnboarding, setDebugOnboarding] = useState(true);
+  const [debugOnboarding, setDebugOnboarding] = useState(false);
   const [tooltipsReady, setTooltipsReady] = useState(false);
 
   const filteredConversations = useMemo(() => {
@@ -305,7 +305,6 @@ const MainPage: React.FC = () => {
         </AnimatePresence>
       </main>
       {showOnboardingTooltips && tooltipsReady && <OnboardingTooltips onComplete={handleTooltipsComplete} />}
-      <Button onClick={() => setDebugOnboarding(true)}>Debug Onboarding</Button>
     </div>
   )
 }
