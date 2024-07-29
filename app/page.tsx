@@ -77,6 +77,8 @@ const MainPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
+  const [debugOnboarding, setDebugOnboarding] = useState(true);
+  const [tooltipsReady, setTooltipsReady] = useState(false);
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conversation => {
@@ -107,7 +109,7 @@ const MainPage: React.FC = () => {
       const hasSeenOnboarding = await getBooleanFromAppStorage(HAS_SEEN_ONBOARDING_KEY, false);
       setAutoClearValue(storedAutoClearValue);
       setIdleTimerValue(storedIdleTimerValue);
-      setShowOnboarding(!hasSeenOnboarding);
+      setShowOnboarding(!hasSeenOnboarding || debugOnboarding);
 
       // Load conversations
       const storedConversations = await getConversationsFromAppStorage()
@@ -129,7 +131,7 @@ const MainPage: React.FC = () => {
     }
 
     initializeApp()
-  }, [])
+  }, [debugOnboarding])
 
   const initializeAudioSuperPower = async () => {
     const audioPermission = await getAudioSuperPowerEnabled();
@@ -232,6 +234,16 @@ const MainPage: React.FC = () => {
     await saveBooleanInAppStorage(HAS_SEEN_ONBOARDING_KEY, true);
   };
 
+  useEffect(() => {
+    if (showOnboardingTooltips) {
+      // Delay tooltip rendering slightly to ensure DOM is ready
+      const timer = setTimeout(() => {
+        setTooltipsReady(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showOnboardingTooltips]);
+
   if (!isInitialized) {
     return null;
   }
@@ -292,7 +304,8 @@ const MainPage: React.FC = () => {
           />
         </AnimatePresence>
       </main>
-      {showOnboardingTooltips && <OnboardingTooltips onComplete={handleTooltipsComplete} />}
+      {showOnboardingTooltips && tooltipsReady && <OnboardingTooltips onComplete={handleTooltipsComplete} />}
+      <Button onClick={() => setDebugOnboarding(true)}>Debug Onboarding</Button>
     </div>
   )
 }
