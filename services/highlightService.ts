@@ -40,6 +40,10 @@ export const fetchTranscript = async (): Promise<string | null> => {
   return await Highlight.user.getAudio(false)
 }
 
+export const fetchTranscriptForDuration = async (seconds: number): Promise<string | null> => {
+  return await Highlight.user.getAudioForDuration(seconds)
+}
+
 export const fetchLongTranscript = async (): Promise<string | null> => {
   return await Highlight.user.getAudio(true)
 }

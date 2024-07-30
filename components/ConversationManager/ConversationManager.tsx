@@ -1,11 +1,11 @@
 'use client'
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { fetchTranscript, fetchMicActivity } from '../../services/highlightService'
+import { fetchTranscriptForDuration, fetchMicActivity } from '../../services/highlightService'
 import { ConversationData, createConversation } from '../../data/conversations'
 import ConversationGrid from '../Card/ConversationGrid'
 
 const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
-const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
+const POLL_TRANSCRIPT_INTERVAL = 30000 // Poll every 30 seconds
 interface ConversationsManagerProps {
   idleThreshold: number
   conversations: ConversationData[]
@@ -101,10 +101,19 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       return;
     }
     try {
-      const transcript = await fetchTranscript()
+      const transcript = await fetchTranscriptForDuration(30) // Get transcript for last 30 seconds
       if (transcript) {
-        setCurrentConversationParts(prevParts => [transcript.trim(), ...prevParts])
+        console.log('Received transcript:', transcript) // Log the received transcript
+        setCurrentConversationParts(prevParts => {
+          // Only add the transcript if it's not empty and different from the most recent one
+          if (transcript.trim() && (prevParts.length === 0 || transcript.trim() !== prevParts[0])) {
+            return [transcript.trim(), ...prevParts]
+          }
+          return prevParts
+        })
         lastActivityTimeRef.current = Date.now() // Reset idle time
+      } else {
+        console.log('No new transcript received') // Log when no transcript is received
       }
     } catch (error) {
       console.error('Error fetching transcript:', error)
