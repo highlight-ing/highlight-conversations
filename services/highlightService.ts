@@ -365,7 +365,6 @@ export const saveConversationsInAppStorage = async (conversations: ConversationD
       timestamp: conv.timestamp.toISOString()
     }))
     appStorage.set(CONVERSATIONS_STORAGE_KEY, serializedConversations)
-    console.log('Saving conversations to AppStorage:', serializedConversations)
   } else {
     console.error('AppStorage not available. Unable to save conversations.')
   }

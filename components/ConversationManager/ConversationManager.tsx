@@ -5,7 +5,10 @@ import { ConversationData, createConversation } from '../../data/conversations'
 import ConversationGrid from '../Card/ConversationGrid'
 
 const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
-const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
+// const POLL_TRANSCRIPT_INTERVAL = 15000 // Poll every 29 seconds
+const INITIAL_POLL_INTERVAL = 5000
+const MAX_POLL_INTERVAL = 20000
+
 interface ConversationsManagerProps {
   idleThreshold: number
   conversations: ConversationData[]
@@ -26,14 +29,18 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   onMicActivityChange,
   onDeleteConversation,
   onUpdateConversation
-
 }) => {
   const [currentConversationParts, setCurrentConversationParts] = useState<string[]>([])
   const [micActivity, setMicActivity] = useState(0)
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const [nextTranscriptIn, setNextTranscriptIn] = useState(POLL_TRANSCRIPT_INTERVAL / 1000)
+  const [nextTranscriptIn, setNextTranscriptIn] = useState(INITIAL_POLL_INTERVAL / 1000)
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const lastActivityTimeRef = useRef(Date.now())
+  const lastTranscriptTimeRef = useRef<number>(Date.now())
+  const [pollInterval, setPollInterval] = useState(INITIAL_POLL_INTERVAL) // Start with a short interval
+  const initialPollIntervalRef = useRef(INITIAL_POLL_INTERVAL)
+  const maxPollIntervalRef = useRef(MAX_POLL_INTERVAL)
+  const isPollingRef = useRef(false)
 
   // Function to get the current conversation as a string
   const getCurrentConversationString = useCallback((reversed: boolean = true) => {
@@ -95,33 +102,39 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
   // Poll Highlight api for transcripts
   const pollTranscription = useCallback(async () => {
-    if (isSleeping) return;
-    if (!isAudioEnabled) {
-      setCurrentConversationParts([])
+    if (isSleeping || !isAudioEnabled || isPollingRef.current) {
       return;
     }
+
+    isPollingRef.current = true;
+    const currentTime = Date.now();
+    const timeSinceLastTranscript = (currentTime - lastTranscriptTimeRef.current) / 1000;
+    
     try {
       const transcript = await fetchTranscript()
-      // const transcript = await fetchTranscriptForDuration(30) // Get transcript for last 30 seconds
       if (transcript) {
-        console.log('Received transcript:', transcript) // Log the received transcript
+        console.log(`[${new Date().toISOString()}] Received transcript after ${timeSinceLastTranscript.toFixed(2)} seconds:`, transcript)
         setCurrentConversationParts(prevParts => {
-          // Only add the transcript if it's not empty and different from the most recent one
           if (transcript.trim() && (prevParts.length === 0 || transcript.trim() !== prevParts[0])) {
+            setPollInterval(prev => Math.min(prev * 1.5, maxPollIntervalRef.current))
             return [transcript.trim(), ...prevParts]
           }
           return prevParts
         })
-        lastActivityTimeRef.current = Date.now() // Reset idle time
+        lastActivityTimeRef.current = currentTime
+        lastTranscriptTimeRef.current = currentTime
       } else {
-        console.log('No new transcript received') // Log when no transcript is received
+        console.log(`[${new Date().toISOString()}] No new transcript received. Time since last transcript: ${timeSinceLastTranscript.toFixed(2)} seconds`)
+        setPollInterval(prev => Math.max(prev / 1.2, initialPollIntervalRef.current))
       }
     } catch (error) {
-      console.error('Error fetching transcript:', error)
+      console.error(`[${new Date().toISOString()}] Error fetching transcript after ${timeSinceLastTranscript.toFixed(2)} seconds:`, error)
+      setPollInterval(prev => Math.max(prev / 1.1, initialPollIntervalRef.current))
     } finally {
-      setNextTranscriptIn(POLL_TRANSCRIPT_INTERVAL / 1000) // Reset countdown
+      isPollingRef.current = false;
+      setNextTranscriptIn(pollInterval / 1000)
     }
-  }, [isSleeping, isAudioEnabled])
+  }, [isSleeping, isAudioEnabled, pollInterval])
 
   // Effect for polling mic activity
   useEffect(() => {
@@ -131,25 +144,26 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
   // Effect for polling transcription
   useEffect(() => {
-    const pollTranscriptionWithTimeout = () => {
-      pollTranscription()
-      pollTimeoutRef.current = setTimeout(pollTranscriptionWithTimeout, POLL_TRANSCRIPT_INTERVAL)
-    }
+    let timeoutId: NodeJS.Timeout;
 
-    pollTranscriptionWithTimeout() // Initial poll
+    const schedulePoll = () => {
+      timeoutId = setTimeout(() => {
+        pollTranscription().then(schedulePoll);
+      }, pollInterval);
+    };
+
+    schedulePoll();
 
     return () => {
-      if (pollTimeoutRef.current) {
-        clearTimeout(pollTimeoutRef.current)
-      }
-    }
-  }, [pollTranscription])
+      clearTimeout(timeoutId);
+    };
+  }, [pollTranscription, pollInterval]);
 
     // Countdown effect
     useEffect(() => {
       const updateCountdown = () => {
         setNextTranscriptIn((prev) => {
-          if (prev <= 0) return POLL_TRANSCRIPT_INTERVAL / 1000
+          if (prev <= 0) return INITIAL_POLL_INTERVAL / 1000
           return prev - 1
         })
       }
