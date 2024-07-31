@@ -16,13 +16,23 @@ import { sendAttachmentAndOpen } from '@/services/highlightService'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 
+const highlightText = (text: string, query: string) => {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${query})`, 'gi'));
+  return parts.map((part, i) => 
+    part.toLowerCase() === query.toLowerCase() ? 
+      <span key={i} className="bg-brand/80 text-background">{part}</span> : part
+  );
+};
+
 interface ConversationCardProps {
   conversation: ConversationData
   onDelete: (id: string) => void
   onUpdate: (updatedConversation: ConversationData) => void
+  searchQuery: string
 }
 
-const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete }) => {
+const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete, searchQuery }) => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [isViewTranscriptOpen, setIsViewTranscriptOpen] = useState(false)
 
@@ -54,9 +64,9 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         <ConversationCardHeader conversation={conversation} onDelete={onDelete} />
         <CardContent className="flex flex-grow flex-col px-4 pb-4 pt-0">
           {conversation.summarized ? (
-            <SummarizedContent conversation={conversation} onViewTranscript={handleOnViewTranscript} />
+            <SummarizedContent conversation={conversation} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
           ) : (
-            <UnsummarizedContent transcript={conversation.transcript} onViewTranscript={handleOnViewTranscript} />
+            <UnsummarizedContent transcript={conversation.transcript} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
           )}
         </CardContent>
         <CardFooter className="px-4 pb-4 pt-0">
@@ -148,9 +158,10 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
 interface UnsummarizedContentProps {
   transcript: string;
   onViewTranscript: () => void;
+  searchQuery: string;
 }
 
-const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, onViewTranscript }) => {
+const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, onViewTranscript, searchQuery }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)
 
@@ -171,7 +182,7 @@ const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, o
           className="scrollbar-hide h-full overflow-y-auto p-4"
         >
           <p className="select-text pb-0 text-[15px] text-foreground/80 leading-relaxed whitespace-pre-wrap">
-            {formatTranscript(transcript, "CardTranscript")}
+            {highlightText(formatTranscript(transcript, "CardTranscript"), searchQuery)}
           </p>
         </div>
       </div>
@@ -183,9 +194,10 @@ const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, o
 interface SummarizedContentProps {
   conversation: ConversationData;
   onViewTranscript: () => void;
+  searchQuery: string;
 }
 
-const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onViewTranscript }) => {
+const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onViewTranscript, searchQuery }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
 
@@ -210,7 +222,7 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
         >
           <h3 className="text-sm font-semibold text-white/60 mb-1">Summary:</h3>
           <p className="select-text text-[15px] leading-normal text-white">
-            {conversation.summary}
+            {highlightText(conversation.summary, searchQuery)}
           </p>
         </div>
       </div>

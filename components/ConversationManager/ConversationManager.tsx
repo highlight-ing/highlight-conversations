@@ -18,6 +18,7 @@ interface ConversationsManagerProps {
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
   onUpdateConversation: (updatedConversation: ConversationData) => void
+  searchQuery: string;
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
@@ -28,7 +29,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
-  onUpdateConversation
+  onUpdateConversation,
+  searchQuery
 }) => {
   const [currentConversationParts, setCurrentConversationParts] = useState<string[]>([])
   const [micActivity, setMicActivity] = useState(0)
@@ -188,6 +190,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
       onUpdate={onUpdateConversation}
+      searchQuery={searchQuery} // Pass searchQuery to ConversationGrid
     />
   )
 }

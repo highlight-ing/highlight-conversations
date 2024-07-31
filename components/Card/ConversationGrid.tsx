@@ -17,6 +17,7 @@ interface ConversationGridProps {
   onDeleteConversation: (id: string) => void
   onSave: () => void
   onUpdate: (updatedConversation: ConversationData) => void
+  searchQuery: string
 }
 
 const ConversationGrid: React.FC<ConversationGridProps> = ({
@@ -28,6 +29,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   onDeleteConversation,
   onSave,
   onUpdate,
+  searchQuery,
 }) => {
   return (
     <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
@@ -38,6 +40,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
           isAudioEnabled={isAudioEnabled}
           nextTranscriptIn={nextTranscriptIn}
           onSave={onSave}
+          searchQuery={searchQuery}
         />
       </div>
       <AnimatePresence>
@@ -53,7 +56,8 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
               <ConversationCard 
                 conversation={conversation}
                 onUpdate={onUpdate}
-                onDelete={onDeleteConversation} 
+                onDelete={onDeleteConversation}
+                searchQuery={searchQuery}
               />
             </div>
           </motion.div>

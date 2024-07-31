@@ -298,6 +298,7 @@ const MainPage: React.FC = () => {
             idleThreshold={idleTimerValue}
             isAudioEnabled={isAudioEnabled}
             isSleeping={isSleeping}
+            searchQuery={searchQuery}
             onMicActivityChange={handleMicActivityChange}
             addConversation={addConversation}
             onDeleteConversation={deleteConversation}

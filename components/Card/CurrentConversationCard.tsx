@@ -10,12 +10,22 @@ import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip
 import { Button } from "@/components/ui/button"
 import { formatTranscript } from '@/data/conversations'
 
+const highlightText = (text: string, query: string) => {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${query})`, 'gi'));
+  return parts.map((part, i) => 
+    part.toLowerCase() === query.toLowerCase() ? 
+      <span key={i} className="bg-yellow-200 text-black">{part}</span> : part
+  );
+};
+
 interface CurrentConversationCardProps {
   transcript: string;
   micActivity: number;
   isAudioEnabled: boolean;
   nextTranscriptIn: number;
   onSave: () => void
+  searchQuery: string;
 }
 
 const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
@@ -24,6 +34,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   isAudioEnabled,
   nextTranscriptIn,
   onSave,
+  searchQuery,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)
@@ -150,7 +161,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <p className="select-text pb-0 text-[15px] text-foreground leading-relaxed whitespace-pre-wrap">{formatTranscript(transcript, 'CardTranscript')}</p>
+                      <p className="select-text pb-0 text-[15px] text-foreground leading-relaxed whitespace-pre-wrap">{highlightText(formatTranscript(transcript, 'CardTranscript'), searchQuery)}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
