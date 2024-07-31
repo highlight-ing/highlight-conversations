@@ -1,11 +1,11 @@
 'use client'
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { fetchTranscriptForDuration, fetchMicActivity } from '../../services/highlightService'
+import { fetchTranscript, fetchTranscriptForDuration, fetchMicActivity } from '../../services/highlightService'
 import { ConversationData, createConversation } from '../../data/conversations'
 import ConversationGrid from '../Card/ConversationGrid'
 
 const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
-const POLL_TRANSCRIPT_INTERVAL = 30000 // Poll every 30 seconds
+const POLL_TRANSCRIPT_INTERVAL = 29000 // Poll every 29 seconds
 interface ConversationsManagerProps {
   idleThreshold: number
   conversations: ConversationData[]
@@ -101,7 +101,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       return;
     }
     try {
-      const transcript = await fetchTranscriptForDuration(30) // Get transcript for last 30 seconds
+      const transcript = await fetchTranscript()
+      // const transcript = await fetchTranscriptForDuration(30) // Get transcript for last 30 seconds
       if (transcript) {
         console.log('Received transcript:', transcript) // Log the received transcript
         setCurrentConversationParts(prevParts => {

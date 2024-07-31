@@ -30,7 +30,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   onUpdate,
 }) => {
   return (
-    <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
       <div id={ONBOARDING_CURRENT_CARD}>
         <CurrentConversationCard
           transcript={currentConversation}
