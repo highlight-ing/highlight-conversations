@@ -13,11 +13,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface DeleteConversationButtonProps {
+interface DeleteConversationDialogProps {
   onDelete: () => void;
 }
 
-const DeleteConversationButton: React.FC<DeleteConversationButtonProps> = ({ onDelete }) => {
+const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({ onDelete }) => {
   const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
@@ -67,4 +67,4 @@ const DeleteConversationButton: React.FC<DeleteConversationButtonProps> = ({ onD
   );
 };
 
-export default DeleteConversationButton;
+export default DeleteConversationDialog;

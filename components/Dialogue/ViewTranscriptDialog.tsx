@@ -8,6 +8,7 @@ import useScrollGradient from '@/hooks/useScrollGradient';
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
 import { ConversationData, formatTranscript } from '@/data/conversations';
 import { Tooltip, TooltipState, TooltipType } from '@/components/Tooltip/Tooltip'
+import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
 
 export const ViewTranscriptDialog: React.FC<{
     isOpen: boolean;
@@ -18,7 +19,6 @@ export const ViewTranscriptDialog: React.FC<{
   }> = ({ isOpen, onClose, conversation, onDelete, onSummarize }) => {
     const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp));
     const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
-    const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle');
   
     useEffect(() => {
       const timer = setInterval(() => {
@@ -47,11 +47,6 @@ export const ViewTranscriptDialog: React.FC<{
 
     const handleDeleteTranscript = () => {
       onDelete(conversation.id);
-      setDeleteTooltipState('success');
-      setTimeout(() => setDeleteTooltipState('hiding'), 1500);
-      setTimeout(() => setDeleteTooltipState('idle'), 1700);
-      
-      // Add a slight delay before closing the dialog to allow the delete animation to play
       setTimeout(() => {
         onClose();
       }, 300);
@@ -63,11 +58,9 @@ export const ViewTranscriptDialog: React.FC<{
           conversation={conversation}
           relativeTime={relativeTime}
           copyState={copyTooltipState}
-          deleteState={deleteTooltipState}
           setCopyTooltipState={setCopyTooltipState}
-          setDeleteTooltipState={setDeleteTooltipState}
           onClose={onClose}
-          onDelete={handleDeleteTranscript}
+          onDelete={() => onDelete(conversation.id)}
           onCopy={handleCopyTranscript}
         />
       );
@@ -77,12 +70,10 @@ export const ViewTranscriptDialog: React.FC<{
           conversation={conversation}
           relativeTime={relativeTime}
           copyState={copyTooltipState}
-          deleteState={deleteTooltipState}
           setCopyTooltipState={setCopyTooltipState}
-          setDeleteTooltipState={setDeleteTooltipState}
           isOpen={isOpen}
           onClose={onClose}
-          onDelete={handleDeleteTranscript}
+          onDelete={() => onDelete(conversation.id)}
           onSummarize={onSummarize}
           onCopy={handleCopyTranscript}
         />
@@ -96,11 +87,9 @@ export const ViewTranscriptDialog: React.FC<{
     conversation: ConversationData
     relativeTime: string
     copyState: TooltipState
-    deleteState: TooltipState
     setCopyTooltipState: (state: TooltipState) => void
-    setDeleteTooltipState: (state: TooltipState) => void
     onClose: () => void
-    onDelete: (id: string) => void
+    onDelete: () => void
     onSummarize: () => void
     onCopy: () => void
   }
@@ -110,9 +99,7 @@ export const ViewTranscriptDialog: React.FC<{
     conversation,
     relativeTime,
     copyState,
-    deleteState,
     setCopyTooltipState,
-    setDeleteTooltipState,
     onClose,
     onDelete,
     onSummarize,
@@ -135,7 +122,7 @@ export const ViewTranscriptDialog: React.FC<{
             </div>
             <div className="flex items-center space-x-4 mr-12">
               <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
-              <DeleteButton onClick={() => onDelete(conversation.id)} deleteState={deleteState} setDeleteTooltipState={setDeleteTooltipState} />
+              <DeleteButton onDelete={onDelete} />
               <div className="h-10 w-px bg-white/10" /> {/* Vertical divider */}
               <Button onClick={onSummarize} variant="outline" className="flex items-center">
                 <LightningBoltIcon className="mr-2 h-4 w-4" />
@@ -169,10 +156,8 @@ export const ViewTranscriptDialog: React.FC<{
     relativeTime: string
     copyState: TooltipState
     setCopyTooltipState: (state: TooltipState) => void
-    deleteState: TooltipState
-    setDeleteTooltipState: (state: TooltipState) => void
     onClose: () => void
-    onDelete: (id: string) => void
+    onDelete: () => void
     onCopy: () => void
   }
   
@@ -182,8 +167,6 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
   relativeTime,
   copyState,
   setCopyTooltipState,
-  deleteState,
-  setDeleteTooltipState,
   onClose,
   onDelete,
   onCopy
@@ -208,7 +191,7 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
           </div>
           <div className="flex items-center space-x-4 mr-12">
             <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
-            <DeleteButton onClick={() => onDelete(conversation.id)} deleteState={deleteState} setDeleteTooltipState={setDeleteTooltipState} />
+            <DeleteButton onDelete={onDelete} />
           </div>
         </DialogHeader>
         <div className="h-px bg-white/10 my-2 w-full flex-shrink-0" />
@@ -261,21 +244,9 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ onClick, copyState, setC
 );
 
 interface DeleteButtonProps {
-  onClick: () => void;
-  deleteState: TooltipState
-  setDeleteTooltipState: (state: TooltipState) => void
+  onDelete: () => void;
 }
 
-export const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick, deleteState, setDeleteTooltipState }) => (
-  <div className='relative'>
-  <button
-    onClick={onClick}
-    onMouseEnter={() => setDeleteTooltipState('active')}
-    onMouseLeave={() => setDeleteTooltipState('idle')}
-    className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
-  >
-    <TrashIcon width={24} height={24} />
-    <Tooltip type='delete' state={deleteState} />
-  </button>
-  </div>
+export const DeleteButton: React.FC<DeleteButtonProps> = ({ onDelete }) => (
+  <DeleteConversationDialog onDelete={onDelete} />
 );

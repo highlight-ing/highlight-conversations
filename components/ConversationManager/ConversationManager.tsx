@@ -18,6 +18,7 @@ interface ConversationsManagerProps {
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
   onUpdateConversation: (updatedConversation: ConversationData) => void
+  searchQuery: string;
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
@@ -28,12 +29,13 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
-  onUpdateConversation
+  onUpdateConversation,
+  searchQuery
 }) => {
   const [currentConversationParts, setCurrentConversationParts] = useState<string[]>([])
   const [micActivity, setMicActivity] = useState(0)
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const [nextTranscriptIn, setNextTranscriptIn] = useState(INITIAL_POLL_INTERVAL / 1000)
+  const [nextTranscriptIn, setNextTranscriptIn] = useState(Math.round(INITIAL_POLL_INTERVAL / 1000))
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const lastActivityTimeRef = useRef(Date.now())
   const lastTranscriptTimeRef = useRef<number>(Date.now())
@@ -132,7 +134,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       setPollInterval(prev => Math.max(prev / 1.1, initialPollIntervalRef.current))
     } finally {
       isPollingRef.current = false;
-      setNextTranscriptIn(pollInterval / 1000)
+      // Round the pollInterval to the nearest second (1000ms)
+      setNextTranscriptIn(Math.round(pollInterval / 1000));
     }
   }, [isSleeping, isAudioEnabled, pollInterval])
 
@@ -187,6 +190,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
       onUpdate={onUpdateConversation}
+      searchQuery={searchQuery} // Pass searchQuery to ConversationGrid
     />
   )
 }

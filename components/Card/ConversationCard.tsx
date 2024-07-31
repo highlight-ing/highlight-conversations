@@ -13,16 +13,26 @@ import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog
 import { Tooltip, TooltipState } from "@/components/Tooltip/Tooltip"
 import HighlightIcon from '@/components/ui/icons/HighlightIcon'
 import { sendAttachmentAndOpen } from '@/services/highlightService'
-import { EyeOpenIcon } from "@radix-ui/react-icons";
-import DeleteConversationButton from '@/components/Card/DeleteConversationButton';
+import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
+import { ChevronRightIcon } from "@radix-ui/react-icons";
+
+const highlightText = (text: string, query: string) => {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${query})`, 'gi'));
+  return parts.map((part, i) => 
+    part.toLowerCase() === query.toLowerCase() ? 
+      <span key={i} className="bg-brand/80 text-background">{part}</span> : part
+  );
+};
 
 interface ConversationCardProps {
   conversation: ConversationData
   onDelete: (id: string) => void
   onUpdate: (updatedConversation: ConversationData) => void
+  searchQuery: string
 }
 
-const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete }) => {
+const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete, searchQuery }) => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [isViewTranscriptOpen, setIsViewTranscriptOpen] = useState(false)
 
@@ -54,9 +64,9 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         <ConversationCardHeader conversation={conversation} onDelete={onDelete} />
         <CardContent className="flex flex-grow flex-col px-4 pb-4 pt-0">
           {conversation.summarized ? (
-            <SummarizedContent conversation={conversation} onViewTranscript={handleOnViewTranscript} />
+            <SummarizedContent conversation={conversation} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
           ) : (
-            <UnsummarizedContent transcript={conversation.transcript} onViewTranscript={handleOnViewTranscript} />
+            <UnsummarizedContent transcript={conversation.transcript} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
           )}
         </CardContent>
         <CardFooter className="px-4 pb-4 pt-0">
@@ -138,7 +148,7 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
               <Tooltip type="copy" state={copyTooltipState} />
             </button>
           </div>
-          <DeleteConversationButton onDelete={() => onDelete(conversation.id)} />
+          <DeleteConversationDialog onDelete={() => onDelete(conversation.id)} />
         </div>
       </div>
     </div>
@@ -148,28 +158,35 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
 interface UnsummarizedContentProps {
   transcript: string;
   onViewTranscript: () => void;
+  searchQuery: string;
 }
 
-const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, onViewTranscript }) => {
+const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, onViewTranscript, searchQuery }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)
 
   return (
-    <div className="relative space-y-4">
-      <div className="relative h-[275px]">
+    <div 
+      className="relative space-y-4 cursor-pointer group"
+      onClick={onViewTranscript}
+    >
+      <div className="relative h-[275px] bg-background-100 rounded-lg transition-all duration-200 group-hover:bg-background-200/50">
         {showTopGradient && (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background-100 to-transparent" />
         )}
         {showBottomGradient && (
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-100 h-24 bg-gradient-to-t from-background-100 to-transparent" />
         )}
-        <div ref={scrollRef} className="scrollbar-hide h-full overflow-y-auto p-0">
+        <div 
+          ref={scrollRef} 
+          className="scrollbar-hide h-full overflow-y-auto p-4"
+        >
           <p className="select-text pb-0 text-[15px] text-foreground/80 leading-relaxed whitespace-pre-wrap">
-            {formatTranscript(transcript, "CardTranscript")}
+            {highlightText(formatTranscript(transcript, "CardTranscript"), searchQuery)}
           </p>
         </div>
       </div>
-      <ViewTranscriptButton onViewTranscript={onViewTranscript} />
+      <ViewIndicator />
     </div>
   )
 }
@@ -177,49 +194,50 @@ const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, o
 interface SummarizedContentProps {
   conversation: ConversationData;
   onViewTranscript: () => void;
+  searchQuery: string;
 }
 
-const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onViewTranscript }) => {
+const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onViewTranscript, searchQuery }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
 
   return (
-    <div className="relative space-y-4">
+    <div 
+      className="relative space-y-4 cursor-pointer group"
+      onClick={onViewTranscript}
+    >
       <Badge className="mb-2">
         Summarized
       </Badge>
-      <div className="relative h-[225px]">
+      <div className="relative h-[225px] bg-background-100 rounded-lg transition-all duration-200 group-hover:bg-background-200/50">
         {showTopGradient && (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background-100 to-transparent" />
         )}
         {showBottomGradient && (
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-100 h-24 bg-gradient-to-t from-background-100 to-transparent" />
         )}
-        <div ref={scrollRef} className="scrollbar-hide h-full overflow-y-auto p-0">
+        <div 
+          ref={scrollRef} 
+          className="scrollbar-hide h-full overflow-y-auto p-4"
+        >
           <h3 className="text-sm font-semibold text-white/60 mb-1">Summary:</h3>
           <p className="select-text text-[15px] leading-normal text-white">
-            {conversation.summary}
+            {highlightText(conversation.summary, searchQuery)}
           </p>
         </div>
       </div>
+      <ViewIndicator />
     </div>
   );
 };
 
-interface ViewTranscriptButtonProps {
-  onViewTranscript: () => void;
-}
-
-const ViewTranscriptButton: React.FC<ViewTranscriptButtonProps> = ({ onViewTranscript }) => {
+const ViewIndicator: React.FC = () => {
   return (
-    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center">
-      <Button
-        onClick={onViewTranscript}
-        className="w-full flex items-center justify-center rounded-lg bg-background/10 p-2 text-[15px] font-semibold text-foreground backdrop-blur-sm transition-colors duration-200 hover:text-white hover:bg-background/20 hover:backdrop-blur-sm px-2 gap-2"
-      >
-        View
-        <EyeOpenIcon className="w-6 h-6" />
-      </Button>
+    <div className="absolute bottom-2 right-2">
+      <div className="flex items-center text-sm font-medium text-foreground/70 group-hover:text-foreground bg-background/10 backdrop-blur-sm px-2 py-1 rounded-lg">
+        <span className="mr-1">View</span>
+        <ChevronRightIcon className="w-4 h-4" />
+      </div>
     </div>
   );
 };
