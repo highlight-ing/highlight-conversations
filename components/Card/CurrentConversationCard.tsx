@@ -6,8 +6,9 @@ import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
 import { motion, AnimatePresence } from "framer-motion";
 import { ClipboardIcon, SaveIcon } from '@/components/ui/icons'
-import { CopyState } from "@/types/types"
 import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip"
+import { Button } from "@/components/ui/button"
+import { formatTranscript } from '@/data/conversations'
 
 interface CurrentConversationCardProps {
   transcript: string;
@@ -90,40 +91,25 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
 
   return (
     <Card className={`w-full h-[432px] border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
-      <CardHeader className="flex flex-row items-baseline">
+      <CardHeader className="flex flex-row items-baseline justify-between">
         <CardTitle>Current Conversation</CardTitle>
-        <div className="flex space-x-1">
-          <div className="relative">
-            <button
-              onClick={handleCopyTranscript}
-              onMouseEnter={() => !isSaveDisabled && setCopyTooltipState('active')}
-              onMouseLeave={() => !isSaveDisabled && setCopyTooltipState('idle')}
-              className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
-                ${isSaveDisabled
-                  ? 'text-muted-foreground/40 cursor-not-allowed'
-                  : 'hover:text-brand'
-                }`}
-            >
-              <ClipboardIcon width={24} height={24} className="" />
-            </button>
-            {!isSaveDisabled && <Tooltip type="copy" state={copyTooltipState} />}
-          </div>
-          <div className="relative">
+        <div className="relative">
           <button
-            onClick={handleSaveTranscript}
-            onMouseEnter={() => setSaveTooltipState('active')}
-            onMouseLeave={() => setSaveTooltipState('idle')}
-            disabled={isSaveDisabled}
+            onClick={handleCopyTranscript}
+            onMouseEnter={() => !isSaveDisabled && setCopyTooltipState('active')}
+            onMouseLeave={() => !isSaveDisabled && setCopyTooltipState('idle')}
             className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
-              ${isSaveDisabled ? 'text-muted-foreground/40 cursor-not-allowed' : 'hover:text-brand'}`}
+              ${isSaveDisabled
+                ? 'text-muted-foreground/40 cursor-not-allowed'
+                : 'hover:text-brand'
+              }`}
           >
-            <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" />
-            <Tooltip type="save" state={saveTooltipState} />
+            <ClipboardIcon width={24} height={24} className="" />
           </button>
-          </div>
+          {!isSaveDisabled && <Tooltip type="copy" state={copyTooltipState} />}
         </div>
       </CardHeader>
-      <CardContent className="flex-grow overflow-hidden p-0">
+      <CardContent className="flex-grow overflow-hidden p-0 flex flex-col">
         {isAudioEnabled ? (
           <div className="flex flex-col h-full">
             <div className="space-y-2 mb-2 px-6">
@@ -132,7 +118,6 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
                 <p>Next transcript in {nextTranscriptIn}s</p>
                 <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
               </div>
-              {transcript && <Skeleton className={`h-4 w-full ${skeletonCorner}`} />}
             </div>
             <div className="relative flex-grow overflow-hidden">
               {showTopGradient && (
@@ -150,7 +135,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="space-y-2 h-full flex flex-col justify-center"
+                      className="space-y-2 flex flex-col justify-start"
                     >
                       <Skeleton className={`h-24 w-full ${skeletonCorner}`} />
                       <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
@@ -165,7 +150,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <p className="select-text">{transcript}</p>
+                      <p className="select-text pb-0 text-[15px] text-foreground leading-relaxed whitespace-pre-wrap">{formatTranscript(transcript, 'CardTranscript')}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -180,6 +165,18 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
           </div>
         )}
       </CardContent>
+      <div className="px-4 pb-4 pt-2">
+        <Button
+          onClick={handleSaveTranscript}
+          disabled={isSaveDisabled}
+          className="w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
+        >
+          <span className="flex items-center gap-2">
+            Save
+            <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" />
+          </span>
+        </Button>
+      </div>
     </Card>
   )
 }
