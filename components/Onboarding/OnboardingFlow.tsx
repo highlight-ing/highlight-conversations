@@ -21,7 +21,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   ];
 
   return (
-    <div className="bg-background text-foreground">
+    <div className="bg-background text-foreground h-screen overflow-hidden">
       {steps[currentStep]}
     </div>
   );

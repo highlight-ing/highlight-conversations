@@ -14,6 +14,7 @@ import { Tooltip, TooltipState } from "@/components/Tooltip/Tooltip"
 import HighlightIcon from '@/components/ui/icons/HighlightIcon'
 import { sendAttachmentAndOpen } from '@/services/highlightService'
 import { EyeOpenIcon } from "@radix-ui/react-icons";
+import DeleteConversationButton from '@/components/Card/DeleteConversationButton';
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -61,10 +62,12 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         <CardFooter className="px-4 pb-4 pt-0">
           <Button
             onClick={handleAttachment}
-            className="w-full flex items-center justify-between rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
+            className="w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
           >
-            Prompt
-            <HighlightIcon viewBox='0 0 24 24' />
+            <span className="flex items-center gap-2">
+              Prompt
+              <HighlightIcon viewBox='0 0 24 24' />
+            </span>
           </Button>
         </CardFooter>
       </Card>
@@ -86,7 +89,6 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
 }) => {
   const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
   const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
-  const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -113,13 +115,6 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
       });
   };
 
-  const handleDelete = () => {
-    onDelete(conversation.id);
-    setDeleteTooltipState('success');
-    setTimeout(() => setDeleteTooltipState('hiding'), 1500);
-    setTimeout(() => setDeleteTooltipState('idle'), 1700);
-  };
-
   return (
     <div className="flex flex-col gap-0.5 px-4 pt-4">
       <div className="mb-4 flex items-center justify-between">
@@ -133,32 +128,23 @@ const ConversationCardHeader: React.FC<{ conversation: ConversationData; onDelet
         </div>
         <div className="flex gap-[5px]">
           <div className='relative'>
-          <button
-            onClick={handleCopyTranscript}
-            onMouseEnter={() => setCopyTooltipState('active')}
-            onMouseLeave={() => setCopyTooltipState('idle')}
-            className = "text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
-          >
-            <ClipboardIcon width={24} height={24} className="" />
-            <Tooltip type="copy" state={copyTooltipState} />
-          </button>
+            <button
+              onClick={handleCopyTranscript}
+              onMouseEnter={() => setCopyTooltipState('active')}
+              onMouseLeave={() => setCopyTooltipState('idle')}
+              className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
+            >
+              <ClipboardIcon width={24} height={24} className="" />
+              <Tooltip type="copy" state={copyTooltipState} />
+            </button>
           </div>
-          <div className='relative'>
-          <button
-            onClick={handleDelete}
-            onMouseEnter={() => setDeleteTooltipState('active')}
-            onMouseLeave={() => setDeleteTooltipState('idle')}
-            className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive"
-          >
-            <TrashIcon width={24} height={24} className='group-hover:text-destructive' />
-            <Tooltip type="delete" state={deleteTooltipState} />
-          </button>
-          </div>
+          <DeleteConversationButton onDelete={() => onDelete(conversation.id)} />
         </div>
       </div>
     </div>
   )
 }
+
 interface UnsummarizedContentProps {
   transcript: string;
   onViewTranscript: () => void;
@@ -229,7 +215,7 @@ const ViewTranscriptButton: React.FC<ViewTranscriptButtonProps> = ({ onViewTrans
     <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center">
       <Button
         onClick={onViewTranscript}
-        className="w-full flex items-center justify-between rounded-lg bg-background/10 p-2 text-[15px] font-semibold text-foreground backdrop-blur-sm transition-colors duration-200 hover:text-white hover:bg-background/20 hover:backdrop-blur-sm px-2"
+        className="w-full flex items-center justify-center rounded-lg bg-background/10 p-2 text-[15px] font-semibold text-foreground backdrop-blur-sm transition-colors duration-200 hover:text-white hover:bg-background/20 hover:backdrop-blur-sm px-2 gap-2"
       >
         View
         <EyeOpenIcon className="w-6 h-6" />

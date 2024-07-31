@@ -1,4 +1,4 @@
-// components/OnboardingTemplate.tsx
+// components/Onboarding/OnboardingTemplate.tsx
 import React, { ReactNode } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import Waveform from './Waveform';
@@ -19,7 +19,7 @@ type OnboardingTemplateProps = {
 
 const OnboardingTemplate: React.FC<OnboardingTemplateProps> = ({ children, gradientTexts, cardClassName = '' }) => {
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden">
       <Waveform className="absolute inset-0 z-0 opacity-70 blur-md" />
       
       <Card className={`relative z-10 w-full max-w-[600px] backdrop-filter backdrop-blur bg-opacity-0 ${cardClassName}`}>

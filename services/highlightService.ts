@@ -40,6 +40,10 @@ export const fetchTranscript = async (): Promise<string | null> => {
   return await Highlight.user.getAudio(false)
 }
 
+export const fetchTranscriptForDuration = async (seconds: number): Promise<string | null> => {
+  return await Highlight.user.getAudioForDuration(seconds)
+}
+
 export const fetchLongTranscript = async (): Promise<string | null> => {
   return await Highlight.user.getAudio(true)
 }
@@ -361,7 +365,6 @@ export const saveConversationsInAppStorage = async (conversations: ConversationD
       timestamp: conv.timestamp.toISOString()
     }))
     appStorage.set(CONVERSATIONS_STORAGE_KEY, serializedConversations)
-    console.log('Saving conversations to AppStorage:', serializedConversations)
   } else {
     console.error('AppStorage not available. Unable to save conversations.')
   }
