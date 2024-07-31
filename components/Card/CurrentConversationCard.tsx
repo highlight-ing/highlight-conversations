@@ -169,7 +169,8 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
         <Button
           onClick={handleSaveTranscript}
           disabled={isSaveDisabled}
-          className="w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
+          className={`w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand
+            ${isSaveDisabled ? 'cursor-not-allowed' : ''}`}
         >
           <span className="flex items-center gap-2">
             Save
