@@ -77,14 +77,11 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
       left: `${rect.right + window.scrollX + 10}px`,
     };
   } else if (currentTooltipData.id === ONBOARDING_SAVED_CARD) {
-    const firstSavedCard = document.querySelector(`#${ONBOARDING_SAVED_CARD}`);
-    if (firstSavedCard) {
-      const firstSavedCardRect = firstSavedCard.getBoundingClientRect();
-      tooltipStyle = {
-        top: `${firstSavedCardRect.top + window.scrollY}px`,
-        left: `${firstSavedCardRect.right + window.scrollX + 10}px`,
-      };
-    }
+    tooltipStyle = {
+      top: `${rect.top + window.scrollY}px`,
+      right: `${window.innerWidth - rect.left + window.scrollX + 10}px`,
+      left: 'auto', // Reset left positioning
+    };
   } else {
     tooltipStyle = {
       top: `${rect.bottom + window.scrollY + 10}px`,

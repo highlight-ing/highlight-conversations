@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Header from '@/components/Header/Header'
 import ConversationsManager from '@/components/ConversationManager/ConversationManager'
-import { ConversationData } from '@/data/conversations'
+import { ConversationData, defaultConversation } from '@/data/conversations'
 import {
   requestBackgroundPermission,
   setAudioSuperpowerEnabled,
@@ -18,6 +18,7 @@ import {
   getBooleanFromAppStorage,
   saveConversationsInAppStorage,
   getConversationsFromAppStorage,
+  deleteAllConversationsInAppStorage,
   AUTO_CLEAR_VALUE_KEY,
   AUTO_SAVE_SEC_KEY,
   AUDIO_ENABLED_KEY,
@@ -37,6 +38,7 @@ import { CrossCircledIcon } from "@radix-ui/react-icons"
 import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
 import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
+import { v4 as uuidv4 } from 'uuid'; // Make sure to install and import uuid
 
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
@@ -113,8 +115,19 @@ const MainPage: React.FC = () => {
       setShowOnboarding(!hasSeenOnboarding || debugOnboarding);
 
       // Load conversations
-      const storedConversations = await getConversationsFromAppStorage()
-      setConversations(storedConversations)
+      let storedConversations = await getConversationsFromAppStorage();
+      
+      // If there are no conversations and it's the first time (showOnboarding is true),
+      // add a default conversation
+      if (storedConversations.length === 0 && (!hasSeenOnboarding || debugOnboarding)) {
+        storedConversations = [defaultConversation];
+        console.log('Adding default conversation:', storedConversations);
+        await saveConversationsInAppStorage(storedConversations);
+      } else {
+        console.log('Conversations already exist:', storedConversations);
+      }
+      
+      setConversations(storedConversations);
       setIsInitialized(true)
 
       // Set up audio permission listener
@@ -198,7 +211,7 @@ const MainPage: React.FC = () => {
 
   const handleDeleteAllConversations = async () => {
     setConversations([])
-    await saveConversationsInAppStorage([])
+    await deleteAllConversationsInAppStorage()
   }
 
   const addConversation = useCallback(async (newConversation: Omit<ConversationData, 'timestamp'>) => {
