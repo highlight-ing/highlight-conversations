@@ -370,6 +370,15 @@ export const saveConversationsInAppStorage = async (conversations: ConversationD
   }
 }
 
+export const deleteAllConversationsInAppStorage = async (): Promise<void> => {
+  const appStorage = getAppStorage()
+  if (appStorage) {
+    await appStorage.whenHydrated()
+    appStorage.delete(CONVERSATIONS_STORAGE_KEY)
+    console.log('Deleted conversations: ', appStorage.get(CONVERSATIONS_STORAGE_KEY))
+  }
+}
+
 // Type-specific app storage retrieval functions
 export const getNumberFromAppStorage = async (key: string, defaultValue: number): Promise<number> => {
   const appStorage = getAppStorage()
