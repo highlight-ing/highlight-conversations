@@ -5,8 +5,8 @@ import { ConversationData, createConversation } from '../../data/conversations'
 import ConversationGrid from '../Card/ConversationGrid'
 
 const POLL_MIC_INTERVAL = 100 // Poll every 100 ms
-const INITIAL_POLL_INTERVAL = 7500
-const MAX_POLL_INTERVAL = 25000
+const INITIAL_POLL_INTERVAL = 5000
+const MAX_POLL_INTERVAL = 20000
 
 interface ConversationsManagerProps {
   idleThreshold: number
