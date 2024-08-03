@@ -38,7 +38,8 @@ import { CrossCircledIcon } from "@radix-ui/react-icons"
 import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
 import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
-import { v4 as uuidv4 } from 'uuid'; // Make sure to install and import uuid
+import { initAmplitude } from '../lib/amplitude';
+
 
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
@@ -90,6 +91,10 @@ const MainPage: React.FC = () => {
       return matchTranscript || matchSummary;
     });
   }, [conversations, searchQuery])
+
+  useEffect(() => {
+    initAmplitude()
+  }, [])
 
   useEffect(() => {
     requestBackgroundPermission()
