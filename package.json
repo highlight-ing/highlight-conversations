@@ -3,7 +3,7 @@
   "version": "0.2.5",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next dev",
+    "dev": "set NODE_OPTIONS=--no-warnings=ExperimentalWarning && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -33,7 +33,7 @@
     "iconsax-react": "^0.0.8",
     "lodash": "^4.17.21",
     "lucide-react": "^0.417.0",
-    "next": "14.2.5",
+    "next": "^14.2.5",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "react": "^18",
     "react-dom": "^18",
