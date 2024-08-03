@@ -137,7 +137,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
               {showBottomGradient && (
                 <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none"></div>
               )}
-              <div className="h-full overflow-y-auto scrollbar-hide px-6" ref={scrollRef}>
+              <div className="h-full overflow-y-auto custom-scrollbar px-6" ref={scrollRef}>
                 <AnimatePresence mode="wait">
                   {!transcript ? (
                     <motion.div
@@ -160,6 +160,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
+                      className="pb-4"
                     >
                       <p className="select-text pb-0 text-[15px] text-foreground leading-relaxed whitespace-pre-wrap">{highlightText(formatTranscript(transcript, 'CardTranscript'), searchQuery)}</p>
                     </motion.div>
