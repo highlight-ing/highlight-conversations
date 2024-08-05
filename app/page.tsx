@@ -81,7 +81,7 @@ const MainPage: React.FC = () => {
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
   const [tooltipsReady, setTooltipsReady] = useState(false);
   //MARK: Set this to false when in production!
-  const [debugOnboarding, setDebugOnboarding] = useState(false);
+  const [debugOnboarding, setDebugOnboarding] = useState(true);
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conversation => {
@@ -95,9 +95,9 @@ const MainPage: React.FC = () => {
     initAmplitude()
   }, [])
 
-  useEffect(() => {
-    requestBackgroundPermission()
-  }, [])
+  // useEffect(() => {
+  //   requestBackgroundPermission()
+  // }, [])
   
   useEffect(() => {
     const initializeApp = async () => {
