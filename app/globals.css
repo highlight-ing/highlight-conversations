@@ -47,6 +47,81 @@
   
       --discord: 235 86% 65%;
       --discord-foreground: 235 43% 99.3%;
+
+      --scrollbar-hide-delay: 0.5s;
+    }
+  }
+
+  @layer utilities {
+    .custom-scrollbar {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      transition: all 0.3s ease;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+  
+    .custom-scrollbar:hover {
+      scrollbar-width: thin;
+    }
+  
+    .custom-scrollbar:hover::-webkit-scrollbar {
+      width: 8px;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background-color: hsl(var(--background-100));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  
+    .custom-scrollbar:hover::-webkit-scrollbar-track {
+      opacity: 1;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: hsl(var(--background-300));
+      border-radius: 20px;
+      border: 2px solid hsl(var(--background-100));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  
+    .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+      opacity: 1;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background-color: hsl(var(--background-400));
+    }
+  
+    /* For Firefox */
+    .custom-scrollbar {
+      scrollbar-color: transparent transparent;
+      transition: scrollbar-color 0.3s ease;
+    }
+  
+    .custom-scrollbar:hover {
+      scrollbar-color: hsl(var(--background-300)) hsl(var(--background-100));
+    }
+  
+    /* Hide scrollbar after hover */
+    .custom-scrollbar:not(:hover) {
+      scrollbar-width: none;
+    }
+  
+    .custom-scrollbar:not(:hover)::-webkit-scrollbar {
+      width: 0;
+    }
+  
+    .custom-scrollbar:not(:hover)::-webkit-scrollbar-thumb,
+    .custom-scrollbar:not(:hover)::-webkit-scrollbar-track {
+      opacity: 0;
+      transition: opacity 0.3s ease var(--scrollbar-hide-delay);
     }
   }
 

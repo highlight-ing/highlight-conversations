@@ -186,7 +186,7 @@ const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, o
         )}
         <div 
           ref={scrollRef} 
-          className="scrollbar-hide h-full overflow-y-auto p-4"
+          className="custom-scrollbar h-full overflow-y-auto p-4"
         >
           <p className="select-text pb-0 text-[15px] text-foreground/80 leading-relaxed whitespace-pre-wrap">
             {highlightText(formatTranscript(transcript, "CardTranscript"), searchQuery)}
@@ -225,7 +225,7 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
         )}
         <div 
           ref={scrollRef} 
-          className="scrollbar-hide h-full overflow-y-auto p-4"
+          className="custom-scrollbar h-full overflow-y-auto p-4"
         >
           <h3 className="text-sm font-semibold text-white/60 mb-1">Summary:</h3>
           <p className="select-text text-[15px] leading-normal text-white">
