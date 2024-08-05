@@ -138,7 +138,6 @@ interface ProcessedConversationData {
 }
 
 export const getTextPredictionFromHighlight = async (transcript: string): Promise<ProcessedConversationData> => {
-  console.log('Starting getTextPrediction')
   const messages: LLMMessage[] = [
     {
       role: 'system',
@@ -154,22 +153,16 @@ export const getTextPredictionFromHighlight = async (transcript: string): Promis
   return new Promise(async (resolve, reject) => {
     let accumulatedText = ''
 
-    console.log('Calling getTextPrediction')
     const predictionId = await window.highlight.internal.getTextPrediction(messages)
-    console.log('Prediction ID:', predictionId)
 
     const updateListener = (event: any) => {
-      console.log('Update event received:', event)
       if (event.id === predictionId) {
-        console.log('Prediction chunk:', event.text)
         accumulatedText += event.text
       }
     }
 
     const doneListener = (event: any) => {
-      console.log('Done event received:', event)
       if (event.id === predictionId) {
-        console.log('Prediction complete. Accumulated text:', accumulatedText)
         Highlight.removeEventListener('onTextPredictionUpdate', updateListener)
         Highlight.removeEventListener('onTextPredictionDone', doneListener)
 

@@ -15,6 +15,7 @@ import HighlightIcon from '@/components/ui/icons/HighlightIcon'
 import { sendAttachmentAndOpen } from '@/services/highlightService'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
 import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { trackEvent } from '@/lib/amplitude'
 
 const highlightText = (text: string, query: string) => {
   if (!query) return text;
@@ -45,6 +46,9 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
       console.error('Error processing conversation:', error)
     } finally {
       setIsProcessing(false)
+      trackEvent('Conversations Interaction', {
+        action: 'Conversation Summarized',
+      })
     }
   }
 
@@ -56,6 +60,9 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
     let toAppId = 'highlightchat'
     let transcript = conversation.transcript
     await sendAttachmentAndOpen(toAppId, transcript)
+    trackEvent('Conversations Interaction', {
+      action: 'Conversation Prompted with HL Chat',
+    })
   }
 
   return (
