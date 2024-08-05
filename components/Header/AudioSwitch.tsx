@@ -3,7 +3,7 @@ import { Label } from '../ui/label'
 import { Switch } from '../ui/switch'
 import InfoTooltip from './InfoTooltip'
 import { TOOLTIP_CONTENT } from '@/constants/tooltipConstants'
-
+import { trackEvent } from '@/lib/amplitude'
 interface AudioSwitchProps {
     isAudioOn: boolean;
     onSwitch: (isOn: boolean) => void;
@@ -20,6 +20,10 @@ interface AudioSwitchProps {
       const newState = !isChecked;
       setIsChecked(newState);
       onSwitch(newState);
+      trackEvent('Conversations Interaction', {
+        action: 'Microphone Input',
+        state: newState ? 'On' : 'Off'
+      });
     };
   
     return (

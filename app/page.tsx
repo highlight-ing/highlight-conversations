@@ -7,7 +7,6 @@ import ConversationsManager from '@/components/ConversationManager/ConversationM
 import { ConversationData, defaultConversation } from '@/data/conversations'
 import {
   requestBackgroundPermission,
-  setAudioSuperpowerEnabled,
   getAudioSuperPowerEnabled,
   addAudioPermissionListener,
   requestAudioPermissionEvents,
@@ -38,8 +37,8 @@ import { CrossCircledIcon } from "@radix-ui/react-icons"
 import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
 import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
-import { initAmplitude } from '../lib/amplitude';
-
+import { initAmplitude, trackEvent } from '../lib/amplitude';
+import debounce from 'lodash.debounce'
 
 // TODO: - set to false or remove for production
 const IS_TEST_MODE = false
@@ -103,9 +102,9 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     const initializeApp = async () => {
       console.log('Initializing app...');
+      
       // Perform migration
       await migrateFromLocalStorageToAppStorage()
-
       // Initialize audio state
       await initializeAudioSuperPower();
       await initializeAudioEnabled();
@@ -199,11 +198,19 @@ const MainPage: React.FC = () => {
   const handleAutoClearValueChange = async (value: number): Promise<void> => {
     setAutoClearValue(value)
     await saveNumberInAppStorage(AUTO_CLEAR_VALUE_KEY, value)
+    trackEvent('Conversations Interaction', {
+      action: 'Auto Clear Value Change',
+      value: value
+    });
   }
 
   const handleAutoSaveChange = async (value: number) => {
     setIdleTimerValue(value)
     await saveNumberInAppStorage(AUTO_SAVE_SEC_KEY, value)
+    trackEvent('Conversations Interaction', {
+      action: 'Auto Save Change',
+      value: value
+    });
   }
   const handleUpdateConversation = (updatedConversation: ConversationData) => {
     setConversations((prevConversations) => {
@@ -228,6 +235,9 @@ const MainPage: React.FC = () => {
       const updatedConversations = [conversationWithCurrentTimestamp, ...prevConversations];
       saveConversationsInAppStorage(updatedConversations);
       return updatedConversations;
+    })
+    trackEvent('Conversations Interaction', {
+      action: 'Conversation Added'
     });
   }, []);
 
@@ -237,6 +247,9 @@ const MainPage: React.FC = () => {
       saveConversationsInAppStorage(updatedConversations)
       return updatedConversations
     })
+    trackEvent('Conversations Interaction', {
+      action: 'Conversation Deleted'
+    });
   }, [])
 
   useEffect(() => {
@@ -244,6 +257,9 @@ const MainPage: React.FC = () => {
   }, [isAudioPermissionEnabled]);
 
   const handleOnboardingComplete = () => {
+    trackEvent('Conversations Interaction', {
+      action: 'Onboarding Flow Complete',
+    });
     setShowOnboarding(false);
     setShowOnboardingTooltips(true);
   };
@@ -251,6 +267,9 @@ const MainPage: React.FC = () => {
   const handleTooltipsComplete = async () => {
     setShowOnboardingTooltips(false);
     await saveBooleanInAppStorage(HAS_SEEN_ONBOARDING_KEY, true);
+    trackEvent('Conversations Interaction', {
+      action: 'Onboarding Tooltips Complete',
+    });
   };
 
   useEffect(() => {
@@ -262,6 +281,29 @@ const MainPage: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [showOnboardingTooltips]);
+
+  const handleSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = e.target.value;
+    setSearchQuery(newQuery);
+  };
+
+  const debouncedTrackSearchEvent = useMemo(
+    () =>
+      debounce((query: string) => {
+        trackEvent('Conversations Interaction', {
+          action: 'Search Query Change',
+          query: query
+        });
+      }, 500), // 500ms debounce time
+    []
+  );
+
+  useEffect(() => {
+    debouncedTrackSearchEvent(searchQuery);
+    return () => {
+      debouncedTrackSearchEvent.cancel();
+    };
+  }, [searchQuery, debouncedTrackSearchEvent]);
 
   if (!isInitialized) {
     return null;
@@ -293,7 +335,7 @@ const MainPage: React.FC = () => {
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchQueryChange}
             className="pr-8"
           />
           {searchQuery && (

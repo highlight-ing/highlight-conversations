@@ -8,6 +8,7 @@ import {
     ONBOARDING_CURRENT_CARD,
     ONBOARDING_SAVED_CARD
 } from "@/constants/appConstants"
+import { trackEvent } from '@/lib/amplitude';
 
 interface OnboardingTooltipsProps {
   onComplete: () => void;
@@ -61,6 +62,12 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
 
     return () => removeHighlight();
   }, [currentTooltip, tooltips, removeHighlight, addHighlight]);
+
+  useEffect(() => {
+    trackEvent('Conversations Interaction', {
+      action: 'Onboarding Tooltips Started',
+    });
+  }, []);
 
   const currentTooltipData = tooltips[currentTooltip];
   const targetElement = document.getElementById(`${currentTooltipData.id}`);
