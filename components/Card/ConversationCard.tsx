@@ -91,7 +91,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
             className="w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
           >
             <span className="flex items-center gap-2">
-              Prompt
+              Attach to HL Chat
               <HighlightIcon viewBox='0 0 24 24' />
             </span>
           </Button>

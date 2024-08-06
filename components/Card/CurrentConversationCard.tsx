@@ -182,7 +182,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             ${isSaveDisabled ? 'cursor-not-allowed' : ''}`}
         >
           <span className="flex items-center gap-2">
-            Save
+            Save Now
             <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" />
           </span>
         </Button>
