@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getAudioSuperPowerEnabled, setAudioSuperpowerEnabled, addAudioPermissionListener, requestBackgroundPermission } from '@/services/highlightService';
 import OnboardingTemplate, { GradientTexts } from './OnboardingTemplate';
-import { Lock1, Unlock } from "iconsax-react";
+import { Lock1, Unlock, InfoCircle } from "iconsax-react";
 import { motion, AnimatePresence } from 'framer-motion';
 
 type PermissionsScreenProps = {
@@ -68,8 +69,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
     <OnboardingTemplate 
       gradientTexts={gradientTexts}
       cardClassName={`
-        ${areBothPermissionsEnabled ? 'border-brand' : 'border-background/10'} 
-        ${areBothPermissionsEnabled ? 'bg-background/50' : 'bg-background/50'}
+        ${areBothPermissionsEnabled ? 'border-brand bg-background/50' : 'border-border bg-background'}
       `}
     >
       <motion.div
@@ -97,14 +97,38 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
         </p>
         <div className="space-y-4 mb-8 text-foreground/75">
           <div className="flex justify-between items-center">
-            <span>Enable Audio Permission:</span>
+            <div className="flex items-center">
+              <span>Enable Audio Permission:</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <InfoCircle size="20" className="ml-2 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">Conversations needs your permission to use your microphone and system audio to create transcripts of your audio. No audio data is stored, and transcripts are generated and stored locally.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Switch
               checked={isAudioPermissionEnabled}
               onCheckedChange={handleAudioPermissionToggle}
             />
           </div>
           <div className="flex justify-between items-center">
-            <span>Enable Background Permission:</span>
+            <div className="flex items-center">
+              <span>Enable Background Permission:</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <InfoCircle size="20" className="ml-2 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">Conversations needs your permission to run in the background. This allows Conversations to ambiently record your impromptu conversations and provide real-time insights without manual activation.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Switch
               checked={isBackgroundPermissionEnabled}
               onCheckedChange={handleBackgroundPermissionToggle}
