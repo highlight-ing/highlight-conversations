@@ -82,6 +82,7 @@ const MainPage: React.FC = () => {
   const [tooltipsReady, setTooltipsReady] = useState(false);
   //MARK: Set this to false when in production!
   const [debugOnboarding, setDebugOnboarding] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conversation => {
@@ -117,6 +118,7 @@ const MainPage: React.FC = () => {
       setAutoClearValue(storedAutoClearValue);
       setIdleTimerValue(storedIdleTimerValue);
       setShowOnboarding(!hasSeenOnboarding || debugOnboarding);
+      setOnboardingComplete(hasSeenOnboarding && !debugOnboarding);
 
       // Load conversations
       let storedConversations = await getConversationsFromAppStorage();
@@ -125,10 +127,7 @@ const MainPage: React.FC = () => {
       // add a default conversation
       if (storedConversations.length === 0 && (!hasSeenOnboarding || debugOnboarding)) {
         storedConversations = [defaultConversation];
-        console.log('Adding default conversation:', storedConversations);
         await saveConversationsInAppStorage(storedConversations);
-      } else {
-        console.log('Conversations already exist:', storedConversations);
       }
       
       setConversations(storedConversations);
@@ -267,6 +266,7 @@ const MainPage: React.FC = () => {
   const handleTooltipsComplete = async () => {
     setShowOnboardingTooltips(false);
     await saveBooleanInAppStorage(HAS_SEEN_ONBOARDING_KEY, true);
+    setOnboardingComplete(true);
     trackEvent('Conversations Interaction', {
       action: 'Onboarding Tooltips Complete',
     });
@@ -304,6 +304,12 @@ const MainPage: React.FC = () => {
       debouncedTrackSearchEvent.cancel();
     };
   }, [searchQuery, debouncedTrackSearchEvent]);
+
+  useEffect(() => {
+    if (onboardingComplete) {
+      requestBackgroundPermission()
+    }
+  }, [onboardingComplete])
 
   if (!isInitialized) {
     return null;

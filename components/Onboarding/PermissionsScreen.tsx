@@ -68,8 +68,8 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
     <OnboardingTemplate 
       gradientTexts={gradientTexts}
       cardClassName={`
-        ${areBothPermissionsEnabled ? 'border-brand' : 'border-destructive'} 
-        ${areBothPermissionsEnabled ? 'bg-background/50' : 'bg-destructive/10'}
+        ${areBothPermissionsEnabled ? 'border-brand' : 'border-background/10'} 
+        ${areBothPermissionsEnabled ? 'bg-background/50' : 'bg-background/50'}
       `}
     >
       <motion.div
@@ -86,7 +86,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
           {areBothPermissionsEnabled ? (
             <Unlock className="text-brand" size="32" />
           ) : (
-            <Lock1 className="text-destructive" size="32" />
+            <Lock1 className="text-muted-foreground" size="32" />
           )}
         </div>
         <p className="text-[16px] mt-2 mb-6 text-foreground-muted font-medium leading-relaxed">
