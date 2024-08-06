@@ -23,7 +23,6 @@ interface CurrentConversationCardProps {
   transcript: string;
   micActivity: number;
   isAudioEnabled: boolean;
-  nextTranscriptIn: number;
   onSave: () => void
   searchQuery: string;
 }
@@ -32,7 +31,6 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   transcript,
   micActivity,
   isAudioEnabled,
-  nextTranscriptIn,
   onSave,
   searchQuery,
 }) => {
@@ -124,9 +122,8 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
         {isAudioEnabled ? (
           <div className="flex flex-col h-full">
             <div className="space-y-2 mb-2 px-6">
-              {!transcript && <p className="text-sm font-medium">Listening ...</p>}
               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                <p>Next transcript in {nextTranscriptIn}s</p>
+                <p>Listening ...</p>
                 <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
               </div>
             </div>
