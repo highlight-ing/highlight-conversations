@@ -19,5 +19,6 @@ jobs:
       - run: npm run gen:supabase-types
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - run: npx supabase db pull --password ${{ secrets.SUPABASE_DATABASE_PASSWORD }}
       # Commit all changed files back to the repository
       - uses: stefanzweifel/git-auto-commit-action@v5
