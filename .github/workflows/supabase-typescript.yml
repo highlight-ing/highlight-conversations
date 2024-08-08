@@ -2,6 +2,7 @@ name: Update Supabase Typescript definitions
 
 on:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   update-supabase-types:
