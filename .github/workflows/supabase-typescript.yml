@@ -9,6 +9,9 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -17,8 +20,6 @@ jobs:
           node-version: '20.x'
       - run: npm install
       - run: npm run gen:supabase-types
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      - run: npx supabase db pull --password ${{ secrets.SUPABASE_DATABASE_PASSWORD }}
+      - run: npx supabase db pull --db-url $SUPABASE_DB_URL
       # Commit all changed files back to the repository
       - uses: stefanzweifel/git-auto-commit-action@v5
