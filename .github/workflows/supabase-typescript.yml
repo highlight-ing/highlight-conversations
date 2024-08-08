@@ -20,6 +20,6 @@ jobs:
           node-version: '20.x'
       - run: npm install
       - run: npm run gen:supabase-types
-      - run: npx supabase db pull --db-url $SUPABASE_DB_URL
+      - run: npx supabase db pull --db-url $SUPABASE_DB_URL 
       # Commit all changed files back to the repository
       - uses: stefanzweifel/git-auto-commit-action@v5
