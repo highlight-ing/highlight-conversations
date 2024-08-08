@@ -73,6 +73,27 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
   const currentTooltipData = tooltips[currentTooltip];
   const targetElement = document.getElementById(`${currentTooltipData.id}`);
 
+  const getOverlayStyle = useCallback(() => {
+    const targetElement = document.getElementById(`${tooltips[currentTooltip].id}`);
+    if (!targetElement) return {};
+
+    const rect = targetElement.getBoundingClientRect();
+    return {
+      clipPath: `polygon(
+        0% 0%,
+        0% 100%,
+        ${rect.left}px 100%,
+        ${rect.left}px ${rect.top}px,
+        ${rect.right}px ${rect.top}px,
+        ${rect.right}px ${rect.bottom}px,
+        ${rect.left}px ${rect.bottom}px,
+        ${rect.left}px 100%,
+        100% 100%,
+        100% 0%
+      )`
+    };
+  }, [currentTooltip, tooltips]);
+
   if (!targetElement) return null;
 
   const rect = targetElement.getBoundingClientRect();
@@ -96,27 +117,6 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
       left: `${rect.left + window.scrollX}px`,
     };
   }
-
-  const getOverlayStyle = useCallback(() => {
-    const targetElement = document.getElementById(`${tooltips[currentTooltip].id}`);
-    if (!targetElement) return {};
-
-    const rect = targetElement.getBoundingClientRect();
-    return {
-      clipPath: `polygon(
-        0% 0%,
-        0% 100%,
-        ${rect.left}px 100%,
-        ${rect.left}px ${rect.top}px,
-        ${rect.right}px ${rect.top}px,
-        ${rect.right}px ${rect.bottom}px,
-        ${rect.left}px ${rect.bottom}px,
-        ${rect.left}px 100%,
-        100% 100%,
-        100% 0%
-      )`
-    };
-  }, [currentTooltip, tooltips]);
 
   return (
     <div className="fixed inset-0 z-50">

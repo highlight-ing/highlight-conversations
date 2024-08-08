@@ -127,6 +127,12 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
                 <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
               </div>
             </div>
+            {!transcript && (
+              <div className="px-6 mb-4 text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-1">You have no transcripts yet</h3>
+                <p>Conversations will automatically save your first transcript after ~30 seconds of silence</p>
+              </div>
+            )}
             <div className="relative flex-grow overflow-hidden">
               {showTopGradient && (
                 <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none"></div>
@@ -182,8 +188,8 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             ${isSaveDisabled ? 'cursor-not-allowed' : ''}`}
         >
           <span className="flex items-center gap-2">
-            Save Now
-            <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" />
+            Save Transcript Now
+            {/* <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" /> */}
           </span>
         </Button>
       </div>

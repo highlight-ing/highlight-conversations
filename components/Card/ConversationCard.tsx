@@ -91,8 +91,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
             className="w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
           >
             <span className="flex items-center gap-2">
-              Attach to HL Chat
-              <HighlightIcon viewBox='0 0 24 24' />
+              Attach to Chat
             </span>
           </Button>
         </CardFooter>
@@ -123,6 +122,10 @@ const ConversationCardHeader: React.FC<{
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(conversation.title || relativeTime);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const truncateTitle = (title: string) => {
+    return title.length > 40 ? `${title.substring(0, 37)}...` : title;
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -193,8 +196,8 @@ const ConversationCardHeader: React.FC<{
               className="text-xl font-bold leading-normal text-white cursor-pointer group-hover:bg-white/10 transition-colors duration-200 px-1 rounded"
               onClick={() => setIsEditing(true)}
             >
-              {title}
-              <Pencil1Icon className="inline-block ml-2 w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              {truncateTitle(title)}
+              <Pencil1Icon className="inline-block ml-2 w-4 h-4 text-white/50 group-hover:text-white transition-colors duration-200" />
             </CardTitle>
           )}
           <CardDescription className="text-[0.825rem] leading-relaxed text-white/50 font-medium">
