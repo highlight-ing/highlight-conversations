@@ -9,6 +9,7 @@ import {
     ONBOARDING_SAVED_CARD
 } from "@/constants/appConstants"
 import { trackEvent } from '@/lib/amplitude';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface OnboardingTooltipsProps {
   onComplete: () => void;
@@ -96,9 +97,40 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
     };
   }
 
+  const getOverlayStyle = useCallback(() => {
+    const targetElement = document.getElementById(`${tooltips[currentTooltip].id}`);
+    if (!targetElement) return {};
+
+    const rect = targetElement.getBoundingClientRect();
+    return {
+      clipPath: `polygon(
+        0% 0%,
+        0% 100%,
+        ${rect.left}px 100%,
+        ${rect.left}px ${rect.top}px,
+        ${rect.right}px ${rect.top}px,
+        ${rect.right}px ${rect.bottom}px,
+        ${rect.left}px ${rect.bottom}px,
+        ${rect.left}px 100%,
+        100% 100%,
+        100% 0%
+      )`
+    };
+  }, [currentTooltip, tooltips]);
+
   return (
-    <div className="fixed inset-0 z-50 pointer-events-none">
-      <div className="relative w-full h-full">
+    <div className="fixed inset-0 z-50">
+      <AnimatePresence>
+        <motion.div
+          key="overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+          style={getOverlayStyle()}
+        />
+      </AnimatePresence>
+      <div className="relative w-full h-full pointer-events-none">
         <Card 
           className="absolute max-w-sm pointer-events-auto"
           style={tooltipStyle}

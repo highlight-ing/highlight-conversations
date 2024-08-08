@@ -71,7 +71,7 @@ const MainPage: React.FC = () => {
   const [micActivity, setMicActivity] = useState(0)
   const [conversations, setConversations] = useState<ConversationData[]>([])
   const [isAudioEnabled, setIsAudioEnabled] = useState<boolean>(true)
-  const [idleTimerValue, setIdleTimerValue] = useState(AUTO_SAVE_SEC)
+  const [autoSaveValue, setAutoSaveValue] = useState(AUTO_SAVE_SEC)
   const [isSleeping, setIsSleeping] = useState(false)
   const isInitialMount = useRef(true)
   const [isAudioPermissionEnabled, setIsAudioPermissionEnabled] = useState<boolean | null>(null)
@@ -81,7 +81,7 @@ const MainPage: React.FC = () => {
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
   const [tooltipsReady, setTooltipsReady] = useState(false);
   //MARK: Set this to false when in production!
-  const [debugOnboarding, setDebugOnboarding] = useState(false);
+  const [debugOnboarding, setDebugOnboarding] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   const filteredConversations = useMemo(() => {
@@ -113,10 +113,10 @@ const MainPage: React.FC = () => {
 
       // Load values from AppStorage
       const storedAutoClearValue = await getNumberFromAppStorage(AUTO_CLEAR_VALUE_KEY, AUTO_CLEAR_DAYS);
-      const storedIdleTimerValue = await getNumberFromAppStorage(AUTO_SAVE_SEC_KEY, AUTO_SAVE_SEC);
+      const storedAutoSaveValue = await getNumberFromAppStorage(AUTO_SAVE_SEC_KEY, AUTO_SAVE_SEC);
       const hasSeenOnboarding = await getBooleanFromAppStorage(HAS_SEEN_ONBOARDING_KEY, false);
       setAutoClearValue(storedAutoClearValue);
-      setIdleTimerValue(storedIdleTimerValue);
+      setAutoSaveValue(storedAutoSaveValue);
       setShowOnboarding(!hasSeenOnboarding || debugOnboarding);
       setOnboardingComplete(hasSeenOnboarding && !debugOnboarding);
 
@@ -204,7 +204,7 @@ const MainPage: React.FC = () => {
   }
 
   const handleAutoSaveChange = async (value: number) => {
-    setIdleTimerValue(value)
+    setAutoSaveValue(value)
     await saveNumberInAppStorage(AUTO_SAVE_SEC_KEY, value)
     trackEvent('Conversations Interaction', {
       action: 'Auto Save Change',
@@ -327,7 +327,7 @@ const MainPage: React.FC = () => {
       <div id={`${ONBOARDING_HEADER}`}>
         <Header
           autoClearValue={autoClearValue}
-          autoSaveValue={idleTimerValue}
+          autoSaveValue={autoSaveValue}
           isAudioOn={isAudioEnabled ?? false}
           onDeleteAllConversations={handleDeleteAllConversations}
           onAutoClearValueChange={handleAutoClearValueChange}
@@ -361,7 +361,7 @@ const MainPage: React.FC = () => {
         <AnimatePresence>
           <ConversationsManager
             conversations={filteredConversations}
-            idleThreshold={idleTimerValue}
+            idleThreshold={autoSaveValue}
             isAudioEnabled={isAudioEnabled}
             isSleeping={isSleeping}
             searchQuery={searchQuery}
