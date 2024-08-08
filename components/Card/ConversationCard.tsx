@@ -72,20 +72,20 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
 
   return (
     <motion.div initial={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
-      <Card className="flex w-full flex-col rounded-lg bg-background-100 p-0 shadow">
+      <Card className="flex w-full flex-col rounded-lg bg-background-100 shadow">
         <ConversationCardHeader 
           conversation={conversation} 
           onDelete={onDelete} 
           onUpdateTitle={handleUpdateTitle}
         />
-        <CardContent className="flex flex-grow flex-col px-4 pb-4 pt-0">
+        <CardContent className="flex flex-grow flex-col px-4">
           {conversation.summarized ? (
             <SummarizedContent conversation={conversation} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
           ) : (
             <UnsummarizedContent transcript={conversation.transcript} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
           )}
         </CardContent>
-        <CardFooter className="px-4 pb-4 pt-0">
+        <CardFooter className="px-4 pb-2">
           <Button
             onClick={handleAttachment}
             className="w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
@@ -122,10 +122,6 @@ const ConversationCardHeader: React.FC<{
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(conversation.title || relativeTime);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const truncateTitle = (title: string) => {
-    return title.length > 40 ? `${title.substring(0, 37)}...` : title;
-  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -178,8 +174,8 @@ const ConversationCardHeader: React.FC<{
   };
 
   return (
-    <div className="flex flex-col gap-0.5 px-4 pt-4">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="flex flex-col gap-0.5 px-8 pt-4">
+      <div className="flex items-center justify-between">
         <div className="flex flex-col relative group">
           {isEditing ? (
             <input
@@ -193,10 +189,10 @@ const ConversationCardHeader: React.FC<{
             />
           ) : (
             <CardTitle 
-              className="text-xl font-bold leading-normal text-white cursor-pointer group-hover:bg-white/10 transition-colors duration-200 px-1 rounded"
+              className="text-xl font-bold leading-normal text-white cursor-pointer group-hover:bg-white/10 transition-colors duration-200 rounded"
               onClick={() => setIsEditing(true)}
             >
-              {truncateTitle(title)}
+              {title}
               <Pencil1Icon className="inline-block ml-2 w-4 h-4 text-white/50 group-hover:text-white transition-colors duration-200" />
             </CardTitle>
           )}
@@ -235,7 +231,7 @@ const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, o
 
   return (
     <div 
-      className="relative space-y-4 cursor-pointer group"
+      className="relative cursor-pointer group"
       onClick={onViewTranscript}
     >
       <div className="relative h-[275px] bg-background-100 rounded-lg transition-all duration-200 group-hover:bg-background-200/50">
@@ -249,7 +245,7 @@ const UnsummarizedContent: React.FC<UnsummarizedContentProps> = ({ transcript, o
           ref={scrollRef} 
           className="custom-scrollbar h-full overflow-y-auto p-4"
         >
-          <p className="select-text pb-0 text-[15px] text-foreground/80 leading-relaxed whitespace-pre-wrap">
+          <p className="select-text text-[15px] text-foreground/80 leading-relaxed whitespace-pre-wrap">
             {highlightText(formatTranscript(transcript, "CardTranscript"), searchQuery)}
           </p>
         </div>

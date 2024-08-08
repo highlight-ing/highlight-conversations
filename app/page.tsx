@@ -81,7 +81,7 @@ const MainPage: React.FC = () => {
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
   const [tooltipsReady, setTooltipsReady] = useState(false);
   //MARK: Set this to false when in production!
-  const [debugOnboarding, setDebugOnboarding] = useState(true);
+  const [debugOnboarding, setDebugOnboarding] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   const filteredConversations = useMemo(() => {
@@ -294,7 +294,7 @@ const MainPage: React.FC = () => {
           action: 'Search Query Change',
           query: query
         });
-      }, 500), // 500ms debounce time
+      }, 1000), // 1000ms debounce time
     []
   );
 
@@ -365,6 +365,7 @@ const MainPage: React.FC = () => {
             isAudioEnabled={isAudioEnabled}
             isSleeping={isSleeping}
             searchQuery={searchQuery}
+            autoSaveTime={autoSaveValue}
             onMicActivityChange={handleMicActivityChange}
             addConversation={addConversation}
             onDeleteConversation={deleteConversation}

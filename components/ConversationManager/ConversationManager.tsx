@@ -13,6 +13,7 @@ interface ConversationsManagerProps {
   conversations: ConversationData[]
   isAudioEnabled: boolean
   isSleeping: boolean
+  autoSaveTime: number
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
@@ -25,6 +26,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   conversations,
   isAudioEnabled,
   isSleeping,
+  autoSaveTime,
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
@@ -164,6 +166,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       conversations={conversations}
       micActivity={micActivity}
       isAudioEnabled={isAudioEnabled}
+      autoSaveTime={autoSaveTime}
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
       onUpdate={onUpdateConversation}
