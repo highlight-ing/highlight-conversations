@@ -101,7 +101,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   }
 
   return (
-    <Card className={`w-full h-[432px] border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
+    <Card className={`w-full h-[415px] border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
       <CardHeader className="flex flex-row items-baseline justify-between">
         <CardTitle>Current Conversation</CardTitle>
         <div className="relative">

@@ -19,10 +19,10 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
   const [currentTooltip, setCurrentTooltip] = useState(0);
 
   const tooltips = useMemo(() => [
-    { id: ONBOARDING_HEADER, content: 'Adjust settings like audio input, auto-save, and auto-clear here.' },
-    { id: ONBOARDING_SEARCH, content: 'Search through your conversations to find specific conversations.' },
-    { id: ONBOARDING_CURRENT_CARD, content: 'This is the live feed of your transcriptions. The border animates to show audio input. Conversations will use both your microphone and system audio to generate transcriptions. You can manually save and copy the current conversation once there is text available.' },
-    { id: ONBOARDING_SAVED_CARD, content: 'View, copy, delete, or prompt with Highlight your saved conversations here.' },
+    // { id: ONBOARDING_HEADER, content: 'Adjust settings like audio input, auto-save, and auto-clear here.' },
+    // { id: ONBOARDING_SEARCH, content: 'Search through your conversations to find specific conversations.' },
+    { id: ONBOARDING_CURRENT_CARD, content: 'This is your current transcript. The border will animate when you have incoming audio. The transcript will automatically save after 10 seconds of silence, but you can click to save it at any point.' },
+    // { id: ONBOARDING_SAVED_CARD, content: 'View, copy, delete, or prompt with Highlight your saved conversations here.' },
   ], []);
 
   const addHighlight = useCallback((element: HTMLElement) => {
@@ -73,12 +73,17 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
   const currentTooltipData = tooltips[currentTooltip];
   const targetElement = document.getElementById(`${currentTooltipData.id}`);
 
-  const getOverlayStyle = useCallback(() => {
+  const [overlayStyle, setOverlayStyle] = useState({});
+
+  const updateOverlayStyle = useCallback(() => {
     const targetElement = document.getElementById(`${tooltips[currentTooltip].id}`);
-    if (!targetElement) return {};
+    if (!targetElement) {
+      setOverlayStyle({});
+      return;
+    }
 
     const rect = targetElement.getBoundingClientRect();
-    return {
+    setOverlayStyle({
       clipPath: `polygon(
         0% 0%,
         0% 100%,
@@ -91,8 +96,16 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
         100% 100%,
         100% 0%
       )`
-    };
+    });
   }, [currentTooltip, tooltips]);
+
+  useEffect(() => {
+    updateOverlayStyle();
+    window.addEventListener('resize', updateOverlayStyle);
+    return () => {
+      window.removeEventListener('resize', updateOverlayStyle);
+    };
+  }, [updateOverlayStyle]);
 
   if (!targetElement) return null;
 
@@ -127,7 +140,7 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
-          style={getOverlayStyle()}
+          style={overlayStyle}
         />
       </AnimatePresence>
       <div className="relative w-full h-full pointer-events-none">
@@ -135,8 +148,8 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
           className="absolute max-w-sm pointer-events-auto"
           style={tooltipStyle}
         >
-          <CardContent className="pt-6">
-            <p>{currentTooltipData.content}</p>
+          <CardContent>
+            <p className='pt-6'>{currentTooltipData.content}</p>
           </CardContent>
           <CardFooter>
             <Button onClick={handleNextTooltip} className="mt-2 bg-brand text-background">

@@ -80,9 +80,9 @@ const MainPage: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
   const [tooltipsReady, setTooltipsReady] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
   //MARK: Set this to false when in production!
   const [debugOnboarding, setDebugOnboarding] = useState(false);
-  const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conversation => {
