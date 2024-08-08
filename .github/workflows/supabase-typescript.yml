@@ -1,0 +1,19 @@
+name: Update Supabase Typescript definitions
+
+on:
+  pull_request:
+
+jobs:
+  update-supabase-types:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - run: npm run gen:supabase-types
+      # Commit all changed files back to the repository
+      - uses: stefanzweifel/git-auto-commit-action@v5

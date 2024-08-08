@@ -26,6 +26,10 @@ Note: Conversations must run inside the Highlight app to utilize the Highlight r
 
 Conversations should now be running and accessible through the Highlight app.
 
+## Supabase
+
+The sharing functionality for Highlight Conversations is powered by Supabase. On PRs, a GitHub action will automatically update the Supabase types along with dumping the latest Supabase schema. If you want to develop by yourself, you'll need to create a Supabase project and import the schema definition.
+
 ## Contributing
 
 We welcome contributions to Highlight Conversations! If you'd like to contribute, please follow these steps:
