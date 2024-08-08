@@ -13,6 +13,7 @@ interface ConversationsManagerProps {
   conversations: ConversationData[]
   isAudioEnabled: boolean
   isSleeping: boolean
+  autoSaveTime: number
   addConversation: (conversations: ConversationData) => void
   onDeleteConversation: (id: string) => void
   onMicActivityChange: (activity: number) => void
@@ -25,6 +26,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   conversations,
   isAudioEnabled,
   isSleeping,
+  autoSaveTime,
   addConversation,
   onMicActivityChange,
   onDeleteConversation,
@@ -34,7 +36,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   const [currentConversationParts, setCurrentConversationParts] = useState<string[]>([])
   const [micActivity, setMicActivity] = useState(0)
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const [nextTranscriptIn, setNextTranscriptIn] = useState(Math.round(INITIAL_POLL_INTERVAL / 1000))
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const lastActivityTimeRef = useRef(Date.now())
   const lastTranscriptTimeRef = useRef<number>(Date.now())
@@ -133,10 +134,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       setPollInterval(prev => Math.max(prev / 1.1, initialPollIntervalRef.current))
     } finally {
       isPollingRef.current = false;
-      // Round the pollInterval to the nearest second (1000ms)
-      setNextTranscriptIn(Math.round(pollInterval / 1000));
     }
-  }, [isSleeping, isAudioEnabled, pollInterval])
+  }, [isSleeping, isAudioEnabled])
 
   // Effect for polling mic activity
   useEffect(() => {
@@ -161,31 +160,13 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     };
   }, [pollTranscription, pollInterval]);
 
-    // Countdown effect
-    useEffect(() => {
-      const updateCountdown = () => {
-        setNextTranscriptIn((prev) => {
-          if (prev <= 0) return INITIAL_POLL_INTERVAL / 1000
-          return prev - 1
-        })
-      }
-  
-      countdownIntervalRef.current = setInterval(updateCountdown, 1000)
-  
-      return () => {
-        if (countdownIntervalRef.current) {
-          clearInterval(countdownIntervalRef.current)
-        }
-      }
-    }, [])
-
   return (
     <ConversationGrid
       currentConversation={getCurrentConversationString()} // Pass reversed (latest on top)
       conversations={conversations}
       micActivity={micActivity}
       isAudioEnabled={isAudioEnabled}
-      nextTranscriptIn={nextTranscriptIn}
+      autoSaveTime={autoSaveTime}
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}
       onUpdate={onUpdateConversation}

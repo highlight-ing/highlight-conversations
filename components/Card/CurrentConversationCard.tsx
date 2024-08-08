@@ -23,7 +23,7 @@ interface CurrentConversationCardProps {
   transcript: string;
   micActivity: number;
   isAudioEnabled: boolean;
-  nextTranscriptIn: number;
+  autoSaveTime: number;
   onSave: () => void
   searchQuery: string;
 }
@@ -32,7 +32,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   transcript,
   micActivity,
   isAudioEnabled,
-  nextTranscriptIn,
+  autoSaveTime,
   onSave,
   searchQuery,
 }) => {
@@ -101,7 +101,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   }
 
   return (
-    <Card className={`w-full h-[432px] border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
+    <Card className={`w-full h-[415px] border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
       <CardHeader className="flex flex-row items-baseline justify-between">
         <CardTitle>Current Conversation</CardTitle>
         <div className="relative">
@@ -124,11 +124,17 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
         {isAudioEnabled ? (
           <div className="flex flex-col h-full">
             <div className="space-y-2 mb-2 px-6">
-              {!transcript && <p className="text-sm font-medium">Listening ...</p>}
               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                <p>Next transcript in {nextTranscriptIn}s</p>
+                <p>Listening ...</p>
                 <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
               </div>
+            </div>
+            <div className="px-6 mb-4 text-sm text-muted-foreground">
+            {transcript ? (
+                <p>This transcript will save after {autoSaveTime} seconds of silence</p>
+              ) : (
+                <p>Transcript will generate after ~30 seconds of audio</p>
+              )}
             </div>
             <div className="relative flex-grow overflow-hidden">
               {showTopGradient && (
@@ -185,8 +191,8 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             ${isSaveDisabled ? 'cursor-not-allowed' : ''}`}
         >
           <span className="flex items-center gap-2">
-            Save
-            <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" />
+            Save Transcript Now
+            {/* <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" /> */}
           </span>
         </Button>
       </div>

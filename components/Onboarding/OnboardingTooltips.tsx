@@ -9,6 +9,7 @@ import {
     ONBOARDING_SAVED_CARD
 } from "@/constants/appConstants"
 import { trackEvent } from '@/lib/amplitude';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface OnboardingTooltipsProps {
   onComplete: () => void;
@@ -16,12 +17,14 @@ interface OnboardingTooltipsProps {
 
 const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) => {
   const [currentTooltip, setCurrentTooltip] = useState(0);
+  const [overlayStyle, setOverlayStyle] = useState({});
+  const [tooltipStyle, setTooltipStyle] = useState({});
 
   const tooltips = useMemo(() => [
-    { id: ONBOARDING_HEADER, content: 'Adjust settings like audio input, auto-save, and auto-clear here.' },
-    { id: ONBOARDING_SEARCH, content: 'Search through your conversations to find specific conversations.' },
+    // { id: ONBOARDING_HEADER, content: 'Adjust settings like audio input, auto-save, and auto-clear here.' },
+    // { id: ONBOARDING_SEARCH, content: 'Search through your conversations to find specific conversations.' },
     { id: ONBOARDING_CURRENT_CARD, content: 'This is the live feed of your transcriptions. The border animates to show audio input. Conversations will use both your microphone and system audio to generate transcriptions. You can manually save and copy the current conversation once there is text available.' },
-    { id: ONBOARDING_SAVED_CARD, content: 'View, copy, delete, or prompt with Highlight your saved conversations here.' },
+    // { id: ONBOARDING_SAVED_CARD, content: 'View, copy, delete, or prompt with Highlight your saved conversations here.' },
   ], []);
 
   const addHighlight = useCallback((element: HTMLElement) => {
@@ -53,15 +56,62 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
     }
   }, [currentTooltip, tooltips, removeHighlight, onComplete]);
 
-  useEffect(() => {
+  const updatePositioning = useCallback(() => {
     const targetElement = document.getElementById(`${tooltips[currentTooltip].id}`);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      addHighlight(targetElement);
+    if (!targetElement) {
+      setOverlayStyle({});
+      setTooltipStyle({});
+      return;
     }
 
-    return () => removeHighlight();
-  }, [currentTooltip, tooltips, removeHighlight, addHighlight]);
+    const rect = targetElement.getBoundingClientRect();
+
+    setOverlayStyle({
+      clipPath: `polygon(
+        0% 0%,
+        0% 100%,
+        ${rect.left}px 100%,
+        ${rect.left}px ${rect.top}px,
+        ${rect.right}px ${rect.top}px,
+        ${rect.right}px ${rect.bottom}px,
+        ${rect.left}px ${rect.bottom}px,
+        ${rect.left}px 100%,
+        100% 100%,
+        100% 0%
+      )`
+    });
+
+    let newTooltipStyle = {};
+    if (tooltips[currentTooltip].id === ONBOARDING_CURRENT_CARD) {
+      newTooltipStyle = {
+        top: `${rect.top}px`,
+        left: `${rect.right + 10}px`,
+      };
+    } else if (tooltips[currentTooltip].id === ONBOARDING_SAVED_CARD) {
+      newTooltipStyle = {
+        top: `${rect.top}px`,
+        right: `${window.innerWidth - rect.left + 10}px`,
+        left: 'auto',
+      };
+    } else {
+      newTooltipStyle = {
+        top: `${rect.bottom + 10}px`,
+        left: `${rect.left}px`,
+      };
+    }
+    setTooltipStyle(newTooltipStyle);
+  }, [currentTooltip, tooltips]);
+
+  useEffect(() => {
+    updatePositioning();
+    window.addEventListener('resize', updatePositioning);
+    window.addEventListener('scroll', updatePositioning);
+
+    return () => {
+      window.removeEventListener('resize', updatePositioning);
+      window.removeEventListener('scroll', updatePositioning);
+    };
+  }, [updatePositioning]);
 
   useEffect(() => {
     trackEvent('Conversations Interaction', {
@@ -70,35 +120,20 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
   }, []);
 
   const currentTooltipData = tooltips[currentTooltip];
-  const targetElement = document.getElementById(`${currentTooltipData.id}`);
-
-  if (!targetElement) return null;
-
-  const rect = targetElement.getBoundingClientRect();
-
-  let tooltipStyle = {};
-
-  if (currentTooltipData.id === ONBOARDING_CURRENT_CARD) {
-    tooltipStyle = {
-      top: `${rect.top + window.scrollY}px`,
-      left: `${rect.right + window.scrollX + 10}px`,
-    };
-  } else if (currentTooltipData.id === ONBOARDING_SAVED_CARD) {
-    tooltipStyle = {
-      top: `${rect.top + window.scrollY}px`,
-      right: `${window.innerWidth - rect.left + window.scrollX + 10}px`,
-      left: 'auto', // Reset left positioning
-    };
-  } else {
-    tooltipStyle = {
-      top: `${rect.bottom + window.scrollY + 10}px`,
-      left: `${rect.left + window.scrollX}px`,
-    };
-  }
 
   return (
-    <div className="fixed inset-0 z-50 pointer-events-none">
-      <div className="relative w-full h-full">
+    <div className="fixed inset-0 z-50 overflow-hidden">
+      <AnimatePresence>
+        <motion.div
+          key="overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+          style={overlayStyle}
+        />
+      </AnimatePresence>
+      <div className="fixed inset-0 pointer-events-none">
         <Card 
           className="absolute max-w-sm pointer-events-auto"
           style={tooltipStyle}

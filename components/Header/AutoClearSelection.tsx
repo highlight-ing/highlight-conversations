@@ -47,7 +47,7 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
           onValueChange={(selectedValue) => onChange(parseInt(selectedValue))}
           value={value.toString()}
         >
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className="w-[145px]">
             <SelectValue placeholder="Select" />
           </SelectTrigger>
           <SelectContent>

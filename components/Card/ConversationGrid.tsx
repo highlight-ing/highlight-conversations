@@ -13,7 +13,7 @@ interface ConversationGridProps {
   conversations: ConversationData[]
   micActivity: number
   isAudioEnabled: boolean
-  nextTranscriptIn: number
+  autoSaveTime: number
   onDeleteConversation: (id: string) => void
   onSave: () => void
   onUpdate: (updatedConversation: ConversationData) => void
@@ -25,7 +25,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   conversations,
   micActivity,
   isAudioEnabled,
-  nextTranscriptIn,
+  autoSaveTime,
   onDeleteConversation,
   onSave,
   onUpdate,
@@ -38,7 +38,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
           transcript={currentConversation}
           micActivity={micActivity}
           isAudioEnabled={isAudioEnabled}
-          nextTranscriptIn={nextTranscriptIn}
+          autoSaveTime={autoSaveTime}
           onSave={onSave}
           searchQuery={searchQuery}
         />

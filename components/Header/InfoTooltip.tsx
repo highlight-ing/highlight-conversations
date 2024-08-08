@@ -16,7 +16,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({ content, type }) => {
         <TooltipTrigger>
           <IoInformationCircleOutline className={`text-muted-foreground hover:text-brand transition-colors ${type === 'AUDIO_SWITCH' ? 'm-0' : 'mr-2'}`} />
         </TooltipTrigger>
-        <TooltipContent className="max-w-xs whitespace-pre-line text-muted-foreground bg-background/70 backdrop-blur-md rounded-lg shadow-lg p-2">
+        <TooltipContent className="max-w-xs whitespace-pre-line text-white bg-muted-foreground/20 backdrop-blur-md rounded-lg shadow-lg p-2">
           <p className='font-regular'>{content}</p>
         </TooltipContent>
       </Tooltip>
