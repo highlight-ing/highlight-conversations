@@ -197,9 +197,16 @@ const ConversationCardHeader: React.FC<{
               <Pencil1Icon className="inline-block ml-2 w-4 h-4 text-white/50 group-hover:text-white transition-colors duration-200" />
             </CardTitle>
           )}
-          <CardDescription className="text-[0.825rem] leading-relaxed text-white/50 font-medium">
-            {formatTimestamp(conversation.timestamp)}
-          </CardDescription>
+          <div className="flex items-center gap-2">
+            <CardDescription className="text-[0.825rem] leading-relaxed text-white/50 font-medium">
+              {formatTimestamp(conversation.timestamp)}
+            </CardDescription>
+            {conversation.summarized && (
+              <Badge className="text-xs text-foreground/75">
+                Summarized
+              </Badge>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <div className='relative'>
@@ -271,9 +278,6 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
       className="relative space-y-4 cursor-pointer group"
       onClick={onViewTranscript}
     >
-      <Badge className="mb-2">
-        Summarized
-      </Badge>
       <div className="relative h-[225px] bg-background-100 rounded-lg transition-all duration-200 group-hover:bg-background-200/50">
         {showTopGradient && (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background-100 to-transparent" />
