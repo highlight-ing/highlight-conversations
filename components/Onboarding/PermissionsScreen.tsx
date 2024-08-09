@@ -37,7 +37,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
     checkAudioPermission();
 
     const removeListener = addAudioPermissionListener((event: 'locked' | 'detect' | 'attach') => {
-      const newPermissionState = event === 'attach';
+      const newPermissionState = ['detect', 'attach'].includes(event);
       setIsAudioPermissionEnabled(newPermissionState);
     });
 
@@ -66,7 +66,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
   };
 
   return (
-    <OnboardingTemplate 
+    <OnboardingTemplate
       gradientTexts={gradientTexts}
       cardClassName={`
         ${areBothPermissionsEnabled ? 'border-brand bg-background/50' : 'border-border bg-background'}
@@ -90,7 +90,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
           )}
         </div>
         <p className="text-[16px] mt-2 mb-6 text-foreground-muted font-medium leading-relaxed">
-          {areBothPermissionsEnabled 
+          {areBothPermissionsEnabled
             ? "Conversations is ready to use 🎉"
             : "Enable Audio and Background permissions for Highlight"
           }
@@ -143,7 +143,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Button 
+            <Button
               onClick={onPermissionGranted}
               className={`w-full font-semibold text-md p-4 ${
                 areBothPermissionsEnabled 
