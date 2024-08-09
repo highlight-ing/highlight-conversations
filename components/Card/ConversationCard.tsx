@@ -32,9 +32,10 @@ interface ConversationCardProps {
   onDelete: (id: string) => void
   onUpdate: (updatedConversation: ConversationData) => void
   searchQuery: string
+  height: string; // Add height prop
 }
 
-const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete, searchQuery }) => {
+const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete, searchQuery, height }) => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [isViewTranscriptOpen, setIsViewTranscriptOpen] = useState(false)
 
@@ -72,7 +73,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
 
   return (
     <motion.div initial={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
-      <Card className="flex w-full flex-col rounded-lg bg-background-100 shadow">
+      <Card className={`flex w-full flex-col rounded-lg bg-background-100 shadow ${height}`}>
         <ConversationCardHeader 
           conversation={conversation} 
           onDelete={onDelete} 

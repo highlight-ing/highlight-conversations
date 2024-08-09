@@ -23,7 +23,7 @@ const AudioPermissionDialog: React.FC<AudioPermissionDialogProps> = ({ isAudioPe
         try { 
             setAudioSuperpowerEnabled(true)
         } catch (error) {
-            console.log('Error handle Enable Audio Transcript: ', error)
+            console.error('Error handle Enable Audio Transcript: ', error)
         }
     };
 

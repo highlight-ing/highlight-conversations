@@ -105,7 +105,6 @@ const openExternalApp = async (): Promise<void> => {
   if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
     try {
       await Highlight.app.openApp('highlightchat')
-      console.log('External app opened successfully')
     } catch (error) {
       console.error('Failed to open external app:', error)
     }
@@ -121,7 +120,6 @@ const sendAttachment = async (
   if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
     try {
       await window.highlight.internal.sendConversationAsAttachment(targetAppId, attachment)
-      console.log('Attachment sent successfully')
     } catch (error) {
       console.error('Error sending attachment:', error)
       throw error
@@ -137,70 +135,43 @@ interface ProcessedConversationData {
   summary: string
 }
 
+interface ProcessedConversationData {
+  topics: string[];
+  summary: string;
+}
+
 export const getTextPredictionFromHighlight = async (transcript: string): Promise<ProcessedConversationData> => {
   const messages: LLMMessage[] = [
     {
       role: 'system',
       content:
-        "Analyze the following conversation transcript and generate a JSON object containing the following fields: 'topics' (an array of main topics discussed), and 'summary' (a brief summary of the conversation). Ensure the output is valid JSON."
+        "Analyze the following conversation transcript and generate a JSON object containing the following fields: 'topics' (an array of main topics discussed), and 'summary' (a brief summary of the conversation). Your response must be valid JSON and nothing else. Do not include any explanations or markdown formatting. The response should be in this exact format: {\"topics\": [\"topic1\", \"topic2\", ...], \"summary\": \"Brief summary here\"}"
     },
     {
       role: 'user',
       content: transcript
     }
-  ]
+  ];
 
-  return new Promise(async (resolve, reject) => {
-    let accumulatedText = ''
+  let accumulatedText = '';
 
-    const predictionId = await window.highlight.internal.getTextPrediction(messages)
+  try {
+    const textPredictionStream = Highlight.inference.getTextPrediction(messages);
 
-    const updateListener = (event: any) => {
-      if (event.id === predictionId) {
-        accumulatedText += event.text
-      }
+    for await (const chunk of textPredictionStream) {
+      accumulatedText += chunk;
     }
 
-    const doneListener = (event: any) => {
-      if (event.id === predictionId) {
-        Highlight.removeEventListener('onTextPredictionUpdate', updateListener)
-        Highlight.removeEventListener('onTextPredictionDone', doneListener)
+    // Parse the accumulated text as JSON
+    const parsedData: ProcessedConversationData = JSON.parse(accumulatedText);
+    console.log('Parsed data:', parsedData);
+    return parsedData;
+  } catch (error) {
+    console.error('Error in text prediction or parsing:', error);
+    throw new Error('Failed to get or parse LLM output');
+  }
+};
 
-        try {
-          // Parse the accumulated text as JSON
-          const jsonStr = accumulatedText.replace(/^```json|```$/g, '').trim()
-          const parsedData: ProcessedConversationData = JSON.parse(jsonStr)
-          console.log('Parsed data:', parsedData)
-          resolve(parsedData)
-        } catch (error) {
-          console.error('Error parsing JSON:', error)
-          reject(new Error('Failed to parse LLM output as JSON'))
-        }
-      }
-    }
-
-    console.log('Adding event listeners')
-    Highlight.addEventListener('onTextPredictionUpdate', updateListener)
-    Highlight.addEventListener('onTextPredictionDone', doneListener)
-
-    // Optional: Add a timeout
-    const timeoutId = setTimeout(() => {
-      console.log('Timeout reached')
-      Highlight.removeEventListener('onTextPredictionUpdate', updateListener)
-      Highlight.removeEventListener('onTextPredictionDone', doneListener)
-      reject(new Error('Text prediction timed out'))
-    }, 60000) // 60 second timeout
-
-    // Clear timeout if prediction completes successfully
-    const clearTimeoutOnCompletion = (event: any) => {
-      if (event.id === predictionId) {
-        clearTimeout(timeoutId)
-        Highlight.removeEventListener('onTextPredictionDone', clearTimeoutOnCompletion)
-      }
-    }
-    Highlight.addEventListener('onTextPredictionDone', clearTimeoutOnCompletion)
-  })
-}
 
 const parsePrompts = (text: string): GeneratedPrompt[] => {
   return text
