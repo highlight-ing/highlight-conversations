@@ -1,0 +1,26 @@
+name: Update Supabase Typescript definitions
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  update-supabase-types:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - run: npm install
+      - run: npm run gen:supabase-types
+      - run: npx supabase db pull --db-url $SUPABASE_DB_URL
+        continue-on-error: true
+      # Commit all changed files back to the repository
+      - uses: stefanzweifel/git-auto-commit-action@v5

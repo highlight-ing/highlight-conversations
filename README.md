@@ -26,6 +26,19 @@ Note: Conversations must run inside the Highlight app to utilize the Highlight r
 
 Conversations should now be running and accessible through the Highlight app.
 
+## Supabase
+
+The sharing functionality for Highlight Conversations is powered by Supabase. On PRs, a GitHub action will automatically update the Supabase types along with creating migrations for any changes from Highlight's Supabase account.
+
+To start a local Supabase instance, run:
+
+```bash
+npx supabase start
+```
+
+This will run a Supabase docker container and start a local Supabase instance. Use the outputted values to update the `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in a `.env` file based on the `.env.sample` file.
+
+
 ## Contributing
 
 We welcome contributions to Highlight Conversations! If you'd like to contribute, please follow these steps:
