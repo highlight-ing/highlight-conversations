@@ -35,7 +35,9 @@ const IdleTimerSelection: React.FC<IdleTimerSelectionProps> = ({
   return (
     <div>
       <div className="flex flex-row items-center px-2">
-        <Label className="mr-1 text-muted-foreground" htmlFor="idleTimerSelection">Auto-save after</Label>
+        <InfoTooltip type='AUTO_SAVE' content={TOOLTIP_CONTENT.AUTO_SAVE}>
+          <Label className="mr-1 text-muted-foreground cursor-help" htmlFor="idleTimerSelection">Auto-save after</Label>
+        </InfoTooltip>
         <Select
           onValueChange={(selectedValue) => onIdleTimerChange(parseInt(selectedValue))}
           value={value?.toString() ?? ''}
@@ -54,7 +56,6 @@ const IdleTimerSelection: React.FC<IdleTimerSelectionProps> = ({
           </SelectContent>
         </Select>
         <Label className="m-1 text-muted-foreground">of silence</Label>
-        <InfoTooltip type='AUTO_SAVE' content={TOOLTIP_CONTENT.AUTO_SAVE} />
       </div>
     </div>
   )

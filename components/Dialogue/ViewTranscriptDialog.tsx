@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardIcon, TrashIcon } from '@/components/ui/icons';
@@ -111,10 +112,13 @@ export const ViewTranscriptDialog: React.FC<{
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-[80vw] max-w-[1200px]">
+          <DialogTitle asChild>
+            <VisuallyHidden.Root>View Transcript</VisuallyHidden.Root>
+          </DialogTitle>
           <DialogHeader className="flex flex-row items-center justify-between">
             <div className="flex flex-col">
               <h2 className="text-xl font-semibold leading-normal text-white">
-                {relativeTime || 'Moments ago'}
+                {conversation.title || relativeTime || 'Moments ago'}
               </h2>
               <p className="text-sm leading-normal text-white/60">
                 {formatTimestamp(conversation.timestamp)}
@@ -177,6 +181,9 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[80vw] max-w-[1200px] h-[80vh] flex flex-col">
+        <DialogTitle asChild>
+          <VisuallyHidden.Root>View Summarized Transcript</VisuallyHidden.Root>
+        </DialogTitle>
         <DialogHeader className="flex-shrink-0 flex flex-row items-center justify-between">
           <div className="flex flex-col">
             <h2 className="text-xl font-semibold leading-normal text-white">

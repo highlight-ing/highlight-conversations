@@ -26,6 +26,7 @@ interface CurrentConversationCardProps {
   autoSaveTime: number;
   onSave: () => void
   searchQuery: string;
+  height: string; // Added height prop
 }
 
 const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
@@ -35,6 +36,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   autoSaveTime,
   onSave,
   searchQuery,
+  height, // Use the height prop
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)
@@ -101,7 +103,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   }
 
   return (
-    <Card className={`w-full h-[415px] border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
+    <Card className={`w-full ${height} border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
       <CardHeader className="flex flex-row items-baseline justify-between">
         <CardTitle>Current Conversation</CardTitle>
         <div className="relative">

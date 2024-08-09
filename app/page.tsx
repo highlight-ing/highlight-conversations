@@ -135,10 +135,8 @@ const MainPage: React.FC = () => {
 
       // Set up audio permission listener
       const removeListener = addAudioPermissionListener((event: 'locked' | 'detect' | 'attach') => {
-        console.log('Audio permission update:', event);
         const newPermissionState = event === 'attach';
         setIsAudioPermissionEnabled(newPermissionState);
-        console.log('New audio permission state:', newPermissionState);
       });
 
       // // Clean up function
@@ -152,13 +150,11 @@ const MainPage: React.FC = () => {
 
   const initializeAudioSuperPower = async () => {
     const audioPermission = await getAudioSuperPowerEnabled();
-    console.log('Initial audio permission:', audioPermission);
     setIsAudioPermissionEnabled(audioPermission);
   };
 
   const initializeAudioEnabled = async () => {
     const audioEnabled = await getBooleanFromAppStorage(AUDIO_ENABLED_KEY, true);
-    console.log('Audio enabled:', audioEnabled);
     setIsAudioEnabled(audioEnabled);
   };
 

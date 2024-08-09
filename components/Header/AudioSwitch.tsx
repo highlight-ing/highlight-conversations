@@ -4,6 +4,7 @@ import { Switch } from '../ui/switch'
 import InfoTooltip from './InfoTooltip'
 import { TOOLTIP_CONTENT } from '@/constants/tooltipConstants'
 import { trackEvent } from '@/lib/amplitude'
+
 interface AudioSwitchProps {
     isAudioOn: boolean;
     onSwitch: (isOn: boolean) => void;
@@ -28,8 +29,9 @@ interface AudioSwitchProps {
   
     return (
       <div className="flex items-center space-x-2">
-        <Label className="text-muted-foreground" htmlFor="audio-switch">Microphone Input</Label>
-        <InfoTooltip type='AUDIO_SWITCH' content={TOOLTIP_CONTENT.AUDIO_SWITCH} />
+        <InfoTooltip type='AUDIO_SWITCH' content={TOOLTIP_CONTENT.AUDIO_SWITCH}>
+          <Label className="text-muted-foreground cursor-help" htmlFor="audio-switch">Microphone Input</Label>
+        </InfoTooltip>
         <Switch
           checked={isChecked}
           onCheckedChange={handleToggle}
