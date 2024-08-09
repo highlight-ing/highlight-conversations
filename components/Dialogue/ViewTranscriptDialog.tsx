@@ -118,7 +118,7 @@ export const ViewTranscriptDialog: React.FC<{
           <DialogHeader className="flex flex-row items-center justify-between">
             <div className="flex flex-col">
               <h2 className="text-xl font-semibold leading-normal text-white">
-                {relativeTime || 'Moments ago'}
+                {conversation.title || relativeTime || 'Moments ago'}
               </h2>
               <p className="text-sm leading-normal text-white/60">
                 {formatTimestamp(conversation.timestamp)}
