@@ -41,13 +41,16 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
   return (
     <div>
       <div className="flex flex-row items-center px-4">
-        <Label className="mr-2 text-muted-foreground" htmlFor="autoClearSelection">Auto Clear</Label>
-        <InfoTooltip type='AUTO_CLEAR' content={TOOLTIP_CONTENT.AUTO_CLEAR} />
+        <InfoTooltip type='AUTO_CLEAR' content={TOOLTIP_CONTENT.AUTO_CLEAR}>
+          <Label className="mr-2 text-muted-foreground cursor-help" htmlFor="autoClearSelection">
+            Auto-Clear
+          </Label>
+        </InfoTooltip>
         <Select
           onValueChange={(selectedValue) => onChange(parseInt(selectedValue))}
           value={value.toString()}
         >
-          <SelectTrigger className="w-[145px]">
+          <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="Select" />
           </SelectTrigger>
           <SelectContent>

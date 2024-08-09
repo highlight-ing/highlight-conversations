@@ -115,7 +115,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     try {
       const transcript = await fetchTranscript()
       if (transcript) {
-        console.log(`[${new Date().toISOString()}] Received transcript after ${timeSinceLastTranscript.toFixed(2)} seconds:`, transcript)
         setCurrentConversationParts(prevParts => {
           if (transcript.trim() && (prevParts.length === 0 || transcript.trim() !== prevParts[0])) {
             setPollInterval(prev => Math.min(prev * 1.5, maxPollIntervalRef.current))
@@ -126,7 +125,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
         lastActivityTimeRef.current = currentTime
         lastTranscriptTimeRef.current = currentTime
       } else {
-        console.log(`[${new Date().toISOString()}] No new transcript received. Time since last transcript: ${timeSinceLastTranscript.toFixed(2)} seconds`)
         setPollInterval(prev => Math.max(prev / 1.2, initialPollIntervalRef.current))
       }
     } catch (error) {

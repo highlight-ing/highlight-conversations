@@ -31,8 +31,10 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   onUpdate,
   searchQuery,
 }) => {
+  const cardHeight = "h-[415px]"; // Define the height here
+
   return (
-    <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
+    <div className="grid gap-4 p-4 sm:grid-cols-2 2xl:grid-cols-3">
       <div id={ONBOARDING_CURRENT_CARD}>
         <CurrentConversationCard
           transcript={currentConversation}
@@ -41,6 +43,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
           autoSaveTime={autoSaveTime}
           onSave={onSave}
           searchQuery={searchQuery}
+          height={cardHeight} // Pass the height prop
         />
       </div>
       <AnimatePresence>
@@ -58,6 +61,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
                 onUpdate={onUpdate}
                 onDelete={onDeleteConversation}
                 searchQuery={searchQuery}
+                height={cardHeight} // Pass the height prop
               />
             </div>
           </motion.div>
