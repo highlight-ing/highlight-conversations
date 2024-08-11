@@ -12,10 +12,11 @@ import { trackEvent } from '@/lib/amplitude';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface OnboardingTooltipsProps {
-  onComplete: () => void;
+  autoSaveSeconds: number
+  onComplete: () => void
 }
 
-const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) => {
+const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ autoSaveSeconds, onComplete }) => {
   const [currentTooltip, setCurrentTooltip] = useState(0);
   const [overlayStyle, setOverlayStyle] = useState({});
   const [tooltipStyle, setTooltipStyle] = useState({});
@@ -23,9 +24,9 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ onComplete }) =
   const tooltips = useMemo(() => [
     // { id: ONBOARDING_HEADER, content: 'Adjust settings like audio input, auto-save, and auto-clear here.' },
     // { id: ONBOARDING_SEARCH, content: 'Search through your conversations to find specific conversations.' },
-    { id: ONBOARDING_CURRENT_CARD, content: 'This is the live feed of your transcriptions. The border animates to show audio input. Conversations will use both your microphone and system audio to generate transcriptions. You can manually save and copy the current conversation once there is text available.' },
+    { id: ONBOARDING_CURRENT_CARD, content: `This is your current transcript. It will automatically save after ${autoSaveSeconds} seconds of silence, but you can click to save it at any point.` },
     // { id: ONBOARDING_SAVED_CARD, content: 'View, copy, delete, or prompt with Highlight your saved conversations here.' },
-  ], []);
+  ], [autoSaveSeconds]);
 
   const addHighlight = useCallback((element: HTMLElement) => {
     if (element.id === ONBOARDING_CURRENT_CARD) {

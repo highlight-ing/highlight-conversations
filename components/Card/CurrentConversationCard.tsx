@@ -26,7 +26,7 @@ interface CurrentConversationCardProps {
   autoSaveTime: number;
   onSave: () => void
   searchQuery: string;
-  height: string; // Added height prop
+  height: string;
 }
 
 const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
@@ -36,7 +36,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
   autoSaveTime,
   onSave,
   searchQuery,
-  height, // Use the height prop
+  height,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)
@@ -104,35 +104,41 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
 
   return (
     <Card className={`w-full ${height} border-2 ${borderClass} transition-all duration-300 bg-background-100 relative flex flex-col`}>
-      <CardHeader className="flex flex-row items-baseline justify-between">
-        <CardTitle>Current Conversation</CardTitle>
-        <div className="relative">
-          <button
-            onClick={handleCopyTranscript}
-            onMouseEnter={() => !isSaveDisabled && setCopyTooltipState('active')}
-            onMouseLeave={() => !isSaveDisabled && setCopyTooltipState('idle')}
-            className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
-              ${isSaveDisabled
-                ? 'text-muted-foreground/40 cursor-not-allowed'
-                : 'hover:text-brand'
-              }`}
-          >
-            <ClipboardIcon width={24} height={24} className="" />
-          </button>
-          {!isSaveDisabled && <Tooltip type="copy" state={copyTooltipState} />}
-        </div>
-      </CardHeader>
-      <CardContent className="flex-grow overflow-hidden p-0 flex flex-col">
-        {isAudioEnabled ? (
-          <div className="flex flex-col h-full">
-            <div className="space-y-2 mb-2 px-6">
-              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+      <div className="flex flex-col gap-0.5 px-8 pt-4">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <CardTitle className="text-xl font-bold leading-normal text-white">
+              Current Conversation
+            </CardTitle>
+            {isAudioEnabled && (
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground font-semibold">
                 <p>Listening ...</p>
                 <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
               </div>
-            </div>
-            <div className="px-6 mb-4 text-sm text-muted-foreground">
-            {transcript ? (
+            )}
+          </div>
+          <div className="relative">
+            <button
+              onClick={handleCopyTranscript}
+              onMouseEnter={() => !isSaveDisabled && setCopyTooltipState('active')}
+              onMouseLeave={() => !isSaveDisabled && setCopyTooltipState('idle')}
+              className={`text-muted-foreground transition-colors duration-200 flex items-center justify-center
+                ${isSaveDisabled
+                  ? 'text-muted-foreground/40 cursor-not-allowed'
+                  : 'hover:text-brand'
+                }`}
+            >
+              <ClipboardIcon width={24} height={24} className="" />
+            </button>
+            {!isSaveDisabled && <Tooltip type="copy" state={copyTooltipState} />}
+          </div>
+        </div>
+      </div>
+      <CardContent className="flex-grow overflow-hidden p-0 flex flex-col">
+        {isAudioEnabled ? (
+          <div className="flex flex-col h-full px-8">
+            <div className="mt-2 mb-2 text-sm font-medium text-muted-foreground">
+              {transcript ? (
                 <p>This transcript will save after {autoSaveTime} seconds of silence</p>
               ) : (
                 <p>Transcript will generate after ~30 seconds of audio</p>
@@ -145,7 +151,7 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
               {showBottomGradient && (
                 <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none"></div>
               )}
-              <div className="h-full overflow-y-auto custom-scrollbar px-6" ref={scrollRef}>
+              <div className="h-[275px] overflow-y-auto custom-scrollbar" ref={scrollRef}>
                 <AnimatePresence mode="wait">
                   {!transcript ? (
                     <motion.div
@@ -178,23 +184,21 @@ const CurrentConversationCard: React.FC<CurrentConversationCardProps> = ({
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full px-6">
+          <div className="flex items-center justify-center h-full px-8">
             <p className="text-center text-muted-foreground max-w-sm">
               Microphone input is disabled. Please enable it to receive transcripts of your conversations.
             </p>
           </div>
         )}
       </CardContent>
-      <div className="px-4 pb-4 pt-2">
+      <div className="px-4 pb-2 pt-4">
         <Button
           onClick={handleSaveTranscript}
           disabled={isSaveDisabled}
-          className={`w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand
-            ${isSaveDisabled ? 'cursor-not-allowed' : ''}`}
+          className="w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
         >
           <span className="flex items-center gap-2">
             Save Transcript Now
-            {/* <SaveIcon width={24} height={24} viewBox={"0 0 20 20"} className="" /> */}
           </span>
         </Button>
       </div>

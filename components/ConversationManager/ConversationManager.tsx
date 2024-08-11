@@ -67,7 +67,6 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     const checkIdleTime = () => {
       const currentTime = Date.now()
       const idleTime = currentTime - lastActivityTimeRef.current
-
       if (idleTime >= idleThreshold * 1000) {
         saveCurrentConversation()
         lastActivityTimeRef.current = currentTime
@@ -92,7 +91,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     setMicActivity(activity)
     onMicActivityChange(activity)
 
-    if (activity > 1) {
+    if (activity >= 1) {
       lastActivityTimeRef.current = Date.now()
     }
   }, [isSleeping, isAudioEnabled, onMicActivityChange])

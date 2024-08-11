@@ -40,14 +40,13 @@ import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
 import { initAmplitude, trackEvent } from '../lib/amplitude';
 import debounce from 'lodash.debounce'
 
-// TODO: - set to false or remove for production
-const IS_TEST_MODE = false
+
 const AUTO_CLEAR_POLL = 60000
+const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
 
 const clearOldConversations = (
   conversations: ConversationData[],
   autoClearValue: number,
-  isTestMode: boolean
 ): ConversationData[] => {
   if (!conversations || conversations.length === 0) {
     return []
@@ -58,7 +57,7 @@ const clearOldConversations = (
   return conversations.filter((conversation) => {
     const conversationDate = new Date(conversation.timestamp)
 
-    const diff = isTestMode ? minutesDifference(conversationDate, now) : daysDifference(conversationDate, now)
+    const diff = daysDifference(conversationDate, now)
 
     const shouldKeep = diff < autoClearValue
 
@@ -82,7 +81,7 @@ const MainPage: React.FC = () => {
   const [tooltipsReady, setTooltipsReady] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   //MARK: Set this to false when in production!
-  const [debugOnboarding, setDebugOnboarding] = useState(false);
+  const [debugOnboarding, setDebugOnboarding] = useState(DEBUG_ONBOARDING);
 
   const filteredConversations = useMemo(() => {
     return conversations.filter(conversation => {
@@ -169,7 +168,7 @@ const MainPage: React.FC = () => {
 
   useEffect(() => {
     const clearConversations = () => {
-      const updatedConversations = clearOldConversations(conversations, autoClearValue, IS_TEST_MODE)
+      const updatedConversations = clearOldConversations(conversations, autoClearValue)
       if (updatedConversations.length !== conversations.length) {
         setConversations(updatedConversations)
       }
@@ -369,7 +368,7 @@ const MainPage: React.FC = () => {
           />
         </AnimatePresence>
       </main>
-      {showOnboardingTooltips && tooltipsReady && <OnboardingTooltips onComplete={handleTooltipsComplete} />}
+      {showOnboardingTooltips && tooltipsReady && <OnboardingTooltips autoSaveSeconds={autoSaveValue} onComplete={handleTooltipsComplete} />}
     </div>
   )
 }
