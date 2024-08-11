@@ -24,8 +24,8 @@ import {
   HAS_SEEN_ONBOARDING_KEY,
 } from '@/services/highlightService'
 import { minutesDifference, daysDifference } from '@/utils/dateUtils'
-import { 
-  AUTO_SAVE_SEC, 
+import {
+  AUTO_SAVE_SEC,
   AUTO_CLEAR_DAYS,
   ONBOARDING_HEADER,
   ONBOARDING_SEARCH,
@@ -98,11 +98,11 @@ const MainPage: React.FC = () => {
   // useEffect(() => {
   //   requestBackgroundPermission()
   // }, [])
-  
+
   useEffect(() => {
     const initializeApp = async () => {
       console.log('Initializing app...');
-      
+
       // Perform migration
       await migrateFromLocalStorageToAppStorage()
       // Initialize audio state
@@ -121,20 +121,20 @@ const MainPage: React.FC = () => {
 
       // Load conversations
       let storedConversations = await getConversationsFromAppStorage();
-      
+
       // If there are no conversations and it's the first time (showOnboarding is true),
       // add a default conversation
       if (storedConversations.length === 0 && (!hasSeenOnboarding || debugOnboarding)) {
         storedConversations = [defaultConversation];
         await saveConversationsInAppStorage(storedConversations);
       }
-      
+
       setConversations(storedConversations);
       setIsInitialized(true)
 
       // Set up audio permission listener
       const removeListener = addAudioPermissionListener((event: 'locked' | 'detect' | 'attach') => {
-        const newPermissionState = event === 'attach';
+        const newPermissionState = ['detect', 'attach'].includes(event);
         setIsAudioPermissionEnabled(newPermissionState);
       });
 
