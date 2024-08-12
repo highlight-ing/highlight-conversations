@@ -1,4 +1,6 @@
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase';
+import { ConversationData } from '@/data/conversations';
+import SharePageComponent from '@/components/Share/SharePageComponent';
 
 interface SharePageProps {
   params: {
@@ -7,28 +9,24 @@ interface SharePageProps {
 }
 
 export default async function SharePage({ params }: SharePageProps) {
-  const { id } = params
+  const { id } = params;
 
-  // Lookup the conversation by the ID.
   const { data: conversation, error } = await supabase
     .from('conversations')
-    .select('*')
+    .select('contents')
     .eq('external_id', id)
-    .maybeSingle()
+    .single();
 
   if (error) {
-    console.error('Error fetching conversation', error)
-    return <div>Error: {error.message}</div>
+    console.error('Error fetching conversation', error);
+    return <div>Error: {error.message}</div>;
   }
 
   if (!conversation) {
-    return <div>Conversation not found</div>
+    return <div>Conversation not found</div>;
   }
 
-  return (
-    <div>
-      <h1>Shared Conversation</h1>
-      <p>{conversation.contents}</p>
-    </div>
-  )
+  const parsedConversation: ConversationData = JSON.parse(conversation.contents);
+
+  return <SharePageComponent conversation={parsedConversation} />;
 }

@@ -17,6 +17,7 @@ import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { trackEvent } from '@/lib/amplitude'
 import { Pencil1Icon } from '@radix-ui/react-icons';
+import { shareConversation } from '@/services/shareService';
 
 const highlightText = (text: string, query: string) => {
   if (!query) return text;
@@ -67,6 +68,22 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
     })
   }
 
+  const handleShare = async () => {
+    try {
+      const response = await fetch('/api/share-conversation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(conversation),
+      });
+      const data = await response.json();
+      console.log('Share URL:', data.shareUrl);
+    } catch (error) {
+      console.error('Error sharing conversation:', error);
+    }
+  };
+
   const handleUpdateTitle = (id: string, newTitle: string) => {
     onUpdate({ ...conversation, title: newTitle });
   };
@@ -87,14 +104,24 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
           )}
         </CardContent>
         <CardFooter className="px-4 pb-2">
-          <Button
-            onClick={handleAttachment}
-            className="w-full flex items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
-          >
-            <span className="flex items-center gap-2">
-              Attach to Chat
-            </span>
-          </Button>
+          <div className="flex w-full gap-2">
+            <Button
+              onClick={handleAttachment}
+              className="flex-1 items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
+            >
+              <span className="flex items-center gap-2">
+                Attach to Chat
+              </span>
+            </Button>
+            <Button
+              onClick={handleShare}
+              className="flex-1 items-center justify-center rounded-lg p-2 text-[15px] font-semibold transition-colors duration-200 bg-background text-foreground hover:bg-background hover:text-brand"
+            >
+              <span className="flex items-center gap-2">
+                Share
+              </span>
+            </Button>
+          </div>
         </CardFooter>
       </Card>
       <ProcessingDialog isProcessing={isProcessing} />
