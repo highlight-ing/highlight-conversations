@@ -13,7 +13,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 export async function shareConversation(conversation: ConversationData): Promise<string> {
   const slug = uuidv4();
-  
+  console.log('User ID:', conversation.userId)
   const { data, error } = await supabase
     .from('conversations')
     .insert({

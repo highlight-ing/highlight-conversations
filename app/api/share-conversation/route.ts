@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const conversation = await request.json()
+    conversation.userId = userId
     const shareUrl = await shareConversation(conversation)
     return NextResponse.json({ shareUrl })
   } catch (error) {
