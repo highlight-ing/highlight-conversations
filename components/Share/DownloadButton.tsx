@@ -7,7 +7,7 @@ const DownloadButton: React.FC = () => {
   return (
     <Button 
       onClick={() => window.location.href = "https://highlight.ing/apps/conversations"}
-      className="bg-brand text-background hover:bg-brand-light"
+      className="bg-brand text-background font-bold hover:bg-brand-light"
     >
       Download Conversations
     </Button>
