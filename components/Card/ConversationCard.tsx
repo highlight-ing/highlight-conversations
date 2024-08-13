@@ -11,13 +11,12 @@ import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
 import { Badge } from "@/components/ui/badge";
 import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
 import { Tooltip, TooltipState } from "@/components/Tooltip/Tooltip"
-import HighlightIcon from '@/components/ui/icons/HighlightIcon'
 import { sendAttachmentAndOpen } from '@/services/highlightService'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { trackEvent } from '@/lib/amplitude'
 import { Pencil1Icon } from '@radix-ui/react-icons';
-import { shareConversation } from '@/services/shareService';
+import ShareDialog from '@/components/Dialogue/Share/ShareDialog'
 
 const highlightText = (text: string, query: string) => {
   if (!query) return text;
@@ -37,14 +36,29 @@ interface ConversationCardProps {
 }
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpdate, onDelete, searchQuery, height }) => {
+  const [localConversation, setLocalConversation] = useState(conversation)
   const [isProcessing, setIsProcessing] = useState(false)
   const [isViewTranscriptOpen, setIsViewTranscriptOpen] = useState(false)
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
+  const [shareUrl, setShareUrl] = useState('')
+  const [shareStatus, setShareStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    setLocalConversation(conversation)
+  }, [conversation])
 
   const handleSummarize = async () => {
     setIsProcessing(true)
     try {
-      const processedConversation = await mockProcessConversation(conversation)
-      onUpdate({ ...processedConversation, summarized: true })
+      const processedConversation = await mockProcessConversation(localConversation)
+      const updatedConversation = { ...processedConversation, summarized: true }
+      setLocalConversation(updatedConversation)
+      onUpdate(updatedConversation)
     } catch (error) {
       console.error('Error processing conversation:', error)
     } finally {
@@ -61,7 +75,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
 
   const handleAttachment = async () => {
     let toAppId = 'highlightchat'
-    let transcript = conversation.transcript
+    let transcript = localConversation.transcript
     await sendAttachmentAndOpen(toAppId, transcript)
     trackEvent('Conversations Interaction', {
       action: 'Conversation Prompted with HL Chat',
@@ -69,38 +83,81 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
   }
 
   const handleShare = async () => {
+    setIsShareDialogOpen(true)
+
+    if (localConversation.shareLink) {
+      setShareUrl(localConversation.shareLink)
+      setShareStatus('success')
+      trackEvent('Conversations Interaction', {
+        action: 'Conversation Shared (Existing Link)',
+      })
+      return
+    }
+
+    setShareStatus('processing')
+
     try {
+      let updatedConversation = localConversation;
+      
+      if (!localConversation.summarized) {
+        const processedData = await mockProcessConversation(localConversation);
+        updatedConversation = {
+          ...localConversation,
+          title: processedData.title,
+          summary: processedData.summary,
+          topic: processedData.topic,
+          summarized: true
+        };
+        setLocalConversation(updatedConversation)
+        onUpdate(updatedConversation);
+      }
+
       const response = await fetch('/api/share-conversation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(conversation),
+        body: JSON.stringify(updatedConversation),
       });
       const data = await response.json();
-      console.log('Share URL:', data.shareUrl);
+      
+      updatedConversation = {
+        ...updatedConversation,
+        shareLink: data.shareUrl
+      };
+      setLocalConversation(updatedConversation)
+      onUpdate(updatedConversation);
+
+      setShareUrl(data.shareUrl);
+      setShareStatus('success');
+      trackEvent('Conversations Interaction', {
+        action: 'Conversation Shared (New Link)',
+      })
     } catch (error) {
       console.error('Error sharing conversation:', error);
+      setShareStatus('error');
     }
   };
 
   const handleUpdateTitle = (id: string, newTitle: string) => {
-    onUpdate({ ...conversation, title: newTitle });
+    const updatedConversation = { ...localConversation, title: newTitle };
+    setLocalConversation(updatedConversation);
+    onUpdate(updatedConversation);
   };
 
   return (
     <motion.div initial={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
       <Card className={`flex w-full flex-col rounded-lg bg-background-100 shadow ${height}`}>
         <ConversationCardHeader 
-          conversation={conversation} 
+          conversation={localConversation} 
           onDelete={onDelete} 
           onUpdateTitle={handleUpdateTitle}
         />
         <CardContent className="flex flex-grow flex-col px-4">
-          {conversation.summarized ? (
-            <SummarizedContent conversation={conversation} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
+          {localConversation.summarized ? (
+            <SummarizedContent conversation={localConversation} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
           ) : (
-            <UnsummarizedContent transcript={conversation.transcript} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
+            <UnsummarizedContent transcript={localConversation.transcript} onViewTranscript={handleOnViewTranscript} searchQuery={searchQuery} />
           )}
         </CardContent>
         <CardFooter className="px-4 pb-2">
@@ -128,10 +185,18 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
       <ViewTranscriptDialog 
         isOpen={isViewTranscriptOpen} 
         onClose={() => setIsViewTranscriptOpen(false)} 
-        conversation={conversation} 
+        conversation={localConversation} 
         onDelete={onDelete} 
         onSummarize={handleSummarize} 
       />
+      {isMounted && (
+        <ShareDialog 
+          isOpen={isShareDialogOpen}
+          onOpenChange={setIsShareDialogOpen}
+          status={shareStatus}
+          url={shareUrl}
+        />
+      )}
     </motion.div>
   )
 }
@@ -157,6 +222,10 @@ const ConversationCardHeader: React.FC<{
     }, 60000)
     return () => clearInterval(timer)
   }, [conversation.timestamp])
+
+  useEffect(() => {
+    setTitle(conversation.title || relativeTime);
+  }, [conversation.title, relativeTime]);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {

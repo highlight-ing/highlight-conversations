@@ -133,11 +133,7 @@ const sendAttachment = async (
 interface ProcessedConversationData {
   topics: string[]
   summary: string
-}
-
-interface ProcessedConversationData {
-  topics: string[];
-  summary: string;
+  title: string
 }
 
 export const getTextPredictionFromHighlight = async (transcript: string): Promise<ProcessedConversationData> => {
@@ -145,7 +141,7 @@ export const getTextPredictionFromHighlight = async (transcript: string): Promis
     {
       role: 'system',
       content:
-        "Analyze the following conversation transcript and generate a JSON object containing the following fields: 'topics' (an array of main topics discussed), and 'summary' (a brief summary of the conversation). Your response must be valid JSON and nothing else. Do not include any explanations or markdown formatting. The response should be in this exact format: {\"topics\": [\"topic1\", \"topic2\", ...], \"summary\": \"Brief summary here\"}"
+        "Analyze the following conversation transcript and generate a JSON object containing the following fields: 'topics' (an array of main topics discussed), 'summary' (a brief summary of the conversation), and 'title' (a concise title no more than 26 characters long). Your response must be valid JSON and nothing else. Do not include any explanations or markdown formatting. The response should be in this exact format: {\"topics\": [\"topic1\", \"topic2\", ...], \"summary\": \"Brief summary here\", \"title\": \"Concise title (max 26 chars)\"}"
     },
     {
       role: 'user',

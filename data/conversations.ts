@@ -8,6 +8,7 @@ export interface ConversationData {
   topic: string
   transcript: string
   summarized: boolean
+  shareLink: string
 }
 
 export type FormatType = "CardTranscript" | "DialogueTranscript"
@@ -22,6 +23,7 @@ export const createConversation = (transcript: string): ConversationData => {
     transcript: transcript,
     timestamp: new Date(),
     summarized: false,
+    shareLink: ''
   }
 }
 
@@ -107,5 +109,6 @@ export const defaultConversation: ConversationData = {
   summary: "",
   timestamp: new Date(),
   topic: "",
-  summarized: false
+  summarized: false,
+  shareLink: ""
 };

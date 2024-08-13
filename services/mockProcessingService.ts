@@ -7,7 +7,8 @@ export const mockProcessConversation = async (conversation: ConversationData): P
         return {
             ...conversation,
             topic: processedData.topics.join(', '), // Join topics into a single string
-            summary: processedData.summary
+            summary: processedData.summary,
+            title: processedData.title
         };
     } catch (error) {
         console.error("Error in mockProcessConversation:", error);
