@@ -12,7 +12,7 @@ export const processConversation = async (conversation: ConversationData, signal
             summarized: true
         };
     } catch (error) {
-        if (error.name === 'AbortError') {
+        if (error instanceof DOMException && error.name === 'AbortError') {
             console.log('Conversation processing was aborted');
             throw error; // Re-throw the AbortError
         }

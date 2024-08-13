@@ -117,10 +117,10 @@ export const ViewTranscriptDialog: React.FC<{
           </DialogTitle>
           <DialogHeader className="flex flex-row items-center justify-between">
             <div className="flex flex-col">
-              <h2 className="text-xl font-semibold leading-normal text-white">
+              <h2 className="text-xl font-semibold leading-normal text-foreground">
                 {conversation.title || relativeTime || 'Moments ago'}
               </h2>
-              <p className="text-sm leading-normal text-white/60">
+              <p className="text-sm leading-normal text-foreground/60">
                 {formatTimestamp(conversation.timestamp)}
               </p>
             </div>
@@ -143,7 +143,7 @@ export const ViewTranscriptDialog: React.FC<{
               <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-background to-transparent" />
             )}
             <div ref={scrollRef} className="scrollbar-hide h-full overflow-y-auto">
-              <p className="select-text text-sm font-regular text-white/80 whitespace-pre-wrap leading-relaxed">
+              <p className="select-text text-sm font-regular text-foreground/80 whitespace-pre-wrap leading-relaxed">
                 {formatTranscript(conversation.transcript, "DialogueTranscript")}
               </p>
             </div>
@@ -186,11 +186,11 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
         </DialogTitle>
         <DialogHeader className="flex-shrink-0 flex flex-row items-center justify-between">
           <div className="flex flex-col">
-            <h2 className="text-xl font-semibold leading-normal text-white">
-              {relativeTime || 'Moments ago'}
+            <h2 className="text-xl font-semibold leading-normal text-foreground">
+              {conversation.title || relativeTime || 'Moments ago'}
             </h2>
             <div className="flex items-center space-x-2">
-              <p className="text-sm leading-normal text-white/60">
+              <p className="text-sm leading-normal text-foreground/60">
                 {formatTimestamp(conversation.timestamp)}
               </p>
               <Badge>Summarized</Badge>
@@ -201,15 +201,15 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
             <DeleteButton onDelete={onDelete} />
           </div>
         </DialogHeader>
-        <div className="h-px bg-white/10 my-2 w-full flex-shrink-0" />
+        <div className="h-px bg-foreground/10 w-full flex-shrink-0" />
         <div className="flex flex-col flex-grow overflow-hidden">
           <div className="flex-shrink-0 mb-4">
-            <h3 className="text-lg font-semibold mb-2 text-white">Summary</h3>
-            <p className="text-sm text-white/80">{conversation.summary}</p>
+            <h3 className="text-lg font-semibold mb-2 text-foreground">Summary</h3>
+            <p className="text-sm text-foreground/80">{conversation.summary}</p>
           </div>
           <div className="h-px bg-white/10 my-2 w-full flex-shrink-0" />
           <div className="flex-grow flex flex-col min-h-0">
-            <h3 className="text-lg font-semibold mb-2 text-white flex-shrink-0">Transcript</h3>
+            <h3 className="text-lg font-semibold mb-2 text-foreground flex-shrink-0">Transcript</h3>
             <div className="relative flex-grow overflow-hidden">
               {showTopGradient && (
                 <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background to-transparent" />
@@ -218,7 +218,7 @@ const SummarizedViewTranscriptDialog: React.FC<SummarizedViewTranscriptDialogPro
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-background to-transparent" />
               )}
               <div ref={transcriptScrollRef} className="scrollbar-hide absolute inset-0 overflow-y-auto">
-                <p className="select-text text-sm font-regular text-white/60 whitespace-pre-wrap leading-relaxed">
+                <p className="select-text text-sm font-regular text-foreground/60 whitespace-pre-wrap leading-relaxed">
                   {formatTranscript(conversation.transcript, "DialogueTranscript")}
                 </p>
               </div>

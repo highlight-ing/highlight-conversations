@@ -19,8 +19,6 @@ import { Pencil1Icon } from '@radix-ui/react-icons'
 import ShareDialog from '@/components/Dialogue/Share/ShareDialog'
 import { getAccessToken } from '@/services/highlightService'
 
-type AbortError = Error & { name: 'AbortError' }
-
 const highlightText = (text: string, query: string) => {
   if (!query) return text
   const parts = text.split(new RegExp(`(${query})`, 'gi'))
@@ -56,21 +54,6 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
   const [shareUrl, setShareUrl] = useState('')
   const [shareStatus, setShareStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
-  const [isMounted, setIsMounted] = useState(false)
-  const shareTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const abortControllerRef = useRef<AbortController | null>(null)
-
-  useEffect(() => {
-    setIsMounted(true)
-    return () => {
-      if (shareTimeoutRef.current) {
-        clearTimeout(shareTimeoutRef.current)
-      }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-    }
-  }, [])
 
   useEffect(() => {
     setLocalConversation(conversation)
@@ -119,22 +102,14 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
       return
     }
 
-    // Set up timeout
-    shareTimeoutRef.current = setTimeout(() => {
-      setShareStatus('error')
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-    }, 15000) // 15 seconds timeout
-
-    // Set up abort controller
-    abortControllerRef.current = new AbortController()
+    const abortController = new AbortController()
+    const timeoutId = setTimeout(() => abortController.abort(), 15000) // 15 seconds timeout
 
     try {
       let updatedConversation = localConversation
 
       if (!localConversation.summarized) {
-        updatedConversation = await processConversation(localConversation, abortControllerRef.current.signal)
+        updatedConversation = await processConversation(localConversation, abortController.signal)
         setLocalConversation(updatedConversation)
         onUpdate(updatedConversation)
       }
@@ -148,8 +123,13 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
           Authorization: `Bearer ${accessToken}`
         },
         body: JSON.stringify(updatedConversation),
-        signal: abortControllerRef.current.signal
+        signal: abortController.signal
       })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
       const data = await response.json()
 
       updatedConversation = {
@@ -165,28 +145,21 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
         action: 'Conversation Shared (New Link)'
       })
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (error instanceof DOMException && error.name === 'AbortError') {
         console.log('Share operation was aborted')
+        setShareStatus('error')
       } else {
         console.error('Error sharing conversation:', error)
         setShareStatus('error')
       }
     } finally {
-      if (shareTimeoutRef.current) {
-        clearTimeout(shareTimeoutRef.current)
-      }
+      clearTimeout(timeoutId)
     }
   }
 
   const handleShareDialogClose = () => {
     setIsShareDialogOpen(false)
     setShareStatus('idle')
-    if (shareTimeoutRef.current) {
-      clearTimeout(shareTimeoutRef.current)
-    }
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort()
-    }
   }
 
   const handleUpdateTitle = (id: string, newTitle: string) => {
@@ -243,14 +216,12 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
         onDelete={onDelete}
         onSummarize={handleSummarize}
       />
-      {isMounted && (
-        <ShareDialog
-          isOpen={isShareDialogOpen}
-          onOpenChange={handleShareDialogClose}
-          status={shareStatus}
-          url={shareUrl}
-        />
-      )}
+      <ShareDialog
+        isOpen={isShareDialogOpen}
+        onOpenChange={handleShareDialogClose}
+        status={shareStatus}
+        url={shareUrl}
+      />
     </motion.div>
   )
 }

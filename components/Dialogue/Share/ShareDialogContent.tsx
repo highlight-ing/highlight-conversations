@@ -43,13 +43,13 @@ const ProcessingContent: React.FC = () => (
 )
 
 const SuccessContent: React.FC<{ url: string; onCopy: () => void; isCopied: boolean }> = ({ url, onCopy, isCopied }) => (
-  <div className="py-4">
+  <div className="py-2">
     <TooltipProvider>
       <Tooltip open={isCopied}>
         <TooltipTrigger asChild>
           <div 
             onClick={onCopy}
-            className="text-foreground select-text hover:text-brand cursor-pointer whitespace-nowrap overflow-x-auto max-w-full"
+            className="text-foreground select-text hover:text-brand cursor-pointer whitespace-nowrap overflow-x-auto max-w-full font-medium"
           >
             {url}
           </div>
@@ -63,7 +63,7 @@ const SuccessContent: React.FC<{ url: string; onCopy: () => void; isCopied: bool
 )
 
 const ErrorContent: React.FC = () => (
-  <div className="py-4 text-destructive">
+  <div className="py-2 text-destructive">
     Failed to share conversation. Please try again.
   </div>
 )

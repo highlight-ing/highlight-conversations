@@ -162,7 +162,7 @@ export const getTextPredictionFromHighlight = async (
     console.log('Parsed data:', parsedData)
     return parsedData
   } catch (error) {
-    if (error.name === 'AbortError') {
+    if (error instanceof DOMException && error.name === 'AbortError') {
       console.log('Text prediction was aborted')
       throw error
     }
