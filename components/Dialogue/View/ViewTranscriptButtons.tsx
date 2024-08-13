@@ -1,4 +1,5 @@
-import { ClipboardIcon, TrashIcon } from '@/components/ui/icons';
+import { ClipboardIcon } from '@/components/ui/icons';
+import { Export } from "iconsax-react";
 import { Tooltip, TooltipState} from '@/components/Tooltip/Tooltip'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
 
@@ -29,3 +30,23 @@ interface CopyButtonProps {
   export const DeleteButton: React.FC<DeleteButtonProps> = ({ onDelete }) => (
     <DeleteConversationDialog onDelete={onDelete} />
   );
+
+interface ShareButtonProps {
+  onClick: () => void
+  shareState: TooltipState
+  setShareTooltipState: (state: TooltipState) => void
+}
+
+export const ShareButton: React.FC<ShareButtonProps> = ({ onClick, shareState, setShareTooltipState }) => (
+  <div className='relative'>
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setShareTooltipState('active')}
+      onMouseLeave={() => setShareTooltipState('idle')}
+      className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-brand"
+    >
+      <Export size={24} />
+      <Tooltip type='share' state={shareState} />
+    </button>
+  </div>
+);

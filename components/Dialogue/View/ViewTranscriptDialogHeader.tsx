@@ -2,7 +2,7 @@ import React from 'react';
 import { DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CopyButton, DeleteButton } from "./ViewTranscriptButtons"
+import { CopyButton, DeleteButton, ShareButton } from "./ViewTranscriptButtons"
 import { LightningBoltIcon } from "@radix-ui/react-icons";
 import { TooltipState} from '@/components/Tooltip/Tooltip'
 

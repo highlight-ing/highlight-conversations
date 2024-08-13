@@ -381,8 +381,8 @@ const SummarizedContent: React.FC<SummarizedContentProps> = ({ conversation, onV
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)
 
   return (
-    <div className="group relative cursor-pointer space-y-4" onClick={onViewTranscript}>
-      <div className="relative h-[225px] rounded-lg bg-background-100 transition-all duration-200 group-hover:bg-background-200/50">
+    <div className="group relative cursor-pointer" onClick={onViewTranscript}>
+      <div className="relative h-[275px] rounded-lg bg-background-100 transition-all duration-200 group-hover:bg-background-200/50">
         {showTopGradient && (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background-100 to-transparent" />
         )}
