@@ -1,6 +1,6 @@
 import '@/app/globals.css'
 import Header from '@/components/Share/Header'
-
+import Footer from '@/components/Share/Footer'
 export default function ShareLayout({
   children,
 }: {
@@ -12,6 +12,7 @@ export default function ShareLayout({
       <main className="flex-grow">
         {children}
       </main>
+      <Footer />
     </div>
   )
 }

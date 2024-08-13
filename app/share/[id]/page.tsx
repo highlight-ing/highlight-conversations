@@ -21,12 +21,12 @@ export default async function SharePage({ params }: SharePageProps) {
 
     if (error) {
       console.error('Error fetching conversation', error);
-      return <div className="p-8 text-red-500">Error: {error.message}</div>;
+      return <div className="p-8 text-destructive">Error: {error.message}</div>;
     }
 
     if (!conversation) {
       console.log('Conversation not found');
-      return <div className="p-8 text-red-500">Conversation not found</div>;
+      return <div className="p-8 text-destructive">Conversation not found</div>;
     }
 
     let parsedConversation: ConversationData;
@@ -35,7 +35,7 @@ export default async function SharePage({ params }: SharePageProps) {
       parsedConversation.timestamp = new Date(parsedConversation.timestamp);
     } catch (parseError) {
       console.error('Error parsing conversation data:', parseError);
-      return <div className="p-8 text-red-500">Error: Invalid conversation data</div>;
+      return <div className="p-8 text-destructive">Error: Invalid conversation data</div>;
     }
 
     return (
@@ -45,6 +45,6 @@ export default async function SharePage({ params }: SharePageProps) {
     );
   } catch (error) {
     console.error('Unexpected error in SharePage:', error);
-    return <div className="p-8 text-red-500">An unexpected error occurred</div>;
+    return <div className="p-8 text-destructive">An unexpected error occurred</div>;
   }
 }
