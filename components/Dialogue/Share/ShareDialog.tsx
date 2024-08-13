@@ -20,7 +20,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ isOpen, onOpenChange, status,
             {status === 'error' && 'Error with Share Link'}
           </DialogTitle>
         </DialogHeader>
-        <ShareDialogContent status={status} url={url} />
+        <ShareDialogContent status={status} url={url} onClose={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   )

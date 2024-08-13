@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardFooter, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import ProcessingDialog from '@/components/Dialogue/ProcessingDialog'
-import { mockProcessConversation } from '@/services/mockProcessingService'
+import { processConversation } from '@/services/processConversationService'
 import { ClipboardIcon, TrashIcon } from '@/components/ui/icons'
 import { Badge } from "@/components/ui/badge";
 import { ViewTranscriptDialog } from "@/components/Dialogue/ViewTranscriptDialog"
@@ -17,6 +17,8 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { trackEvent } from '@/lib/amplitude'
 import { Pencil1Icon } from '@radix-ui/react-icons';
 import ShareDialog from '@/components/Dialogue/Share/ShareDialog'
+
+type AbortError = Error & { name: 'AbortError' };
 
 const highlightText = (text: string, query: string) => {
   if (!query) return text;
@@ -43,9 +45,19 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
   const [shareUrl, setShareUrl] = useState('')
   const [shareStatus, setShareStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
   const [isMounted, setIsMounted] = useState(false)
+  const shareTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     setIsMounted(true)
+    return () => {
+      if (shareTimeoutRef.current) {
+        clearTimeout(shareTimeoutRef.current)
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
   }, [])
 
   useEffect(() => {
@@ -55,7 +67,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
   const handleSummarize = async () => {
     setIsProcessing(true)
     try {
-      const processedConversation = await mockProcessConversation(localConversation)
+      const processedConversation = await processConversation(localConversation)
       const updatedConversation = { ...processedConversation, summarized: true }
       setLocalConversation(updatedConversation)
       onUpdate(updatedConversation)
@@ -84,6 +96,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
 
   const handleShare = async () => {
     setIsShareDialogOpen(true)
+    setShareStatus('processing')
 
     if (localConversation.shareLink) {
       setShareUrl(localConversation.shareLink)
@@ -94,20 +107,22 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
       return
     }
 
-    setShareStatus('processing')
+    // Set up timeout
+    shareTimeoutRef.current = setTimeout(() => {
+      setShareStatus('error')
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }, 15000) // 15 seconds timeout
+
+    // Set up abort controller
+    abortControllerRef.current = new AbortController()
 
     try {
       let updatedConversation = localConversation;
       
       if (!localConversation.summarized) {
-        const processedData = await mockProcessConversation(localConversation);
-        updatedConversation = {
-          ...localConversation,
-          title: processedData.title,
-          summary: processedData.summary,
-          topic: processedData.topic,
-          summarized: true
-        };
+        updatedConversation = await processConversation(localConversation, abortControllerRef.current.signal);
         setLocalConversation(updatedConversation)
         onUpdate(updatedConversation);
       }
@@ -118,6 +133,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedConversation),
+        signal: abortControllerRef.current.signal
       });
       const data = await response.json();
       
@@ -134,10 +150,29 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
         action: 'Conversation Shared (New Link)',
       })
     } catch (error) {
-      console.error('Error sharing conversation:', error);
-      setShareStatus('error');
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('Share operation was aborted');
+      } else {
+        console.error('Error sharing conversation:', error);
+        setShareStatus('error');
+      }
+    } finally {
+      if (shareTimeoutRef.current) {
+        clearTimeout(shareTimeoutRef.current)
+      }
     }
   };
+
+  const handleShareDialogClose = () => {
+    setIsShareDialogOpen(false)
+    setShareStatus('idle')
+    if (shareTimeoutRef.current) {
+      clearTimeout(shareTimeoutRef.current)
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+  }
 
   const handleUpdateTitle = (id: string, newTitle: string) => {
     const updatedConversation = { ...localConversation, title: newTitle };
@@ -192,7 +227,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, onUpd
       {isMounted && (
         <ShareDialog 
           isOpen={isShareDialogOpen}
-          onOpenChange={setIsShareDialogOpen}
+          onOpenChange={handleShareDialogClose}
           status={shareStatus}
           url={shareUrl}
         />

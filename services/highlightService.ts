@@ -136,7 +136,7 @@ interface ProcessedConversationData {
   title: string
 }
 
-export const getTextPredictionFromHighlight = async (transcript: string): Promise<ProcessedConversationData> => {
+export const getTextPredictionFromHighlight = async (transcript: string, signal?: AbortSignal): Promise<ProcessedConversationData> => {
   const messages: LLMMessage[] = [
     {
       role: 'system',
@@ -155,6 +155,9 @@ export const getTextPredictionFromHighlight = async (transcript: string): Promis
     const textPredictionStream = Highlight.inference.getTextPrediction(messages);
 
     for await (const chunk of textPredictionStream) {
+      if (signal?.aborted) {
+        throw new DOMException('Aborted', 'AbortError');
+      }
       accumulatedText += chunk;
     }
 
@@ -163,6 +166,10 @@ export const getTextPredictionFromHighlight = async (transcript: string): Promis
     console.log('Parsed data:', parsedData);
     return parsedData;
   } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Text prediction was aborted');
+      throw error;
+    }
     console.error('Error in text prediction or parsing:', error);
     throw new Error('Failed to get or parse LLM output');
   }

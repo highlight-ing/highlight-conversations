@@ -1,17 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DialogDescription } from "@/components/ui/dialog"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface ShareDialogContentProps {
   status: 'idle' | 'processing' | 'success' | 'error'
   url: string
+  onClose: () => void
 }
 
-const ShareDialogContent: React.FC<ShareDialogContentProps> = ({ status, url }) => {
+const ShareDialogContent: React.FC<ShareDialogContentProps> = ({ status, url, onClose }) => {
+  const [isCopied, setIsCopied] = useState(false);
+
   const handleCopyShareUrl = () => {
     navigator.clipboard.writeText(url)
       .then(() => {
-        // Optionally show a "Copied!" message
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+          onClose();
+        }, 500); // Close dialog after 1.5 seconds
       })
       .catch((err) => {
         console.error('Failed to copy: ', err);
@@ -22,7 +29,7 @@ const ShareDialogContent: React.FC<ShareDialogContentProps> = ({ status, url }) 
     <DialogDescription asChild>
       <div className={`w-full ${status === 'processing' ? 'min-w-[300px]' : ''}`}>
         {status === 'processing' && <ProcessingContent />}
-        {status === 'success' && <SuccessContent url={url} onCopy={handleCopyShareUrl} />}
+        {status === 'success' && <SuccessContent url={url} onCopy={handleCopyShareUrl} isCopied={isCopied} />}
         {status === 'error' && <ErrorContent />}
       </div>
     </DialogDescription>
@@ -30,15 +37,15 @@ const ShareDialogContent: React.FC<ShareDialogContentProps> = ({ status, url }) 
 }
 
 const ProcessingContent: React.FC = () => (
-  <div className="flex justify-center items-center h-24 px-8">
+  <div className="flex justify-center items-center h-24">
     <div className="animate-spin h-8 w-8 border-4 border-brand border-t-transparent rounded-full"></div>
   </div>
 )
 
-const SuccessContent: React.FC<{ url: string; onCopy: () => void }> = ({ url, onCopy }) => (
-  <div className="py-4 px-8">
+const SuccessContent: React.FC<{ url: string; onCopy: () => void; isCopied: boolean }> = ({ url, onCopy, isCopied }) => (
+  <div className="py-4">
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip open={isCopied}>
         <TooltipTrigger asChild>
           <div 
             onClick={onCopy}
@@ -48,7 +55,7 @@ const SuccessContent: React.FC<{ url: string; onCopy: () => void }> = ({ url, on
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Click to copy</span>
+          <span>{isCopied ? "Copied!" : "Click to copy"}</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -56,7 +63,7 @@ const SuccessContent: React.FC<{ url: string; onCopy: () => void }> = ({ url, on
 )
 
 const ErrorContent: React.FC = () => (
-  <div className="py-4 px-8 text-destructive">
+  <div className="py-4 text-destructive">
     Failed to share conversation. Please try again.
   </div>
 )
