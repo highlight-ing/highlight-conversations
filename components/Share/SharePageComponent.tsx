@@ -1,8 +1,8 @@
 import React from 'react'
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { ConversationData } from '@/data/conversations'
-import TranscriptSearch from './TranscriptSearch'
+import ScrollableTranscript from './ScrollableTranscript'
 
 interface SharePageComponentProps {
   conversation: ConversationData;
@@ -22,7 +22,7 @@ const SharePageComponent: React.FC<SharePageComponentProps> = ({ conversation })
             {formatTimestamp(conversation.timestamp)}
           </p>
           {conversation.topic && (
-            <p className = "text-sm text-foreground/70">
+            <p className="text-sm text-foreground/70">
               Topics: {conversation.topic}
             </p>
           )}
@@ -41,8 +41,11 @@ const SharePageComponent: React.FC<SharePageComponentProps> = ({ conversation })
       )}
 
       <Card className="flex-grow flex flex-col min-h-0 mb-2 bg-background-100">
+        <CardHeader>
+          <h2 className="text-xl font-semibold">Transcript</h2>
+        </CardHeader>
         <CardContent className="flex-grow overflow-hidden">
-          <TranscriptSearch conversation={conversation} />
+          <ScrollableTranscript transcript={conversation.transcript} />
         </CardContent>
       </Card>
     </div>
