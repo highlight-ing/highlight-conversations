@@ -1,37 +1,52 @@
-import React from 'react';
-import { ConversationData, formatTranscript } from '@/data/conversations';
-import { formatTimestamp } from '@/utils/dateUtils';
-import { Button } from '@/components/ui/button';
+import React from 'react'
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
+import { ConversationData } from '@/data/conversations'
+import ScrollableTranscript from './ScrollableTranscript'
 
 interface SharePageComponentProps {
   conversation: ConversationData;
 }
 
 const SharePageComponent: React.FC<SharePageComponentProps> = ({ conversation }) => {
+  const relativeTime = getRelativeTimeString(conversation.timestamp);
+
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-4">{conversation.title || 'Shared Conversation'}</h1>
-      <p className="text-gray-500 mb-8">{formatTimestamp(conversation.timestamp)}</p>
-      
-      {conversation.summarized && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-2">Summary</h2>
-          <p>{conversation.summary}</p>
-        </div>
+    <div className="h-[calc(100vh-4rem)] flex flex-col p-4 max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto">
+      <Card className="flex-shrink-0 mb-4">
+        <CardHeader>
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
+            {conversation.title || relativeTime || 'Shared Conversation'}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {formatTimestamp(conversation.timestamp)}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Shared by Anon {/* {conversation.sharedBy || 'Anonymous'} */}
+          </p>
+        </CardHeader>
+      </Card>
+
+      {conversation.summarized && conversation.summary && (
+        <Card className="flex-shrink-0 mb-4">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h2 className="text-xl font-semibold">Summary</h2>
+          </CardHeader>
+          <CardContent>
+            <p className="select-text text-foreground/80">{conversation.summary}</p>
+          </CardContent>
+        </Card>
       )}
-      
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Transcript</h2>
-        <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded">
-          {formatTranscript(conversation.transcript, "DialogueTranscript")}
-        </pre>
-      </div>
-      
-      <div className="mt-8">
-        <Button onClick={() => window.location.href = "https://highlight.ing/download"}>
-          Download Highlight
-        </Button>
-      </div>
+
+      <Card className="flex-grow flex flex-col min-h-0 mb-4">
+        <CardHeader className="flex-shrink-0">
+          <h2 className="text-xl font-semibold">Transcript</h2>
+        </CardHeader>
+        <CardContent className="flex-grow overflow-hidden">
+          <ScrollableTranscript transcript={conversation.transcript} />
+        </CardContent>
+      </Card>
     </div>
   );
 };

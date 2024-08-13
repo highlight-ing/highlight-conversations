@@ -26,5 +26,5 @@ export async function shareConversation(conversation: ConversationData): Promise
     throw new Error(`Error sharing conversation: ${error.message}`);
   }
 
-  return `https://conversations.app.highlight.ing//share/${slug}`;
+  return `https://conversations.app.highlight.ing/share/${slug}`;
 }
