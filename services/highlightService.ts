@@ -89,15 +89,12 @@ export const setAudioSuperpowerEnabled = async (enabled: boolean): Promise<void>
   await window.highlight.internal.setAudioSuperpowerEnabled(enabled)
 }
 
-export const sendAttachmentAndOpen = async (
-  targetAppId: string,
-  attachment: string
-): Promise<void> => {
+export const sendAttachmentAndOpen = async (targetAppId: string, attachment: string): Promise<void> => {
   await openExternalApp()
-  
+
   // Add a 2-second delay
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
   await sendAttachment(targetAppId, attachment)
 }
 
@@ -113,10 +110,7 @@ const openExternalApp = async (): Promise<void> => {
   }
 }
 
-const sendAttachment = async (
-  targetAppId: string,
-  attachment: string
-): Promise<void> => {
+const sendAttachment = async (targetAppId: string, attachment: string): Promise<void> => {
   if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
     try {
       await window.highlight.internal.sendConversationAsAttachment(targetAppId, attachment)
@@ -127,51 +121,55 @@ const sendAttachment = async (
   } else {
     throw new Error('sendAttachment function is not available')
   }
-
 }
 
 interface ProcessedConversationData {
   topics: string[]
   summary: string
+  title: string
 }
 
-interface ProcessedConversationData {
-  topics: string[];
-  summary: string;
-}
-
-export const getTextPredictionFromHighlight = async (transcript: string): Promise<ProcessedConversationData> => {
+export const getTextPredictionFromHighlight = async (
+  transcript: string,
+  signal?: AbortSignal
+): Promise<ProcessedConversationData> => {
   const messages: LLMMessage[] = [
     {
       role: 'system',
       content:
-        "Analyze the following conversation transcript and generate a JSON object containing the following fields: 'topics' (an array of main topics discussed), and 'summary' (a brief summary of the conversation). Your response must be valid JSON and nothing else. Do not include any explanations or markdown formatting. The response should be in this exact format: {\"topics\": [\"topic1\", \"topic2\", ...], \"summary\": \"Brief summary here\"}"
+        'Analyze the following conversation transcript and generate a JSON object containing the following fields: \'topics\' (an array of main topics discussed), \'summary\' (a brief summary of the conversation), and \'title\' (a concise title no more than 26 characters long). Your response must be valid JSON and nothing else. Do not include any explanations or markdown formatting. The response should be in this exact format: {"topics": ["topic1", "topic2", ...], "summary": "Brief summary here", "title": "Concise title (max 26 chars)"}'
     },
     {
       role: 'user',
       content: transcript
     }
-  ];
+  ]
 
-  let accumulatedText = '';
+  let accumulatedText = ''
 
   try {
-    const textPredictionStream = Highlight.inference.getTextPrediction(messages);
+    const textPredictionStream = Highlight.inference.getTextPrediction(messages)
 
     for await (const chunk of textPredictionStream) {
-      accumulatedText += chunk;
+      if (signal?.aborted) {
+        throw new DOMException('Aborted', 'AbortError')
+      }
+      accumulatedText += chunk
     }
 
     // Parse the accumulated text as JSON
-    const parsedData: ProcessedConversationData = JSON.parse(accumulatedText);
-    console.log('Parsed data:', parsedData);
-    return parsedData;
+    const parsedData: ProcessedConversationData = JSON.parse(accumulatedText)
+    console.log('Parsed data:', parsedData)
+    return parsedData
   } catch (error) {
-    console.error('Error in text prediction or parsing:', error);
-    throw new Error('Failed to get or parse LLM output');
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      console.log('Text prediction was aborted')
+      throw error
+    }
+    console.error('Error in text prediction or parsing:', error)
+    throw new Error('Failed to get or parse LLM output')
   }
-};
-
+}
 
 const parsePrompts = (text: string): GeneratedPrompt[] => {
   return text
@@ -227,15 +225,14 @@ export const requestAudioPermissionEvents = async (): Promise<void> => {
 }
 
 export const setupSimpleAudioPermissionListener = () => {
-  console.log('Setting up simple audio permission listener');
+  console.log('Setting up simple audio permission listener')
   Highlight.app.addListener('onAudioPermissionUpdate', (event: any) => {
-    console.log('Audio permission event received:', event);
+    console.log('Audio permission event received:', event)
     // If you know the exact structure of the event, you can log specific properties
     // For example, if there's a hasPermission property:
     // console.log('Audio permission changed:', event.hasPermission);
-  });
-};
-
+  })
+}
 
 // export const addSleepListener = (listener: () => void): void => {
 //   Highlight.addEventListener('onSleep', listener);
@@ -448,4 +445,10 @@ async function migrateBoolean(key: string): Promise<void> {
     await saveBooleanInAppStorage(key, value === 'true')
     localStorage.removeItem(key)
   }
+}
+
+export async function getAccessToken() {
+  const { accessToken } = await Highlight.auth.signIn()
+
+  return accessToken
 }

@@ -21,8 +21,7 @@ interface AudioSwitchProps {
       const newState = !isChecked;
       setIsChecked(newState);
       onSwitch(newState);
-      trackEvent('Conversations Interaction', {
-        action: 'Microphone Input',
+      trackEvent('Changed Mic Input', {
         state: newState ? 'On' : 'Off'
       });
     };

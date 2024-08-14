@@ -1,17 +1,25 @@
 // utils/dateUtils.ts
 
 export const formatTimestamp = (date: Date, locale?: string): string => {
-    const userLocale = locale || navigator.language || 'en-US';
-    
-    return date.toLocaleString(userLocale, {
+  // Default to 'en-US' if no locale is provided
+  const userLocale = locale || 'en-US';
+
+  // Check if we're in a browser environment
+  const isBrowser = typeof window !== 'undefined';
+
+  // Use Intl.DateTimeFormat for consistent formatting in all environments
+  const formatter = new Intl.DateTimeFormat(userLocale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-  }
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      timeZoneName: 'short'
+  });
+
+  return formatter.format(date);
+};
   
   export const getTimeDifference = (date: Date, now: Date = new Date()): number => {
     return now.getTime() - date.getTime();

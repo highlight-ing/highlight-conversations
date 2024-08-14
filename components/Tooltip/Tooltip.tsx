@@ -1,4 +1,4 @@
-export type TooltipType = 'copy' | 'delete' | 'save';
+export type TooltipType = 'copy' | 'delete' | 'save' | 'share';
 export type TooltipState = 'idle' | 'active' | 'success' | 'hiding';
 
 interface TooltipProps {
@@ -16,6 +16,8 @@ export const Tooltip: React.FC<TooltipProps> = ({ type, state, className = '' })
         return state === 'success' ? 'Deleted' : 'Delete';
       case 'save':
         return state === 'success' ? 'Saved' : 'Save';
+      case 'share':
+        return state === 'success' ? 'Shared' : 'Share';
     }
   };
 

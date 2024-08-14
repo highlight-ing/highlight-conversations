@@ -115,9 +115,7 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ autoSaveSeconds
   }, [updatePositioning]);
 
   useEffect(() => {
-    trackEvent('Conversations Interaction', {
-      action: 'Onboarding Tooltips Started',
-    });
+    trackEvent('Onboarding Tooltips Started', {});
   }, []);
 
   const currentTooltipData = tooltips[currentTooltip];

@@ -123,6 +123,11 @@
       opacity: 0;
       transition: opacity 0.3s ease var(--scrollbar-hide-delay);
     }
+
+    .radix-dialog-content {
+      max-width: 90vw !important;
+      width: auto !important;
+    }
   }
 
   @keyframes fadeInOut {

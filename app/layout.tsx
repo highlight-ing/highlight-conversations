@@ -1,7 +1,5 @@
 import '@/app/globals.css'
-
 import type { Metadata } from 'next'
-
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import { meta } from '@/config/meta'
@@ -27,7 +25,7 @@ interface RootLayoutProps {
   readonly children: React.ReactNode
 }
 
-export default async function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       suppressHydrationWarning
@@ -38,8 +36,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       )}
       lang="en"
     >
-      <body>
-          <main className="font-sans antialiased">{children}</main>
+      <body className="bg-background text-foreground">
+        <main className="font-sans antialiased min-h-screen">
+          {children}
+        </main>
       </body>
     </html>
   )
