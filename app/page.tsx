@@ -39,10 +39,13 @@ import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
 import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
 import { initAmplitude, trackEvent } from '../lib/amplitude';
 import debounce from 'lodash.debounce'
+import { getUserId } from '@/services/authService'
 
 
 const AUTO_CLEAR_POLL = 60000
 const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
+
+
 
 const clearOldConversations = (
   conversations: ConversationData[],
@@ -92,8 +95,26 @@ const MainPage: React.FC = () => {
   }, [conversations, searchQuery])
 
   useEffect(() => {
-    initAmplitude()
-  }, [])
+    const initializeAmplitude = async () => {
+      try {
+        const userId = await getUserId();
+        if (userId) {
+          initAmplitude(userId);
+          trackEvent('App Initialized', { userId });
+        } else {
+          initAmplitude('anonymous_' + Math.random().toString(36).substr(2, 9));
+          trackEvent('App Initialized', { fallbackId: 'anonymous_' + Math.random().toString(36).substr(2, 9), error: 'Failed to get userId' });
+        }
+      } catch (error) {
+        console.error('Failed to initialize Amplitude:', error);
+        const fallbackId = `anonymous_${Math.random().toString(36).substr(2, 9)}`;
+        initAmplitude(fallbackId);
+        trackEvent('App Initialized', { fallbackId, error: 'Failed to get userId' });
+      }
+    };
+
+    initializeAmplitude();
+  }, []);
 
   // useEffect(() => {
   //   requestBackgroundPermission()
@@ -192,8 +213,7 @@ const MainPage: React.FC = () => {
   const handleAutoClearValueChange = async (value: number): Promise<void> => {
     setAutoClearValue(value)
     await saveNumberInAppStorage(AUTO_CLEAR_VALUE_KEY, value)
-    trackEvent('Conversations Interaction', {
-      action: 'Auto Clear Value Change',
+    trackEvent('Changed Auto Clear Value', {
       value: value
     });
   }
@@ -201,8 +221,7 @@ const MainPage: React.FC = () => {
   const handleAutoSaveChange = async (value: number) => {
     setAutoSaveValue(value)
     await saveNumberInAppStorage(AUTO_SAVE_SEC_KEY, value)
-    trackEvent('Conversations Interaction', {
-      action: 'Auto Save Change',
+    trackEvent('Changed Auto Save Value', {
       value: value
     });
   }
@@ -230,9 +249,7 @@ const MainPage: React.FC = () => {
       saveConversationsInAppStorage(updatedConversations);
       return updatedConversations;
     })
-    trackEvent('Conversations Interaction', {
-      action: 'Conversation Added'
-    });
+    trackEvent('Conversation Added', {});
   }, []);
 
   const deleteConversation = useCallback((id: string) => {
@@ -241,9 +258,7 @@ const MainPage: React.FC = () => {
       saveConversationsInAppStorage(updatedConversations)
       return updatedConversations
     })
-    trackEvent('Conversations Interaction', {
-      action: 'Conversation Deleted'
-    });
+    trackEvent('Conversation Deleted', {});
   }, [])
 
   useEffect(() => {
@@ -251,9 +266,7 @@ const MainPage: React.FC = () => {
   }, [isAudioPermissionEnabled]);
 
   const handleOnboardingComplete = () => {
-    trackEvent('Conversations Interaction', {
-      action: 'Onboarding Flow Complete',
-    });
+    trackEvent('Onboarding Flow Complete', {});
     setShowOnboarding(false);
     setShowOnboardingTooltips(true);
   };
@@ -262,9 +275,7 @@ const MainPage: React.FC = () => {
     setShowOnboardingTooltips(false);
     await saveBooleanInAppStorage(HAS_SEEN_ONBOARDING_KEY, true);
     setOnboardingComplete(true);
-    trackEvent('Conversations Interaction', {
-      action: 'Onboarding Tooltips Complete',
-    });
+    trackEvent('Onboarding Tooltips Complete', {});
   };
 
   useEffect(() => {
@@ -281,24 +292,6 @@ const MainPage: React.FC = () => {
     const newQuery = e.target.value;
     setSearchQuery(newQuery);
   };
-
-  const debouncedTrackSearchEvent = useMemo(
-    () =>
-      debounce((query: string) => {
-        trackEvent('Conversations Interaction', {
-          action: 'Search Query Change',
-          query: query
-        });
-      }, 1000), // 1000ms debounce time
-    []
-  );
-
-  useEffect(() => {
-    debouncedTrackSearchEvent(searchQuery);
-    return () => {
-      debouncedTrackSearchEvent.cancel();
-    };
-  }, [searchQuery, debouncedTrackSearchEvent]);
 
   useEffect(() => {
     if (onboardingComplete) {

@@ -70,9 +70,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
       console.error('Error processing conversation:', error)
     } finally {
       setIsProcessing(false)
-      trackEvent('Conversations Interaction', {
-        action: 'Conversation Summarized'
-      })
+      trackEvent('Summarized', {})
     }
   }
 
@@ -84,9 +82,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
     let toAppId = 'highlightchat'
     let transcript = localConversation.transcript
     await sendAttachmentAndOpen(toAppId, transcript)
-    trackEvent('Conversations Interaction', {
-      action: 'Conversation Prompted with HL Chat'
-    })
+    trackEvent('Added to HL Chat', {})
   }
 
   const handleShare = async () => {
@@ -96,9 +92,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
     if (localConversation.shareLink) {
       setShareUrl(localConversation.shareLink)
       setShareStatus('success')
-      trackEvent('Conversations Interaction', {
-        action: 'Conversation Shared (Existing Link)'
-      })
+      trackEvent('Shared (Existing Link)', {})
       return
     }
 
@@ -116,6 +110,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
 
       const accessToken = await getAccessToken()
 
+      //TODO: Refactor with new Server Actions
       const response = await fetch('/api/share-conversation', {
         method: 'POST',
         headers: {
@@ -141,9 +136,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
 
       setShareUrl(data.shareUrl)
       setShareStatus('success')
-      trackEvent('Conversations Interaction', {
-        action: 'Conversation Shared (New Link)'
-      })
+      trackEvent('Shared (New Link)', {})
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
         console.log('Share operation was aborted')
