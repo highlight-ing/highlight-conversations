@@ -17,6 +17,8 @@ interface ViewTranscriptDialogHeaderProps {
     onSummarize?: () => void;
   }
   
+  const isDebug = process.env.NEXT_PUBLIC_DEBUG_SUMMARY === 'true';
+
   export const ViewTranscriptDialogHeader: React.FC<ViewTranscriptDialogHeaderProps> = ({
     title,
     timestamp,
@@ -25,7 +27,7 @@ interface ViewTranscriptDialogHeaderProps {
     onDelete,
     copyState,
     setCopyTooltipState,
-    onSummarize
+    onSummarize,
   }) => (
     <DialogHeader className="flex-shrink-0 flex flex-row items-center justify-between">
       <div className="flex flex-col">
@@ -42,7 +44,7 @@ interface ViewTranscriptDialogHeaderProps {
       <div className="flex items-center space-x-4 mr-12">
         <CopyButton onClick={onCopy} copyState={copyState} setCopyTooltipState={setCopyTooltipState} />
         <DeleteButton onDelete={onDelete} />
-        {!isSummarized && (
+        {(!isSummarized || isDebug) && (
           <>
             <div className="h-10 w-px bg-white/10" />
             <Button onClick={onSummarize} variant="outline" className="flex items-center">

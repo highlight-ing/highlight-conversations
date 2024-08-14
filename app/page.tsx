@@ -44,7 +44,7 @@ import { getUserId } from '@/services/authService'
 
 const AUTO_CLEAR_POLL = 60000
 const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
-
+const DEBUG_SUMMARY = process.env.NEXT_PUBLIC_DEBUG_SUMMARY === 'true'
 
 
 const clearOldConversations = (
