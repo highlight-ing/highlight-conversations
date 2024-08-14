@@ -79,7 +79,7 @@ const MainPage: React.FC = () => {
   const [isAudioPermissionEnabled, setIsAudioPermissionEnabled] = useState<boolean | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null)
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
   const [tooltipsReady, setTooltipsReady] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
@@ -115,10 +115,6 @@ const MainPage: React.FC = () => {
 
     initializeAmplitude();
   }, []);
-
-  // useEffect(() => {
-  //   requestBackgroundPermission()
-  // }, [])
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -299,7 +295,7 @@ const MainPage: React.FC = () => {
     }
   }, [onboardingComplete])
 
-  if (!isInitialized) {
+  if (!isInitialized || showOnboarding === null) {
     return null;
   }
 
