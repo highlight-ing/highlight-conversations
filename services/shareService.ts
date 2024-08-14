@@ -13,13 +13,12 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 export async function shareConversation(conversation: ConversationData): Promise<string> {
   const slug = uuidv4();
-  console.log('User ID:', conversation.userId)
   const { data, error } = await supabase
     .from('conversations')
     .insert({
       external_id: slug,
       contents: JSON.stringify(conversation),
-      highlight_user_id: 'user_id_here', // You'll need to implement user authentication
+      highlight_user_id: conversation.userId,
     });
 
   if (error) {

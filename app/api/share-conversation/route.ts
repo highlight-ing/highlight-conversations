@@ -15,9 +15,7 @@ export async function POST(request: NextRequest) {
   if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-
   let payload
-
   try {
     payload = await jwtVerify(token, new TextEncoder().encode(process.env.HIGHLIGHT_JWT_SECRET))
   } catch (error) {
@@ -30,8 +28,6 @@ export async function POST(request: NextRequest) {
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-
-  userId
 
   try {
     const conversation = await request.json()
