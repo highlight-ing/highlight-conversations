@@ -1,6 +1,6 @@
 import React from "react"
 import { AnimatePresence, motion } from "framer-motion";
-import ConversationCard from "./ConversationCard";
+import ConversationCard from "./SavedConversation/ConversationCard";
 import CurrentConversationCard from "./CurrentConversationCard";
 import { ConversationData } from "@/data/conversations";
 import { 
@@ -18,6 +18,7 @@ interface ConversationGridProps {
   onSave: () => void
   onUpdate: (updatedConversation: ConversationData) => void
   searchQuery: string
+  isAudioPermissionEnabled: boolean | null;
 }
 
 const ConversationGrid: React.FC<ConversationGridProps> = ({
@@ -30,6 +31,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   onSave,
   onUpdate,
   searchQuery,
+  isAudioPermissionEnabled,
 }) => {
   const cardHeight = "h-[415px]"; // Define the height here
 
@@ -44,6 +46,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
           onSave={onSave}
           searchQuery={searchQuery}
           height={cardHeight} // Pass the height prop
+          isAudioPermissionEnabled={isAudioPermissionEnabled}
         />
       </div>
       <AnimatePresence>

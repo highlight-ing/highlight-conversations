@@ -74,7 +74,25 @@ const removeDuplicateLines = (text: string): string => {
     }
   }).join('\n');
 };
-//TODO: FormatType might be redudant now they use the same formatting, but keeping temporary in case we want some differences other places
+
+const removeThankYouLines = (text: string): string => {
+  const lines = text.split('\n');
+  return lines
+    .filter(line => {
+      const match = line.match(/^(\d{2}:\d{2}:\d{2} [AP]M) - ([^:]+): (.*)$/);
+      if (!match) return true; // Keep lines that don't match the expected format
+
+      const [, , , content] = match;
+      const trimmedContent = content.trim().toLowerCase();
+
+      // Remove lines with only "Thank you" or "Thank you." (case-insensitive)
+      if (trimmedContent === 'thank you' || trimmedContent === 'thank you.') return false;
+
+      return true;
+    })
+    .join('\n');
+};
+
 export const formatTranscript = (transcript: string, formatType: FormatType): string => {
   // Step 1: Remove extra newlines and spaces
   let formattedTranscript = transcript.replace(/\s+/g, ' ').trim();
@@ -92,16 +110,19 @@ export const formatTranscript = (transcript: string, formatType: FormatType): st
   // Step 5: Remove duplicate lines
   formattedTranscript = removeDuplicateLines(formattedTranscript);
 
-  // Step 6: Apply format-specific adjustments (if needed)
+  // Step 6: Remove "Thank you" lines
+  formattedTranscript = removeThankYouLines(formattedTranscript);
+
+  // Step 7: Apply format-specific adjustments
   switch (formatType) {
     case "CardTranscript":
     case "DialogueTranscript":
-      formattedTranscript = formattedTranscript.replace(/\n/g, '\n');
+      // Keep single newlines
+      return formattedTranscript;
     default:
-      formattedTranscript = formattedTranscript.replace(/\n/g, '\n\n');
+      // Add an extra newline for paragraph-style formatting
+      return formattedTranscript.replace(/\n/g, '\n\n');
   }
-
-  return formattedTranscript
 }
 
 export const defaultConversation: ConversationData = {

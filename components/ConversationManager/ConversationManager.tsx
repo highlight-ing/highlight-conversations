@@ -19,6 +19,7 @@ interface ConversationsManagerProps {
   onMicActivityChange: (activity: number) => void
   onUpdateConversation: (updatedConversation: ConversationData) => void
   searchQuery: string;
+  isAudioPermissionEnabled: boolean | null;
 }
 
 const ConversationsManager: React.FC<ConversationsManagerProps> = ({
@@ -31,7 +32,8 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
   onMicActivityChange,
   onDeleteConversation,
   onUpdateConversation,
-  searchQuery
+  searchQuery,
+  isAudioPermissionEnabled
 }) => {
   const [currentConversationParts, setCurrentConversationParts] = useState<string[]>([])
   const [micActivity, setMicActivity] = useState(0)
@@ -82,8 +84,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
 
   // Poll Mic Activity and make time stamp of last mic activity
   const pollMicActivity = useCallback(async () => {
-    if (isSleeping) return;
-    if (!isAudioEnabled) {
+    if (isSleeping || !isAudioEnabled || !isAudioPermissionEnabled) {
       setMicActivity(0)
       return;
     }
@@ -94,7 +95,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     if (activity >= 1) {
       lastActivityTimeRef.current = Date.now()
     }
-  }, [isSleeping, isAudioEnabled, onMicActivityChange])
+  }, [isSleeping, isAudioEnabled, isAudioPermissionEnabled, onMicActivityChange])
 
   const handleSave = useCallback((didTapSaveButton: boolean = false) => {
     setCurrentConversationParts(currentConversationParts)
@@ -163,6 +164,7 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       conversations={conversations}
       micActivity={micActivity}
       isAudioEnabled={isAudioEnabled}
+      isAudioPermissionEnabled={isAudioPermissionEnabled}
       autoSaveTime={autoSaveTime}
       onDeleteConversation={onDeleteConversation}
       onSave={() => handleSave(true)}

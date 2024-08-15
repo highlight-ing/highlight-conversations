@@ -28,10 +28,6 @@
       />
     ];
 
-    useEffect(() => {
-      trackEvent('Onboarding: Started Onboarding Flow', {});
-    }, []);
-
     return (
       <div className="bg-background text-foreground h-screen overflow-hidden">
         {steps[currentStep]}

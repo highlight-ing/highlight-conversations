@@ -38,13 +38,12 @@ import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
 import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
 import { initAmplitude, trackEvent } from '../lib/amplitude';
-import debounce from 'lodash.debounce'
-import { getUserId } from '@/services/authService'
+import { getUserId } from '@/utils/userUtils'
 
 
 const AUTO_CLEAR_POLL = 60000
 const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
-
+const DEBUG_SUMMARY = process.env.NEXT_PUBLIC_DEBUG_SUMMARY === 'true'
 
 
 const clearOldConversations = (
@@ -79,7 +78,7 @@ const MainPage: React.FC = () => {
   const [isAudioPermissionEnabled, setIsAudioPermissionEnabled] = useState<boolean | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null)
   const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false)
   const [tooltipsReady, setTooltipsReady] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
@@ -102,12 +101,12 @@ const MainPage: React.FC = () => {
           initAmplitude(userId);
           trackEvent('App Initialized', { userId });
         } else {
-          initAmplitude('anonymous_' + Math.random().toString(36).substr(2, 9));
-          trackEvent('App Initialized', { fallbackId: 'anonymous_' + Math.random().toString(36).substr(2, 9), error: 'Failed to get userId' });
+          initAmplitude('anonymous_' + Math.random().toString(36).slice(2, 9));
+          trackEvent('App Initialized', { fallbackId: 'anonymous_' + Math.random().toString(36).slice(2, 9), error: 'Failed to get userId' });
         }
       } catch (error) {
         console.error('Failed to initialize Amplitude:', error);
-        const fallbackId = `anonymous_${Math.random().toString(36).substr(2, 9)}`;
+        const fallbackId = `anonymous_${Math.random().toString(36).slice(2, 9)}`;
         initAmplitude(fallbackId);
         trackEvent('App Initialized', { fallbackId, error: 'Failed to get userId' });
       }
@@ -115,10 +114,6 @@ const MainPage: React.FC = () => {
 
     initializeAmplitude();
   }, []);
-
-  // useEffect(() => {
-  //   requestBackgroundPermission()
-  // }, [])
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -299,7 +294,7 @@ const MainPage: React.FC = () => {
     }
   }, [onboardingComplete])
 
-  if (!isInitialized) {
+  if (!isInitialized || showOnboarding === null) {
     return null;
   }
 
@@ -351,6 +346,7 @@ const MainPage: React.FC = () => {
             conversations={filteredConversations}
             idleThreshold={autoSaveValue}
             isAudioEnabled={isAudioEnabled}
+            isAudioPermissionEnabled={isAudioPermissionEnabled}
             isSleeping={isSleeping}
             searchQuery={searchQuery}
             autoSaveTime={autoSaveValue}

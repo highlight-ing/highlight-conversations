@@ -27,3 +27,14 @@ export async function shareConversation(conversation: ConversationData): Promise
 
   return `https://conversations.app.highlight.ing/share/${slug}`;
 }
+
+export async function deleteConversation(slug: string): Promise<void> {
+  const { error } = await supabase
+    .from('conversations')
+    .delete()
+    .eq('external_id', slug);
+
+  if (error) {
+    throw new Error(`Error deleting conversation: ${error.message}`);
+  }
+}

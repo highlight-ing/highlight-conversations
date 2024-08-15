@@ -137,7 +137,7 @@ export const getTextPredictionFromHighlight = async (
     {
       role: 'system',
       content:
-        'Analyze the following conversation transcript and generate a JSON object containing the following fields: \'topics\' (an array of main topics discussed), \'summary\' (a brief summary of the conversation), and \'title\' (a concise title no more than 26 characters long). Your response must be valid JSON and nothing else. Do not include any explanations or markdown formatting. The response should be in this exact format: {"topics": ["topic1", "topic2", ...], "summary": "Brief summary here", "title": "Concise title (max 26 chars)"}'
+        'Analyze the following conversation transcript and generate a JSON object containing the following fields: \'topics\' (an array of main topics discussed), \'summary\' (a brief summary of the conversation), and \'title\' (a concise title no more than 26 characters long). The Summary should jump straight into listing important topics discussed in the first sentence, with following sentences expanding on conclusions and takeaways. Your response must be valid JSON and nothing else. Do not include any explanations or markdown formatting. The response should be in this exact format: {"topics": ["topic1", "topic2", ...], "summary": "Brief summary here", "title": "Concise title (max 26 chars)"}'
     },
     {
       role: 'user',
