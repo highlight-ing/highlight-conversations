@@ -4,12 +4,18 @@ import React, { useCallback } from 'react'
 import { Button } from "@/components/ui/button"
 import { trackEvent } from '@/lib/amplitude'
 
-const DownloadButton: React.FC = () => {
+type PageType = 'SharePage' | 'NotFoundPage'
+
+interface DownloadButtonProps {
+  page: PageType
+}
+
+const DownloadButton: React.FC<DownloadButtonProps> = ({ page }) => {
 
   const handleDownload = useCallback(() => {
-    trackEvent('Share Page: Download Button Clicked', {});
+    trackEvent(`${page}: Download Button Clicked`, {});
     window.open("https://highlight.ing/apps/conversations", "_blank", "noopener,noreferrer");
-  }, [])
+  }, [page])
   
   return (
     <Button 

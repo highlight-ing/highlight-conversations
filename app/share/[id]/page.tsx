@@ -43,13 +43,13 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   const parsedConversation: ConversationData = JSON.parse(conversation.contents);
   const conversationTitle = parsedConversation.title || 'Untitled Conversation';
-  const conversationDescription = parsedConversation.summary || 'View this shared conversation from Highlight';
+  const conversationDescription = 'Conversations is a privacy focused, local real-time speech transcription app that auto saves your conversations. Join the discord: discord.gg/hlai';
 
   return {
-    title: `${conversationTitle} - Transcribed with Conversations | by Highlight`,
+    title: `${conversationTitle} - Transcribed with Conversations`,
     description: conversationDescription,
     openGraph: {
-      title: `${conversationTitle} - Transcribed with Conversations | by Highlight`,
+      title: `${conversationTitle} - Transcribed with Conversations`,
       description: conversationDescription,
       url: `https://conversations.app.highlight.ing/share/${id}`,
       siteName: shareMeta.siteName,
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${conversationTitle} - Transcribed with Conversations | by Highlight`,
+      title: `${conversationTitle} - Transcribed with Conversations`,
       description: conversationDescription,
       images: [ogImage.src],
     },

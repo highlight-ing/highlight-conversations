@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
             Create and share your own transcripts<br /> securely and for free
           </span>
         </h2>
-        <DownloadButton />
+        <DownloadButton page='SharePage'/>
       </div>
     </footer>
   )
