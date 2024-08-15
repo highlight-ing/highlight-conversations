@@ -4,7 +4,7 @@ import { ConversationData } from '@/data/conversations';
 import SharePageComponent from '@/components/Share/SharePageComponent';
 import { Metadata } from 'next'
 import { shareMeta } from '@/config/shareMeta'
-
+import { trackEvent } from '@/lib/amplitude'
 import ogImage from '@/assets/conversations-open-graph.png'
 
 interface SharePageProps {
@@ -81,12 +81,12 @@ export default async function SharePage({ params }: SharePageProps) {
 
     if (error) {
       console.error('Error fetching conversation', error);
-      return <div className="p-8 text-destructive">Error: {error.message}</div>;
+      return <SharePageComponent error={error.message} />;
     }
 
     if (!conversation) {
       console.log('Conversation not found');
-      return <div className="p-8 text-destructive">Conversation not found</div>;
+      return <SharePageComponent error="Conversation not found" />;
     }
 
     let parsedConversation: ConversationData;
@@ -95,7 +95,7 @@ export default async function SharePage({ params }: SharePageProps) {
       parsedConversation.timestamp = new Date(parsedConversation.timestamp);
     } catch (parseError) {
       console.error('Error parsing conversation data:', parseError);
-      return <div className="p-8 text-destructive">Error: Invalid conversation data</div>;
+      return <SharePageComponent error="Invalid conversation data" />;
     }
 
     return (
@@ -105,6 +105,6 @@ export default async function SharePage({ params }: SharePageProps) {
     );
   } catch (error) {
     console.error('Unexpected error in SharePage:', error);
-    return <div className="p-8 text-destructive">An unexpected error occurred</div>;
+    return <SharePageComponent error="An unexpected error occurred" />;
   }
 }

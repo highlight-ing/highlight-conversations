@@ -1,15 +1,48 @@
-import React from 'react'
+'use client'
+import React, { useEffect } from 'react'
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { ConversationData } from '@/data/conversations'
 import ScrollableTranscript from './ScrollableTranscript'
-import Footer from './Footer'
+import { trackEvent } from '@/lib/amplitude'
 
 interface SharePageComponentProps {
-  conversation: ConversationData;
+  conversation?: ConversationData;
+  error?: string;
 }
 
-const SharePageComponent: React.FC<SharePageComponentProps> = ({ conversation }) => {
+const SharePageComponent: React.FC<SharePageComponentProps> = ({ conversation, error }) => {
+  useEffect(() => {
+    if (conversation) {
+      trackEvent('share_page_viewed', { status: 'success' });
+    } else if (error) {
+      trackEvent('share_page_viewed', { status: 'error', error });
+    }
+  }, [conversation, error]);
+
+  if (error) {
+    return (
+      <div className="h-[calc(100vh-4rem)] flex items-center justify-center">
+        <Card className="max-w-md w-full">
+          <CardHeader>
+            <h1 className="text-2xl font-semibold text-foreground">Oops!</h1>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              {error === 'Conversation not found' 
+                ? "Looks like this conversation is no longer available."
+                : "An error occurred while trying to load the conversation."}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!conversation) {
+    return null; // Or a loading state if appropriate
+  }
+
   const relativeTime = getRelativeTimeString(conversation.timestamp);
 
   return (
