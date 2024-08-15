@@ -38,8 +38,7 @@ import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
 import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
 import { initAmplitude, trackEvent } from '../lib/amplitude';
-import debounce from 'lodash.debounce'
-import { getUserId } from '@/services/authService'
+import { getUserId } from '@/utils/userUtils'
 
 
 const AUTO_CLEAR_POLL = 60000

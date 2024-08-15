@@ -1,5 +1,3 @@
-'use client'
-
 import { getAccessToken } from '@/services/highlightService'
 import { getUserId as getUserIdAction } from '@/app/actions/getUserId'
 
