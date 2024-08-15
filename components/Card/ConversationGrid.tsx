@@ -1,6 +1,6 @@
 import React from "react"
 import { AnimatePresence, motion } from "framer-motion";
-import ConversationCard from "./ConversationCard";
+import ConversationCard from "./SavedConversation/ConversationCard";
 import CurrentConversationCard from "./CurrentConversationCard";
 import { ConversationData } from "@/data/conversations";
 import { 

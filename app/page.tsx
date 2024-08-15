@@ -102,12 +102,12 @@ const MainPage: React.FC = () => {
           initAmplitude(userId);
           trackEvent('App Initialized', { userId });
         } else {
-          initAmplitude('anonymous_' + Math.random().toString(36).substr(2, 9));
-          trackEvent('App Initialized', { fallbackId: 'anonymous_' + Math.random().toString(36).substr(2, 9), error: 'Failed to get userId' });
+          initAmplitude('anonymous_' + Math.random().toString(36).slice(2, 9));
+          trackEvent('App Initialized', { fallbackId: 'anonymous_' + Math.random().toString(36).slice(2, 9), error: 'Failed to get userId' });
         }
       } catch (error) {
         console.error('Failed to initialize Amplitude:', error);
-        const fallbackId = `anonymous_${Math.random().toString(36).substr(2, 9)}`;
+        const fallbackId = `anonymous_${Math.random().toString(36).slice(2, 9)}`;
         initAmplitude(fallbackId);
         trackEvent('App Initialized', { fallbackId, error: 'Failed to get userId' });
       }
