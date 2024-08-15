@@ -18,6 +18,7 @@ interface ConversationGridProps {
   onSave: () => void
   onUpdate: (updatedConversation: ConversationData) => void
   searchQuery: string
+  isAudioPermissionEnabled: boolean | null;
 }
 
 const ConversationGrid: React.FC<ConversationGridProps> = ({
@@ -30,6 +31,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
   onSave,
   onUpdate,
   searchQuery,
+  isAudioPermissionEnabled,
 }) => {
   const cardHeight = "h-[415px]"; // Define the height here
 
@@ -44,6 +46,7 @@ const ConversationGrid: React.FC<ConversationGridProps> = ({
           onSave={onSave}
           searchQuery={searchQuery}
           height={cardHeight} // Pass the height prop
+          isAudioPermissionEnabled={isAudioPermissionEnabled}
         />
       </div>
       <AnimatePresence>

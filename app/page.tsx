@@ -347,6 +347,7 @@ const MainPage: React.FC = () => {
             conversations={filteredConversations}
             idleThreshold={autoSaveValue}
             isAudioEnabled={isAudioEnabled}
+            isAudioPermissionEnabled={isAudioPermissionEnabled}
             isSleeping={isSleeping}
             searchQuery={searchQuery}
             autoSaveTime={autoSaveValue}
