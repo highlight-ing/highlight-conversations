@@ -51,7 +51,7 @@ const SharePageComponent: React.FC<SharePageComponentProps> = ({ conversation, e
             <p className="text-muted-foreground">
               {error === 'Conversation not found' 
                 ? "Looks like this conversation is no longer available."
-                : "An error occurred while trying to load the conversation."}
+                : "An error occurred while trying to load the conversation. The owner made this conversation private."}
             </p>
           </CardContent>
         </Card>

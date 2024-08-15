@@ -2,6 +2,7 @@
 
 import { shareConversation, deleteConversation } from '@/services/shareService'
 import { ConversationData } from '@/data/conversations'
+import { supabase } from '@/lib/supabase';
 
 export async function getShareLink(conversation: ConversationData, userId: string): Promise<string> {
     try {
@@ -47,4 +48,19 @@ export async function deleteShareLink(conversation: ConversationData): Promise<C
             throw new Error('Error deleting share link: Unknown error')
         }
     }
+}
+
+
+export async function checkConversationExists(id: string) {
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('id')
+    .eq('external_id', id)
+    .single();
+
+  if (error || !data) {
+    return false;
+  }
+
+  return true;
 }

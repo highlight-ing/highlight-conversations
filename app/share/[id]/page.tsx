@@ -4,9 +4,9 @@ import { ConversationData } from '@/data/conversations';
 import SharePageComponent from '@/components/Share/SharePageComponent';
 import { Metadata } from 'next'
 import { shareMeta } from '@/config/shareMeta'
-import { trackEvent } from '@/lib/amplitude'
 import ogImage from '@/assets/conversations-open-graph.png'
-
+import { checkConversationExists } from '@/app/actions/shareConversation';
+import Script from 'next/script'
 interface SharePageProps {
   params: {
     id: string
