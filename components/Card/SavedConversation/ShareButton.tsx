@@ -6,6 +6,7 @@ import { ShareOptionsMenu } from './ShareOptionsMenu'
 interface ShareButtonProps {
   onShare: () => void;
   isSharing: boolean;
+  isDeleting: boolean;
   hasExistingShareLink: boolean;
   onGenerateShareLink: () => void;
   onDownloadAsFile: () => void;
@@ -16,6 +17,7 @@ interface ShareButtonProps {
 export const ShareButton: React.FC<ShareButtonProps> = ({
   onShare,
   isSharing,
+  isDeleting,
   hasExistingShareLink,
   onGenerateShareLink,
   onDownloadAsFile,
@@ -26,13 +28,18 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     <HoverCardTrigger asChild>
       <Button
         onClick={onShare}
-        disabled={isSharing}
+        disabled={isSharing || isDeleting}
         className="flex-1 items-center justify-center rounded-lg bg-background p-2 text-[15px] font-semibold text-foreground transition-colors duration-200 hover:bg-background hover:text-brand"
       >
         {isSharing && !hasExistingShareLink ? (
           <>
             <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-brand border-r-transparent align-[-0.125em]"></span>
             Generating...
+          </>
+        ) : isDeleting ? (
+          <>
+            <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-brand border-r-transparent align-[-0.125em]"></span>
+            Deleting...
           </>
         ) : (
           <span className="flex items-center gap-2">Share</span>

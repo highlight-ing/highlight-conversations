@@ -31,8 +31,6 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     const conversationTitle = parsedConversation.title || 'Untitled Conversation';
     const conversationDescription = parsedConversation.summary || 'View this shared conversation from Highlight';
 
-    // const ogImageUrl = `${shareMeta.baseURL}api/og?title=${encodeURIComponent(conversationTitle)}`;
-
     return {
       title: `${conversationTitle} - Transcribed with Conversations | by Highlight`,
       description: conversationDescription,

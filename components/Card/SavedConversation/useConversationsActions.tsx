@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { processConversation } from '@/services/processConversationService'
-import { sendAttachmentAndOpen, getAccessToken } from '@/services/highlightService'
+import { sendAttachmentAndOpen } from '@/services/highlightService'
 import { trackEvent } from '@/lib/amplitude'
-import { getShareLink } from '@/app/actions/shareConversation'
+import { getShareLink, deleteShareLink } from '@/app/actions/shareConversation'
 import { getUserId } from '@/utils/userUtils'
+import { generateMarkdownContent } from '@/utils/markdownUtils'
 
 export const useConversationActions = (
   initialConversation: ConversationData,
@@ -17,6 +18,7 @@ export const useConversationActions = (
   const [shareUrl, setShareUrl] = useState('')
   const [shareStatus, setShareStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
   const [shareMessage, setShareMessage] = useState<{ type: 'success' | 'error', message: string, description?: string } | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const handleSummarize = async () => {
     setIsProcessing(true)
@@ -114,22 +116,43 @@ export const useConversationActions = (
   };
 
   const handleDownloadAsFile = () => {
-    // Placeholder: Implement the logic to download the conversation as a file
-    console.log('Downloading conversation as file...');
+    const markdown = generateMarkdownContent(localConversation);
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${localConversation.title || 'conversation'}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    trackEvent('Downloaded Conversation', {});
   };
 
   const handleCopyLink = () => {
-    // Placeholder: Implement the logic to copy the existing share link
     if (localConversation.shareLink) {
       navigator.clipboard.writeText(localConversation.shareLink);
       setShareMessage({ type: 'success', message: 'Link copied to clipboard', description: localConversation.shareLink });
+      trackEvent('Copied Share Link', {});
     }
   };
 
-  const handleDeleteLink = () => {
-    // Placeholder: Implement the logic to delete the share link
-    console.log('Deleting share link...');
-    // You might want to update the localConversation and call onUpdate here
+  const handleDeleteLink = async () => {
+    setIsDeleting(true);
+    try {
+      const updatedConversation = await deleteShareLink(localConversation);
+      setLocalConversation(updatedConversation);
+      onUpdate(updatedConversation);
+      setShareStatus('idle');
+      setShareMessage({ type: 'success', message: 'Share link deleted successfully' });
+      trackEvent('Deleted Share Link', {});
+    } catch (error) {
+      console.error('Error deleting share link:', error);
+      setShareStatus('error');
+      setShareMessage({ type: 'error', message: 'Failed to delete share link' });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return {
@@ -151,6 +174,7 @@ export const useConversationActions = (
     handleGenerateShareLink,
     handleDownloadAsFile,
     handleCopyLink,
-    handleDeleteLink
+    handleDeleteLink,
+    isDeleting
   }
 }

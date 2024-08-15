@@ -33,6 +33,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
     shareStatus,
     shareMessage,
     setShareMessage,
+    isDeleting,
     handleSummarize,
     handleOnViewTranscript,
     handleAttachment,
@@ -79,6 +80,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
             onAttach={handleAttachment}
             onShare={handleShare}
             isSharing={shareStatus === 'processing'}
+            isDeleting={isDeleting}
             hasExistingShareLink={!!localConversation.shareLink}
             onGenerateShareLink={handleGenerateShareLink}
             onDownloadAsFile={handleDownloadAsFile}
@@ -107,12 +109,13 @@ const ConversationCardActions: React.FC<{
   onAttach: () => void;
   onShare: () => void;
   isSharing: boolean;
+  isDeleting: boolean;
   hasExistingShareLink: boolean;
   onGenerateShareLink: () => void;
   onDownloadAsFile: () => void;
   onCopyLink: () => void;
   onDeleteLink: () => void;
-}> = ({ onAttach, onShare, isSharing, hasExistingShareLink, onGenerateShareLink, onDownloadAsFile, onCopyLink, onDeleteLink }) => (
+}> = ({ onAttach, onShare, isSharing, isDeleting, hasExistingShareLink, onGenerateShareLink, onDownloadAsFile, onCopyLink, onDeleteLink }) => (
   <div className="flex w-full gap-2">
     <Button
       onClick={onAttach}
@@ -123,6 +126,7 @@ const ConversationCardActions: React.FC<{
     <ShareButton
       onShare={onShare}
       isSharing={isSharing}
+      isDeleting={isDeleting}
       hasExistingShareLink={hasExistingShareLink}
       onGenerateShareLink={onGenerateShareLink}
       onDownloadAsFile={onDownloadAsFile}

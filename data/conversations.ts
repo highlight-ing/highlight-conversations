@@ -93,7 +93,6 @@ const removeThankYouLines = (text: string): string => {
     .join('\n');
 };
 
-//TODO: FormatType might be redudant now they use the same formatting, but keeping temporary in case we want some differences other places
 export const formatTranscript = (transcript: string, formatType: FormatType): string => {
   // Step 1: Remove extra newlines and spaces
   let formattedTranscript = transcript.replace(/\s+/g, ' ').trim();
@@ -114,16 +113,16 @@ export const formatTranscript = (transcript: string, formatType: FormatType): st
   // Step 6: Remove "Thank you" lines
   formattedTranscript = removeThankYouLines(formattedTranscript);
 
-  // Step 7: Apply format-specific adjustments (if needed)
+  // Step 7: Apply format-specific adjustments
   switch (formatType) {
     case "CardTranscript":
     case "DialogueTranscript":
-      formattedTranscript = formattedTranscript.replace(/\n/g, '\n');
+      // Keep single newlines
+      return formattedTranscript;
     default:
-      formattedTranscript = formattedTranscript.replace(/\n/g, '\n\n');
+      // Add an extra newline for paragraph-style formatting
+      return formattedTranscript.replace(/\n/g, '\n\n');
   }
-
-  return formattedTranscript
 }
 
 export const defaultConversation: ConversationData = {
