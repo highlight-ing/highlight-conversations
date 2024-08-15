@@ -1,12 +1,10 @@
 'use server'
 
 import { shareConversation } from '@/services/shareService'
-import { getUserId } from '@/services/authService'
 import { ConversationData } from '@/data/conversations'
 
-export async function getShareLink(conversation: ConversationData): Promise<string> {
+export async function getShareLink(conversation: ConversationData, userId: string): Promise<string> {
     try {
-        const userId = await getUserId();
         if (!userId) {
             throw new Error('User ID not found')
         }

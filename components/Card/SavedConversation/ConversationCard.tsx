@@ -46,7 +46,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
 
   useEffect(() => {
     setLocalConversation(conversation)
-  }, [conversation])
+  }, [conversation, setLocalConversation])
 
   useEffect(() => {
     if (shareMessage) {

@@ -4,6 +4,7 @@ import { processConversation } from '@/services/processConversationService'
 import { sendAttachmentAndOpen, getAccessToken } from '@/services/highlightService'
 import { trackEvent } from '@/lib/amplitude'
 import { getShareLink } from '@/app/actions/shareConversation'
+import { getUserId } from '@/utils/userUtils'
 
 export const useConversationActions = (
   initialConversation: ConversationData,
@@ -68,26 +69,8 @@ export const useConversationActions = (
         onUpdate(updatedConversation)
       }
 
-      // const accessToken = await getAccessToken()
-
-      // //TODO: Refactor with new Server Actions
-      // const response = await fetch('/api/share-conversation', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Bearer ${accessToken}`
-      //   },
-      //   body: JSON.stringify(updatedConversation),
-      //   signal: abortController.signal
-      // })
-
-      // if (!response.ok) {
-      //   throw new Error(`HTTP error! status: ${response.status}`)
-      // }
-
-      // const data = await response.json()
-
-      const shareLink = await getShareLink(updatedConversation)
+      const userId = await getUserId()
+      const shareLink = await getShareLink(updatedConversation, userId)
 
       updatedConversation = {
         ...updatedConversation,
