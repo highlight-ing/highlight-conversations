@@ -14,7 +14,7 @@ const Header: React.FC = () => {
             Create and share your own transcripts, securely and for free
           </span>
         </h2>
-        <DownloadButton />
+        <DownloadButton page='SharePage'/>
       </div>
       <Separator />
     </header>
