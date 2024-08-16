@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import OnboardingTemplate, { GradientTexts } from './OnboardingTemplate';
+import { trackEvent } from '@/lib/amplitude';
 
 type WelcomeScreenProps = {
   onNext: () => void;
@@ -13,6 +14,10 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
         bottomLeft: "My dream was so complex",
         bottomRight: "David please make reservations for Tuesday."
       };
+      // Track event on mount
+      useEffect(() => {
+        trackEvent('Onboarding: Started Onboarding Flow', {});
+      }, []);
   return (
     <OnboardingTemplate gradientTexts={gradientTexts}>
       <h1 className="text-3xl font-bold p-4 text-center">Transcribe meetings and calls automatically and securely</h1>
