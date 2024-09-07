@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { fetchTranscript, fetchTranscriptForDuration, fetchMicActivity } from '../../services/highlightService'
+import { fetchTranscript, fetchTranscriptForDuration, fetchMicActivity, fetchLongTranscript } from '../../services/highlightService'
 import { ConversationData, createConversation } from '../../data/conversations'
 import ConversationGrid from '../Card/ConversationGrid'
 
@@ -116,9 +116,12 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
       const transcript = await fetchTranscript()
       if (transcript) {
         setCurrentConversationParts(prevParts => {
-          if (transcript.trim() && (prevParts.length === 0 || transcript.trim() !== prevParts[0])) {
+          const trimmedTranscript = transcript.trim();
+          // Check if the new transcript is different from the most recent one
+          if (trimmedTranscript && (prevParts.length === 0 || trimmedTranscript !== prevParts[0])) {
             setPollInterval(prev => Math.min(prev * 1.5, maxPollIntervalRef.current))
-            return [transcript.trim(), ...prevParts]
+            // Only add the new transcript if it's not already at the beginning
+            return [trimmedTranscript, ...prevParts.filter(part => part !== trimmedTranscript)]
           }
           return prevParts
         })
@@ -158,9 +161,31 @@ const ConversationsManager: React.FC<ConversationsManagerProps> = ({
     };
   }, [pollTranscription, pollInterval]);
 
+  // Fetch the long transcript on component mount
+  useEffect(() => {
+    const fetchInitialTranscript = async () => {
+      try {
+        const longTranscript = await fetchLongTranscript()
+        if (longTranscript) {
+          setCurrentConversationParts(prevParts => {
+            const trimmedTranscript = longTranscript.trim();
+            if (prevParts.length === 0 || trimmedTranscript !== prevParts[0]) {
+              return [trimmedTranscript, ...prevParts.filter(part => part !== trimmedTranscript)]
+            }
+            return prevParts;
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching initial long transcript:', error)
+      }
+    }
+  
+    fetchInitialTranscript()
+  }, [])
+
   return (
     <ConversationGrid
-      currentConversation={getCurrentConversationString()} // Pass reversed (latest on top)
+      currentConversation={getCurrentConversationString()} // This will now include the initial long transcript
       conversations={conversations}
       micActivity={micActivity}
       isAudioEnabled={isAudioEnabled}
