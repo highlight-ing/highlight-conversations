@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { 
+    createContext, 
+    useContext, 
+    useState, 
+    useEffect 
+} from 'react'
 import { 
   saveBooleanInAppStorage, 
   saveNumberInAppStorage, 
@@ -7,53 +12,53 @@ import {
   AUDIO_ENABLED_KEY, 
   AUTO_CLEAR_VALUE_KEY, 
   AUTO_SAVE_SEC_KEY 
-} from '@/services/highlightService';
-import { AUTO_CLEAR_DAYS, AUTO_SAVE_SEC } from '@/constants/appConstants';
+} from '@/services/highlightService'
+import { AUTO_CLEAR_DAYS, AUTO_SAVE_SEC } from '@/constants/appConstants'
 
 interface AppSettingsContextType {
-  isAudioOn: boolean;
-  setIsAudioOn: (isOn: boolean) => Promise<void>;
-  autoClearValue: number;
-  setAutoClearValue: (value: number) => Promise<void>;
-  autoSaveValue: number;
-  setAutoSaveValue: (value: number) => Promise<void>;
+  isAudioOn: boolean
+  setIsAudioOn: (isOn: boolean) => Promise<void>
+  autoClearValue: number
+  setAutoClearValue: (value: number) => Promise<void>
+  autoSaveValue: number
+  setAutoSaveValue: (value: number) => Promise<void>
 }
 
-const AppSettingsContext = createContext<AppSettingsContextType | undefined>(undefined);
+const AppSettingsContext = createContext<AppSettingsContextType | undefined>(undefined)
 
 export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAudioOn, setIsAudioOn] = useState(true);
-  const [autoClearValue, setAutoClearValue] = useState(AUTO_CLEAR_DAYS);
-  const [autoSaveValue, setAutoSaveValue] = useState(AUTO_SAVE_SEC);
+  const [isAudioOn, setIsAudioOn] = useState(true)
+  const [autoClearValue, setAutoClearValue] = useState(AUTO_CLEAR_DAYS)
+  const [autoSaveValue, setAutoSaveValue] = useState(AUTO_SAVE_SEC)
 
   useEffect(() => {
     const loadSettings = async () => {
-      const audioEnabled = await getBooleanFromAppStorage(AUDIO_ENABLED_KEY, true);
-      const storedAutoClearValue = await getNumberFromAppStorage(AUTO_CLEAR_VALUE_KEY, AUTO_CLEAR_DAYS);
-      const storedAutoSaveValue = await getNumberFromAppStorage(AUTO_SAVE_SEC_KEY, AUTO_SAVE_SEC);
+      const audioEnabled = await getBooleanFromAppStorage(AUDIO_ENABLED_KEY, true)
+      const storedAutoClearValue = await getNumberFromAppStorage(AUTO_CLEAR_VALUE_KEY, AUTO_CLEAR_DAYS)
+      const storedAutoSaveValue = await getNumberFromAppStorage(AUTO_SAVE_SEC_KEY, AUTO_SAVE_SEC)
 
-      setIsAudioOn(audioEnabled);
-      setAutoClearValue(storedAutoClearValue);
-      setAutoSaveValue(storedAutoSaveValue);
-    };
+      setIsAudioOn(audioEnabled)
+      setAutoClearValue(storedAutoClearValue)
+      setAutoSaveValue(storedAutoSaveValue)
+    }
 
-    loadSettings();
-  }, []);
+    loadSettings()
+  }, [])
 
   const setIsAudioOnAndSave = async (isOn: boolean) => {
-    setIsAudioOn(isOn);
-    await saveBooleanInAppStorage(AUDIO_ENABLED_KEY, isOn);
-  };
+    setIsAudioOn(isOn)
+    await saveBooleanInAppStorage(AUDIO_ENABLED_KEY, isOn)
+  }
 
   const setAutoClearValueAndSave = async (value: number) => {
-    setAutoClearValue(value);
-    await saveNumberInAppStorage(AUTO_CLEAR_VALUE_KEY, value);
-  };
+    setAutoClearValue(value)
+    await saveNumberInAppStorage(AUTO_CLEAR_VALUE_KEY, value)
+  }
 
   const setAutoSaveValueAndSave = async (value: number) => {
-    setAutoSaveValue(value);
-    await saveNumberInAppStorage(AUTO_SAVE_SEC_KEY, value);
-  };
+    setAutoSaveValue(value)
+    await saveNumberInAppStorage(AUTO_SAVE_SEC_KEY, value)
+  }
 
   return (
     <AppSettingsContext.Provider 
@@ -68,13 +73,13 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     >
       {children}
     </AppSettingsContext.Provider>
-  );
-};
+  )
+}
 
 export const useAppSettings = () => {
-  const context = useContext(AppSettingsContext);
+  const context = useContext(AppSettingsContext)
   if (context === undefined) {
-    throw new Error('useAppSettings must be used within an AppSettingsProvider');
+    throw new Error('useAppSettings must be used within an AppSettingsProvider')
   }
-  return context;
-};
+  return context
+}
