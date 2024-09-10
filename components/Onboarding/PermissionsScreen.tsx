@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { getAudioSuperPowerEnabled, setAudioSuperpowerEnabled, addAudioPermissionListener, requestBackgroundPermission } from '@/services/highlightService';
+import { getAudioSuperpowerEnabled, setAudioSuperpowerEnabled, addAudioPermissionListener, requestBackgroundPermission } from '@/services/highlightService';
 import OnboardingTemplate, { GradientTexts } from './OnboardingTemplate';
 import { Lock1, Unlock, InfoCircle } from "iconsax-react";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,7 +30,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
 
   useEffect(() => {
     const checkAudioPermission = async () => {
-      const audioEnabled = await getAudioSuperPowerEnabled();
+      const audioEnabled = await getAudioSuperpowerEnabled();
       setIsAudioPermissionEnabled(audioEnabled);
     };
 

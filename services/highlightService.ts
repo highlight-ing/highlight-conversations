@@ -81,7 +81,7 @@ export const requestBackgroundPermission = () => {
 }
 
 // Internal API functions
-export const getAudioSuperPowerEnabled = async (): Promise<boolean> => {
+export const getAudioSuperpowerEnabled = async (): Promise<boolean> => {
   return await window.highlight.internal.getAudioSuperpowerEnabled()
 }
 

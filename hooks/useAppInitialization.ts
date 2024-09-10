@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { migrateFromLocalStorageToAppStorage, getBooleanFromAppStorage, getConversationsFromAppStorage, saveConversationsInAppStorage } from '@/services/highlightService';
 import { defaultConversation } from '@/data/conversations';
-import { HAS_SEEN_ONBOARDING_KEY } from '@/constants/appConstants';
+import { HAS_SEEN_ONBOARDING_KEY } from '@/services/highlightService';
 import { initAmplitude, trackEvent } from '@/lib/amplitude';
 import { getUserId } from '@/utils/userUtils';
 
