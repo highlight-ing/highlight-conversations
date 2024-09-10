@@ -1,30 +1,29 @@
 'use client'
+// 
 
 import React, { useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Header from '@/components/Header/Header'
-import ConversationsManager from '@/components/ConversationManager/ConversationManager'
 import AudioPermissionDialog from '@/components/Dialogue/AudioPermissionDialog'
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { CrossCircledIcon } from "@radix-ui/react-icons"
-import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
-import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips';
-import { useAppInitialization } from './hooks/useAppInitialization'
-import { useAudioPermission } from './hooks/useAudioPermission'
-import { useConversationManagement } from './hooks/useConversationManagement'
+import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips'
+import { useAppInitialization } from '@/hooks/useAppInitialization'
+import { useAudioPermission } from '@/hooks/useAudioPermission'
+import { useConversations } from '@/contexts/ConversationContext'
 import { AppSettingsProvider, useAppSettings } from '@/contexts/AppSettingsContext'
 import { ConversationProvider } from '@/contexts/ConversationContext'
 import { useAmplitude } from '@/hooks/useAmplitude'
 import { useOnboarding } from '@/hooks/useOnboarding'
+import SearchBar from '@/components/Search/SearchBar'
+import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
+import ConversationGrid from '@/components/Card/ConversationGrid'
 
 const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
 
 const MainPageContent: React.FC = () => {
-  const { showOnboarding, conversations: initialConversations, isInitialized } = useAppInitialization(DEBUG_ONBOARDING);
+  const { isInitialized, showOnboarding, conversations: initialConversations } = useAppInitialization(DEBUG_ONBOARDING);
   const { isAudioPermissionEnabled, toggleAudioPermission } = useAudioPermission();
-  const { conversations, addConversation, deleteConversation, updateConversation } = useConversationManagement(initialConversations);
+  const { conversations, addConversation, deleteConversation, updateConversation, filteredConversations, currentConversation, micActivity } = useConversations();
   const { autoSaveValue } = useAppSettings();
   const { trackEvent } = useAmplitude();
   const { showOnboardingTooltips, tooltipsReady, handleOnboardingComplete, handleTooltipsComplete } = useOnboarding();
@@ -42,12 +41,6 @@ const MainPageContent: React.FC = () => {
     }} />;
   }
 
-  const filteredConversations = conversations.filter(conversation => {
-    const matchTranscript = conversation.transcript.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchSummary = conversation.summary.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchTranscript || matchSummary;
-  });
-
   return (
     <div className="flex min-h-screen flex-col">
       <AudioPermissionDialog 
@@ -56,38 +49,22 @@ const MainPageContent: React.FC = () => {
       />
       <Header />
       <main className="flex-grow p-4">
-        <div className="relative mb-4">
-          <Input
-            type="text"
-            placeholder="Search conversations..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pr-8"
-          />
-          {searchQuery && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2"
-              onClick={() => setSearchQuery('')}
-            >
-              <CrossCircledIcon className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
+        <SearchBar />
         {searchQuery && (
           <SearchResultsSummary count={filteredConversations.length} />
         )}
         <AnimatePresence>
-          <ConversationsManager
+          <ConversationGrid
+            currentConversation={currentConversation}
             conversations={filteredConversations}
-            idleThreshold={autoSaveValue}
-            isAudioPermissionEnabled={isAudioPermissionEnabled}
-            searchQuery={searchQuery}
+            micActivity={micActivity}
+            isAudioEnabled={isAudioPermissionEnabled}
             autoSaveTime={autoSaveValue}
-            addConversation={addConversation}
             onDeleteConversation={deleteConversation}
-            onUpdateConversation={updateConversation}
+            onSave={handleSave}
+            onUpdate={updateConversation}
+            searchQuery={searchQuery}
+            isAudioPermissionEnabled={isAudioPermissionEnabled}
           />
         </AnimatePresence>
       </main>
@@ -101,8 +78,8 @@ const MainPageContent: React.FC = () => {
         />
       )}
     </div>
-  );
-};
+  )
+}
 
 const MainPage: React.FC = () => {
   return (
@@ -111,7 +88,7 @@ const MainPage: React.FC = () => {
         <MainPageContent />
       </ConversationProvider>
     </AppSettingsProvider>
-  );
-};
+  )
+}
 
-export default MainPage;
+export default MainPage
