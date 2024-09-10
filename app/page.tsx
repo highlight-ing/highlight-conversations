@@ -23,7 +23,7 @@ const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
 
 const MainPageContent: React.FC = () => {
   const { showOnboarding, conversations: initialConversations, isInitialized } = useAppInitialization(DEBUG_ONBOARDING);
-  const isAudioPermissionEnabled = useAudioPermission();
+  const { isAudioPermissionEnabled, toggleAudioPermission } = useAudioPermission();
   const { conversations, addConversation, deleteConversation, updateConversation } = useConversationManagement(initialConversations);
   const { autoSaveValue } = useAppSettings();
   const { trackEvent } = useAmplitude();
@@ -31,7 +31,7 @@ const MainPageContent: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  if (!isInitialized || showOnboarding === null) {
+  if (!isInitialized || isAudioPermissionEnabled === null) {
     return null;
   }
 
@@ -50,9 +50,10 @@ const MainPageContent: React.FC = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {isAudioPermissionEnabled !== null && (
-        <AudioPermissionDialog isAudioPermissionGranted={isAudioPermissionEnabled} />
-      )}
+      <AudioPermissionDialog 
+        isAudioPermissionGranted={isAudioPermissionEnabled} 
+        onTogglePermission={toggleAudioPermission}
+      />
       <Header />
       <main className="flex-grow p-4">
         <div className="relative mb-4">

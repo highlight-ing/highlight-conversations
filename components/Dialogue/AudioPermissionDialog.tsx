@@ -7,6 +7,7 @@ import { setAudioSuperpowerEnabled } from "@/services/highlightService";
 
 interface AudioPermissionDialogProps {
     isAudioPermissionGranted: boolean | null;
+    onTogglePermission: (enable: boolean) => Promise<void>;
 }
 
 const AudioPermissionDialog: React.FC<AudioPermissionDialogProps> = ({ isAudioPermissionGranted }) => {
@@ -24,7 +25,7 @@ const AudioPermissionDialog: React.FC<AudioPermissionDialogProps> = ({ isAudioPe
     }, [isAudioPermissionGranted]);
 
     const handleAudioPermissionToggle = async (checked: boolean) => {
-        await setAudioSuperpowerEnabled(checked);
+        await onTogglePermission(checked);
         setIsAudioPermissionEnabled(checked);
         if (checked) {
             setIsOpen(false);
