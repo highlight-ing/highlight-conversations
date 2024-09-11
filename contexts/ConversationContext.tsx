@@ -32,6 +32,16 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [pollInterval, setPollInterval] = useState(INITIAL_POLL_INTERVAL)
 
   const { autoSaveValue, isAudioOn } = useAppSettings()
+
+  // Create a ref to hold the current autoSaveValue
+  const autoSaveValueRef = useRef(autoSaveValue)
+
+  // Update the ref whenever autoSaveValue changes
+  useEffect(() => {
+    autoSaveValueRef.current = autoSaveValue
+    console.log(`Auto-save value updated to: ${autoSaveValue} seconds`)
+  }, [autoSaveValue])
+
   const isAudioPermissionEnabled = useAudioPermission()
 
   const lastActivityTimeRef = useRef(Date.now())
@@ -77,10 +87,15 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const saveCurrentConversation = useCallback((forceSave: boolean = false) => {
     const conversationString = getCurrentConversationString(false)
+    console.log('Current conversation string:', conversationString)
     if (forceSave || conversationString.trim().length >= 1) {
       const newConversation = createConversation(conversationString)
       addConversation(newConversation)
+      console.log('Saving conversation:', newConversation)
       setCurrentConversationParts([])
+      console.log('Cleared currentConversationParts')
+    } else {
+      console.log('No conversation to save')
     }
   }, [getCurrentConversationString, addConversation])
 
@@ -96,10 +111,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
     const activity = await fetchMicActivity(300)
     setMicActivity(activity)
-
-    if (activity >= 1) {
-      lastActivityTimeRef.current = Date.now()
-    }
   }, [isAudioOn, isAudioPermissionEnabled])
 
   const pollTranscription = useCallback(async () => {
@@ -108,22 +119,48 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
 
     isPollingRef.current = true
-    const currentTime = Date.now()
     
     try {
       const transcript = await fetchTranscript()
+      const currentTime = Date.now()
+      const timeSinceLastTranscript = currentTime - lastTranscriptTimeRef.current
+      console.log(`Time since last transcript: ${timeSinceLastTranscript / 1000} seconds`)
+      console.log(`Auto-save threshold: ${autoSaveValueRef.current} seconds`)
+      console.log('Current conversation parts:', currentConversationParts)
+
+      if (timeSinceLastTranscript >= autoSaveValueRef.current * 1000) {
+        console.log('Auto-save triggered')
+        saveCurrentConversation()
+        lastTranscriptTimeRef.current = currentTime // Reset the timer after auto-save
+      } else {
+        console.log('Auto-save not triggered')
+      }
+
       if (transcript) {
+        const [timestampStr, ...contentParts] = transcript.split(' - ')
+        const content = contentParts.join(' - ').trim()
+
+        // Convert timestamp to Date object
+        const transcriptTime = new Date(`${new Date().toDateString()} ${timestampStr}`)
+        console.log(`Transcript timestamp: ${transcriptTime.toISOString()}`)
+
         setCurrentConversationParts(prevParts => {
-          const trimmedTranscript = transcript.trim()
-          if (trimmedTranscript && (prevParts.length === 0 || trimmedTranscript !== prevParts[0])) {
+          if (content && (prevParts.length === 0 || content !== prevParts[0])) {
             setPollInterval(prev => Math.min(prev * 1.5, MAX_POLL_INTERVAL))
-            return [trimmedTranscript, ...prevParts.filter(part => part !== trimmedTranscript)]
+            console.log(`New content added: "${content.substring(0, 50)}..."`)
+            console.log('Previous parts:', prevParts)
+            const newParts = [content, ...prevParts.filter(part => part !== content)]
+            console.log('New parts:', newParts)
+            return newParts;
           }
           return prevParts
         })
-        lastActivityTimeRef.current = currentTime
-        lastTranscriptTimeRef.current = currentTime
+
+        // Update lastTranscriptTimeRef with the new transcript time
+        lastTranscriptTimeRef.current = transcriptTime.getTime()
+        console.log(`Updated lastTranscriptTimeRef: ${new Date(lastTranscriptTimeRef.current).toISOString()}`)
       } else {
+        console.log('No new transcript received')
         setPollInterval(prev => Math.max(prev / 1.2, INITIAL_POLL_INTERVAL))
       }
     } catch (error) {
@@ -132,21 +169,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } finally {
       isPollingRef.current = false
     }
-  }, [isAudioOn])
-
-  useEffect(() => {
-    const checkIdleTime = () => {
-      const currentTime = Date.now()
-      const idleTime = currentTime - lastActivityTimeRef.current
-      if (idleTime >= autoSaveValue * 1000) {
-        saveCurrentConversation()
-        lastActivityTimeRef.current = currentTime
-      }
-    }
-
-    const idleCheckInterval = setInterval(checkIdleTime, 1000)
-    return () => clearInterval(idleCheckInterval)
-  }, [autoSaveValue, saveCurrentConversation])
+  }, [isAudioOn, saveCurrentConversation, currentConversationParts])
 
   useEffect(() => {
     const intervalId = setInterval(pollMicActivity, POLL_MIC_INTERVAL)
@@ -158,6 +181,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     const schedulePoll = () => {
       timeoutId = setTimeout(() => {
+        console.log(`Polling for transcription (interval: ${pollInterval}ms)`)
         pollTranscription().then(schedulePoll)
       }, pollInterval)
     }
@@ -195,6 +219,10 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const matchSummary = conversation.summary.toLowerCase().includes(searchQuery.toLowerCase())
     return matchTranscript || matchSummary
   })
+
+  useEffect(() => {
+    console.log('currentConversationParts updated:', currentConversationParts)
+  }, [currentConversationParts])
 
   return (
     <ConversationContext.Provider value={{
