@@ -3,6 +3,7 @@ import { ConversationData, createConversation } from '@/data/conversations'
 import { saveConversationsInAppStorage, deleteAllConversationsInAppStorage, fetchTranscript, fetchMicActivity, fetchLongTranscript } from '@/services/highlightService'
 import { useAppSettings } from './AppSettingsContext'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
+import Highlight from '@highlight-ai/app-runtime'
 
 const POLL_MIC_INTERVAL = 100
 const INITIAL_POLL_INTERVAL = 5000
@@ -41,6 +42,18 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     autoSaveValueRef.current = autoSaveValue
     console.log(`Auto-save value updated to: ${autoSaveValue} seconds`)
   }, [autoSaveValue])
+
+  // Add ASR event listener
+  useEffect(() => {
+    // @ts-ignore
+    const destroy = Highlight.app.addListener('onAsrTranscriptEvent', (text) => {
+      
+    })
+
+    return () => {
+      destroy()
+    }
+  })
 
   const isAudioPermissionEnabled = useAudioPermission()
 
