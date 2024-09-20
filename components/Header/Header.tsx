@@ -1,27 +1,27 @@
 import React from 'react'
 import { useAppSettings } from '@/contexts/AppSettingsContext'
+import { useConversations } from '@/contexts/ConversationContext'
 import AutoClearSelection from './AutoClearSelection'
 import AudioSwitch from './AudioSwitch'
 import AutoSaveSelection from './AutoSaveSelection'
 import DeleteAllButton from './DeleteAllButton'
 
-const Header: React.FC<HeaderProps> = () => {
+const Header: React.FC = () => {
+  const { isAudioOn, setIsAudioOn } = useAppSettings();
   const { 
-    isAudioOn, 
-    setIsAudioOn, 
-    autoClearValue, 
-    setAutoClearValue, 
-    autoSaveValue, 
-    setAutoSaveValue 
-  } = useAppSettings();
+    autoSaveTime, 
+    setAutoSaveTime, 
+    autoClearDays, 
+    setAutoClearDays 
+  } = useConversations();
 
   return (
     <div className="w-full border-b">
       <div className="flex items-center justify-between p-4">
         <AudioSwitch isAudioOn={isAudioOn} onSwitch={setIsAudioOn} />
         <div className="flex-1 flex items-center justify-center space-x-4">
-          <AutoSaveSelection value={autoSaveValue} onIdleTimerChange={setAutoSaveValue}/>
-          <AutoClearSelection value={autoClearValue} onChange={setAutoClearValue} />
+          <AutoSaveSelection value={autoSaveTime} onIdleTimerChange={setAutoSaveTime}/>
+          <AutoClearSelection value={autoClearDays} onChange={setAutoClearDays} />
         </div>
         <DeleteAllButton />
       </div>
