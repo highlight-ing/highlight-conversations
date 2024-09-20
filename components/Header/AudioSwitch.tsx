@@ -20,7 +20,7 @@ const AudioSwitch: React.FC = () => {
     <div className="flex items-center space-x-2">
       <InfoTooltip type="AUDIO_SWITCH" content={TOOLTIP_CONTENT.AUDIO_SWITCH}>
         <Label className="cursor-help text-muted-foreground" htmlFor="audio-switch">
-          Microphone Input
+          Audio transcription
         </Label>
       </InfoTooltip>
       <Switch checked={isAudioPermissionEnabled} onCheckedChange={handleToggle} id="audio-switch" />
