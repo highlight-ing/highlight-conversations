@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { migrateFromLocalStorageToAppStorage, getBooleanFromAppStorage, getConversationsFromAppStorage, saveConversationsInAppStorage } from '@/services/highlightService';
 import { defaultConversation } from '@/data/conversations';
 import { HAS_SEEN_ONBOARDING_KEY } from '@/services/highlightService';
 import { initAmplitude, trackEvent } from '@/lib/amplitude';
 import { getUserId } from '@/utils/userUtils';
+import { getHasSeenOnboarding } from '@/services/highlightService';
 
 export const useAppInitialization = (debugOnboarding: boolean) => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -11,12 +12,9 @@ export const useAppInitialization = (debugOnboarding: boolean) => {
   const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
-    const initializeApp = async () => {
-      console.log('Initializing app...');
-
-      // Perform migration
-      await migrateFromLocalStorageToAppStorage();
-
+    const initialize = async () => {
+      const hasSeenOnboarding = await getHasSeenOnboarding();
+      setShowOnboarding(!hasSeenOnboarding || debugOnboarding);
       // Initialize Amplitude
       try {
         const userId = await getUserId();
@@ -35,10 +33,6 @@ export const useAppInitialization = (debugOnboarding: boolean) => {
         trackEvent('App Initialized', { fallbackId, error: 'Failed to get userId' });
       }
 
-      // Check onboarding status
-      const hasSeenOnboarding = await getBooleanFromAppStorage(HAS_SEEN_ONBOARDING_KEY, false);
-      setShowOnboarding(!hasSeenOnboarding || debugOnboarding);
-
       // Load conversations
       let storedConversations = await getConversationsFromAppStorage();
 
@@ -52,8 +46,13 @@ export const useAppInitialization = (debugOnboarding: boolean) => {
       setIsInitialized(true);
     };
 
-    initializeApp();
+    initialize();
   }, [debugOnboarding]);
 
-  return { isInitialized, showOnboarding, conversations };
+  const completeOnboarding = useCallback(async () => {
+    await saveHasSeenOnboarding(true);
+    setShowOnboarding(false);
+  }, []);
+
+  return { isInitialized, showOnboarding, conversations, completeOnboarding, setShowOnboarding };
 };
