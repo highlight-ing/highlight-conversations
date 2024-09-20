@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { CardDescription, CardTitle } from '@/components/ui/card'
@@ -13,32 +13,30 @@ export const ConversationCardHeader: React.FC<{
     onDelete: (id: string) => void
     onUpdateTitle: (id: string, newTitle: string) => void
   }> = ({ conversation, onDelete, onUpdateTitle }) => {
-    const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
     const [title, setTitle] = useState('')
     const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle')
     const [isEditing, setIsEditing] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
   
-    useEffect(() => {
-      const updateTitle = () => {
-        if (!conversation.title || 
-            conversation.title.trim() === '' || 
-            conversation.title.startsWith('Conversation ended at')) {
-          setTitle(getRelativeTimeString(conversation.timestamp));
-        } else {
-          setTitle(conversation.title);
-        }
-      };
+    const updateTitle = useCallback(() => {
+      if (!conversation.title || 
+          conversation.title.trim() === '' || 
+          conversation.title.startsWith('Conversation ended at')) {
+        setTitle(getRelativeTimeString(conversation.timestamp));
+      } else {
+        setTitle(conversation.title);
+      }
+    }, [conversation.title, conversation.timestamp]);
 
+    useEffect(() => {
       updateTitle();
+    }, [updateTitle, conversation]);
+
+    useEffect(() => {
       const timer = setInterval(updateTitle, 60000); // Update every minute
       return () => clearInterval(timer);
-    }, [conversation.title, conversation.timestamp])
-  
-    useEffect(() => {
-      setTitle(conversation.title || relativeTime)
-    }, [conversation.title, relativeTime])
-  
+    }, [updateTitle]);
+
     useEffect(() => {
       if (isEditing && inputRef.current) {
         inputRef.current.focus()
