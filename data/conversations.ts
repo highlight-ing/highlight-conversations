@@ -1,9 +1,11 @@
 // data/conversations.ts
 import { v4 as uuidv4 } from "uuid"
 export interface ConversationData {
-  id: string // UUID
+  id: string
   title: string
   summary: string
+  startedAt: Date
+  endedAt: Date
   timestamp: Date
   topic: string
   transcript: string
@@ -14,18 +16,19 @@ export interface ConversationData {
 
 export type FormatType = "CardTranscript" | "DialogueTranscript"
 
-export const createConversation = (transcript: string): ConversationData => {
-  let uuid = uuidv4();
+export const createConversation = (transcript: string, startedAt: Date, endedAt: Date): ConversationData => {
   return {
-    id: uuid,
+    id: uuidv4(),
     title: '',
     summary: '',
     topic: '',
-    transcript: transcript,
+    transcript,
+    startedAt,
+    endedAt,
     timestamp: new Date(),
     summarized: false,
     shareLink: '',
-    userId: ''
+    userId: '',
   }
 }
 

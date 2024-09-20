@@ -42,10 +42,17 @@ export const formatTimestamp = (date: Date, locale?: string): string => {
     return days;
   };
 
-  export function getRelativeTimeString(date: Date): string {
+  export function getRelativeTimeString(date: Date | unknown): string {
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+      console.error('Invalid date input:', date);
+      console.error('Type:', typeof date);
+      console.error('JSON representation:', JSON.stringify(date));
+      return 'Invalid date';
+    }
+
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  
+
     if (diffInSeconds < 300) { // Less than 5 minutes
       return "Moments ago";
     } else if (diffInSeconds < 3600) { // Less than 1 hour
