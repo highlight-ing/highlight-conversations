@@ -23,8 +23,8 @@ const highlightText = (text: string, query: string) => {
 };
 
 const CurrentConversationCard: React.FC = () => {
-  const { currentConversation, micActivity, handleSave, searchQuery } = useConversations();
-  const { autoSaveValue, isAudioOn } = useAppSettings();
+  const { currentConversation, micActivity, saveCurrentConversation, searchQuery, autoSaveTime } = useConversations();
+  const { isAudioOn } = useAppSettings();
   const { isAudioPermissionEnabled } = useAudioPermission();
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -84,7 +84,7 @@ const CurrentConversationCard: React.FC = () => {
   };
 
   const handleSaveTranscript = () => {
-    handleSave()
+    saveCurrentConversation()
     setSaveTooltipState('success');
     setTimeout(() => setSaveTooltipState('hiding'), 1500);
     setTimeout(() => setSaveTooltipState('idle'), 1700);
@@ -128,7 +128,7 @@ const CurrentConversationCard: React.FC = () => {
             <div className="flex flex-col h-full px-8">
               <div className="mt-2 mb-2 text-sm font-medium text-muted-foreground">
                 {currentConversation ? (
-                  <p>This transcript will save after {autoSaveValue} seconds of silence</p>
+                  <p>This transcript will save after {autoSaveTime} seconds of silence</p>
                 ) : (
                   <p>Transcript will generate after ~30 seconds of audio</p>
                 )}
