@@ -206,8 +206,10 @@ export const removeTextPredictionDoneListener = (listener: (event: any) => void)
   Highlight.removeEventListener('onTextPredictionDone', listener)
 }
 
-export const addAudioPermissionListener = (listener: (event: any) => void): void => {
-  Highlight.app.addListener('onAudioPermissionUpdate', listener)
+export const addAudioPermissionListener = (listener: (event: any) => void): (() => void) => {
+  // @ts-ignore
+  globalThis.highlight?.internal?.requestAudioPermissionEvents()
+  return Highlight.app.addListener('onAudioPermissionUpdate', listener)
 }
 
 export const requestAudioPermissionEvents = async (): Promise<void> => {
@@ -388,12 +390,12 @@ export const getConversationsFromAppStorage = async (): Promise<ConversationData
 
 // Add this new function to the file
 export const saveHasSeenOnboarding = async (value: boolean): Promise<void> => {
-  await saveBooleanInAppStorage(HAS_SEEN_ONBOARDING_KEY, value);
+  await saveBooleanInAppStorage(HAS_SEEN_ONBOARDING_KEY, value)
 }
 
 // Also, let's add a function to retrieve this value
 export const getHasSeenOnboarding = async (): Promise<boolean> => {
-  return await getBooleanFromAppStorage(HAS_SEEN_ONBOARDING_KEY, false);
+  return await getBooleanFromAppStorage(HAS_SEEN_ONBOARDING_KEY, false)
 }
 
 export async function getAccessToken() {
