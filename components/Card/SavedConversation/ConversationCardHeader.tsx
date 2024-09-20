@@ -14,17 +14,26 @@ export const ConversationCardHeader: React.FC<{
     onUpdateTitle: (id: string, newTitle: string) => void
   }> = ({ conversation, onDelete, onUpdateTitle }) => {
     const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp))
+    const [title, setTitle] = useState('')
     const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle')
     const [isEditing, setIsEditing] = useState(false)
-    const [title, setTitle] = useState(conversation.title || relativeTime)
     const inputRef = useRef<HTMLInputElement>(null)
   
     useEffect(() => {
-      const timer = setInterval(() => {
-        setRelativeTime(getRelativeTimeString(conversation.timestamp))
-      }, 60000)
-      return () => clearInterval(timer)
-    }, [conversation.timestamp])
+      const updateTitle = () => {
+        if (!conversation.title || 
+            conversation.title.trim() === '' || 
+            conversation.title.startsWith('Conversation ended at')) {
+          setTitle(getRelativeTimeString(conversation.timestamp));
+        } else {
+          setTitle(conversation.title);
+        }
+      };
+
+      updateTitle();
+      const timer = setInterval(updateTitle, 60000); // Update every minute
+      return () => clearInterval(timer);
+    }, [conversation.title, conversation.timestamp])
   
     useEffect(() => {
       setTitle(conversation.title || relativeTime)
@@ -43,7 +52,7 @@ export const ConversationCardHeader: React.FC<{
     const handleTitleBlur = () => {
       setIsEditing(false)
       if (title.trim() === '') {
-        setTitle(relativeTime)
+        setTitle(getRelativeTimeString(conversation.timestamp))
       } else {
         onUpdateTitle(conversation.id, title)
       }
