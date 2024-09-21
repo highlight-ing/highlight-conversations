@@ -7,7 +7,6 @@ import AutoSaveSelection from './AutoSaveSelection'
 import DeleteAllButton from './DeleteAllButton'
 
 const Header: React.FC = () => {
-  const { isAudioOn, setIsAudioOn } = useAppSettings();
   const { 
     autoSaveTime, 
     setAutoSaveTime, 
@@ -18,7 +17,7 @@ const Header: React.FC = () => {
   return (
     <div className="w-full border-b">
       <div className="flex items-center justify-between p-4">
-        <AudioSwitch isAudioOn={isAudioOn} onSwitch={setIsAudioOn} />
+        <AudioSwitch/>
         <div className="flex-1 flex items-center justify-center space-x-4">
           <AutoSaveSelection value={autoSaveTime} onIdleTimerChange={setAutoSaveTime}/>
           <AutoClearSelection value={autoClearDays} onChange={setAutoClearDays} />

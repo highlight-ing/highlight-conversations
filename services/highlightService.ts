@@ -212,6 +212,11 @@ export const addAudioPermissionListener = (listener: (event: any) => void): (() 
   return Highlight.app.addListener('onAudioPermissionUpdate', listener)
 }
 
+export const isAudioPermissionEnabled = async (): Promise<boolean> => {
+  // @ts-ignore
+  return await globalThis.highlight?.internal?.isAudioTranscriptEnabled()
+}
+
 export const requestAudioPermissionEvents = async (): Promise<void> => {
   if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
     try {

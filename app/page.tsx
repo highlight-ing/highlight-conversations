@@ -24,8 +24,7 @@ const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
 const MainPageContent: React.FC = () => {
   const { isInitialized, showOnboarding, conversations: initialConversations, setShowOnboarding } = useAppInitialization(DEBUG_ONBOARDING);
   const { isAudioPermissionEnabled, toggleAudioPermission } = useAudioPermission();
-  const { conversations, addConversation, deleteConversation, updateConversation, filteredConversations, currentConversation, micActivity, handleSave } = useConversations();
-  const { autoSaveValue } = useAppSettings();
+  const { filteredConversations, autoSaveTime } = useConversations();
   const { trackEvent } = useAmplitude();
   const { showOnboardingTooltips, tooltipsReady, handleTooltipsComplete } = useOnboarding();
 
@@ -63,7 +62,7 @@ const MainPageContent: React.FC = () => {
       </main>
       {showOnboardingTooltips && tooltipsReady && (
         <OnboardingTooltips 
-          autoSaveSeconds={autoSaveValue} 
+          autoSaveSeconds={autoSaveTime} 
           onComplete={() => {
             handleTooltipsComplete();
             trackEvent('Onboarding Tooltips Complete', {});

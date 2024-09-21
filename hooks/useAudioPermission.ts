@@ -10,6 +10,18 @@ export const useAudioPermission = () => {
   }
 
   useEffect(() => {
+    // Check initial audio permission state
+    (async () => {
+      try {
+        // @ts-ignore
+        const enabled = await globalThis.highlight?.internal?.isAudioTranscriptEnabled()
+        setIsAudioPermissionEnabled(enabled)
+      } catch (error) {
+        console.error('Error checking initial audio permission:', error)
+      }
+    })()
+
+    // Set up listener for future changes
     const removeListener = addAudioPermissionListener((event: 'locked' | 'detect' | 'attach') => {
       if (event === 'locked') {
         setIsAudioPermissionEnabled(false)
