@@ -58,7 +58,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initi
       <Card className={`flex w-full flex-col rounded-lg bg-background-100 shadow h-[415px]`}>
         <ConversationCardHeader
           conversation={localConversation}
-          onDelete={deleteConversation}
+          onDelete={() => deleteConversation(localConversation.id)}
           onUpdateTitle={handleUpdateTitle}
         />
         <ConversationCardContent
