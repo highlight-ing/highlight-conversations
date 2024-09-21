@@ -103,11 +103,15 @@ export const ConversationCardHeader: React.FC<{
                 <Pencil1Icon className="ml-2 inline-block h-4 w-4 text-white/50 transition-colors duration-200 group-hover:text-white" />
               </CardTitle>
             )}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col">
               <CardDescription className="text-[0.825rem] font-medium leading-relaxed text-white/50">
                 {formatTimestamp(conversation.timestamp)}
               </CardDescription>
-              {conversation.summarized && <Badge className="text-xs text-foreground/75">Summarized</Badge>}
+              {/* {conversation.summarized && (
+                <Badge className="mt-1 w-fit text-xs text-foreground/75">
+                  Summarized
+                </Badge>
+              )} */}
             </div>
           </div>
           <div className="flex items-center gap-2">
