@@ -10,7 +10,6 @@ import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip
 import { Button } from "@/components/ui/button"
 import { formatTranscript } from '@/data/conversations'
 import { useConversations } from "@/contexts/ConversationContext";
-import { useAppSettings } from "@/contexts/AppSettingsContext";
 import { useAudioPermission } from "@/hooks/useAudioPermission";
 
 const highlightText = (text: string, query: string) => {
@@ -24,7 +23,6 @@ const highlightText = (text: string, query: string) => {
 
 const CurrentConversationCard: React.FC = () => {
   const { currentConversation, micActivity, saveCurrentConversation, searchQuery, autoSaveTime } = useConversations();
-  const { isAudioOn } = useAppSettings();
   const { isAudioPermissionEnabled } = useAudioPermission();
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -98,7 +96,7 @@ const CurrentConversationCard: React.FC = () => {
             <CardTitle className="text-xl font-bold leading-normal text-white">
               Current Conversation
             </CardTitle>
-            {isAudioOn && (
+            {isAudioPermissionEnabled && (
               <div className="flex items-center space-x-2 text-sm text-muted-foreground font-semibold">
                 <p>Listening ...</p>
                 <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full"></div>
@@ -123,66 +121,58 @@ const CurrentConversationCard: React.FC = () => {
         </div>
       </div>
       <CardContent className="flex-grow overflow-hidden p-0 flex flex-col">
-        {isAudioOn ? (
-          isAudioPermissionEnabled ? (
-            <div className="flex flex-col h-full px-8">
-              <div className="mt-2 mb-2 text-sm font-medium text-muted-foreground">
-                {currentConversation ? (
-                  <p>This transcript will save after {autoSaveTime} seconds of silence</p>
-                ) : (
-                  <p>Transcript will generate after ~30 seconds of audio</p>
-                )}
-              </div>
-              <div className="relative flex-grow overflow-hidden">
-                {showTopGradient && (
-                  <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none"></div>
-                )}
-                {showBottomGradient && (
-                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none"></div>
-                )}
-                <div className="h-[275px] overflow-y-auto custom-scrollbar" ref={scrollRef}>
-                  <AnimatePresence mode="wait">
-                    {!currentConversation ? (
-                      <motion.div
-                        key="listening"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="space-y-2 flex flex-col justify-start"
-                      >
-                        <Skeleton className={`h-24 w-full ${skeletonCorner}`} />
-                        <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
-                        <Skeleton className={`h-4 w-[80%] ${skeletonCorner}`} />
-                        <Skeleton className={`h-4 w-[60%] ${skeletonCorner}`} />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key={`transcript-${transcriptKey}`}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="pb-4"
-                      >
-                        <p className="select-text pb-0 text-[15px] text-foreground leading-relaxed whitespace-pre-wrap">{highlightText(formatTranscript(currentConversation, 'CardTranscript'), searchQuery)}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+        {isAudioPermissionEnabled ? (
+          <div className="flex flex-col h-full px-8">
+            <div className="mt-2 mb-2 text-sm font-medium text-muted-foreground">
+              {currentConversation ? (
+                <p>This transcript will save after {autoSaveTime} seconds of silence</p>
+              ) : (
+                <p>Transcript will generate after ~30 seconds of audio</p>
+              )}
+            </div>
+            <div className="relative flex-grow overflow-hidden">
+              {showTopGradient && (
+                <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background-100 to-transparent z-10 pointer-events-none"></div>
+              )}
+              {showBottomGradient && (
+                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background-100 to-transparent z-10 pointer-events-none"></div>
+              )}
+              <div className="h-[275px] overflow-y-auto custom-scrollbar" ref={scrollRef}>
+                <AnimatePresence mode="wait">
+                  {!currentConversation ? (
+                    <motion.div
+                      key="listening"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-2 flex flex-col justify-start"
+                    >
+                      <Skeleton className={`h-24 w-full ${skeletonCorner}`} />
+                      <Skeleton className={`h-4 w-full ${skeletonCorner}`} />
+                      <Skeleton className={`h-4 w-[80%] ${skeletonCorner}`} />
+                      <Skeleton className={`h-4 w-[60%] ${skeletonCorner}`} />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key={`transcript-${transcriptKey}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="pb-4"
+                    >
+                      <p className="select-text pb-0 text-[15px] text-foreground leading-relaxed whitespace-pre-wrap">{highlightText(formatTranscript(currentConversation, 'CardTranscript'), searchQuery)}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
-          ) : (
-            <div className="flex items-center justify-center h-full px-8">
-              <p className="text-center text-muted-foreground max-w-sm">
-                Microphone permission is required. Please grant permission to enable audio transcription.
-              </p>
-            </div>
-          )
+          </div>
         ) : (
           <div className="flex items-center justify-center h-full px-8">
-            <p className="text-center text-muted-foreground max-w-sm">
-              Microphone input is disabled. Please enable it to receive transcripts of your conversations.
+            <p className="text-center text-muted-foreground max-w-sm whitespace-pre-line">
+              Microphone input is disabled.{'\n'}Use the Audio Transcription Switch to enable it.
             </p>
           </div>
         )}
