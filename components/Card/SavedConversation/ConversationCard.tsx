@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { ConversationData } from '@/data/conversations'
 import { motion } from 'framer-motion'
 import { Card, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,22 +8,17 @@ import { ConversationCardContent } from './ConversationCardContent'
 import { useConversationActions } from './useConversationsActions'
 import { Toaster, toast } from 'sonner'
 import { ShareButton } from './ShareButton'
+import { useConversations } from "@/contexts/ConversationContext";
+import { useAppSettings } from "@/contexts/AppSettingsContext";
+import { ConversationData } from '@/data/conversations'
 
 interface ConversationCardProps {
-  conversation: ConversationData
-  onDelete: (id: string) => void
-  onUpdate: (updatedConversation: ConversationData) => void
-  searchQuery: string
-  height: string
+  conversation: ConversationData;
 }
 
-const ConversationCard: React.FC<ConversationCardProps> = ({
-  conversation,
-  onUpdate,
-  onDelete,
-  searchQuery,
-  height
-}) => {
+const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initialConversation }) => {
+  const { updateConversation, deleteConversation, searchQuery } = useConversations();
+
   const {
     localConversation,
     setLocalConversation,
@@ -43,11 +37,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
     handleDownloadAsFile,
     handleCopyLink,
     handleDeleteLink
-  } = useConversationActions(conversation, onUpdate, onDelete)
-
-  useEffect(() => {
-    setLocalConversation(conversation)
-  }, [conversation, setLocalConversation])
+  } = useConversationActions(initialConversation, updateConversation, deleteConversation)
 
   useEffect(() => {
     if (shareMessage) {
@@ -64,10 +54,10 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
 
   return (
     <motion.div initial={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
-      <Card className={`flex w-full flex-col rounded-lg bg-background-100 shadow ${height}`}>
+      <Card className={`flex w-full flex-col rounded-lg bg-background-100 shadow h-[415px]`}>
         <ConversationCardHeader
           conversation={localConversation}
-          onDelete={onDelete}
+          onDelete={() => deleteConversation(localConversation.id)}
           onUpdateTitle={handleUpdateTitle}
         />
         <ConversationCardContent
@@ -93,14 +83,13 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
         isOpen={isViewTranscriptOpen}
         onClose={() => setIsViewTranscriptOpen(false)}
         conversation={localConversation}
-        onDelete={onDelete}
+        onDelete={deleteConversation}
         onSummarize={handleSummarize}
       />
       <Toaster
         theme="dark"
         className="bg-background text-foreground"
       />
-
     </motion.div>
   )
 }

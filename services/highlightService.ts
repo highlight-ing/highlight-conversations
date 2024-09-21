@@ -2,7 +2,6 @@
 'use client'
 import Highlight from '@highlight-ai/app-runtime'
 import { GeneratedPrompt, LLMMessage } from '../types/types'
-import { loadConversations as loadConversationsFromLocalStorage } from '@/utils/localStorage'
 import { ConversationData } from '@/data/conversations'
 
 export const CONVERSATIONS_STORAGE_KEY = 'conversations'
@@ -81,7 +80,7 @@ export const requestBackgroundPermission = () => {
 }
 
 // Internal API functions
-export const getAudioSuperPowerEnabled = async (): Promise<boolean> => {
+export const getAudioSuperpowerEnabled = async (): Promise<boolean> => {
   return await window.highlight.internal.getAudioSuperpowerEnabled()
 }
 
@@ -206,8 +205,15 @@ export const removeTextPredictionDoneListener = (listener: (event: any) => void)
   Highlight.removeEventListener('onTextPredictionDone', listener)
 }
 
-export const addAudioPermissionListener = (listener: (event: any) => void): void => {
-  Highlight.app.addListener('onAudioPermissionUpdate', listener)
+export const addAudioPermissionListener = (listener: (event: any) => void): (() => void) => {
+  // @ts-ignore
+  globalThis.highlight?.internal?.requestAudioPermissionEvents()
+  return Highlight.app.addListener('onAudioPermissionUpdate', listener)
+}
+
+export const isAudioPermissionEnabled = async (): Promise<boolean> => {
+  // @ts-ignore
+  return await globalThis.highlight?.internal?.isAudioTranscriptEnabled()
 }
 
 export const requestAudioPermissionEvents = async (): Promise<void> => {
@@ -386,65 +392,14 @@ export const getConversationsFromAppStorage = async (): Promise<ConversationData
   return []
 }
 
-// Add this constant to your file
-const MIGRATION_COMPLETED_KEY = 'migrationCompleted'
-
-export const migrateFromLocalStorageToAppStorage = async (): Promise<void> => {
-  const appStorage = getAppStorage()
-  if (appStorage) {
-    await appStorage.whenHydrated()
-
-    // Check if migration has already been completed
-    const migrationCompleted = await getBooleanFromAppStorage(MIGRATION_COMPLETED_KEY, false)
-    if (migrationCompleted) {
-      console.log('Migration already completed. Skipping.')
-      return
-    }
-
-    // Check if there's anything to migrate
-    const keysToCheck = [CONVERSATIONS_STORAGE_KEY, AUTO_CLEAR_VALUE_KEY, AUTO_SAVE_SEC_KEY, AUDIO_ENABLED_KEY]
-    const hasDataToMigrate = keysToCheck.some((key) => localStorage.getItem(key) !== null)
-
-    if (!hasDataToMigrate) {
-      console.log('No data to migrate. Marking migration as completed.')
-      await saveBooleanInAppStorage(MIGRATION_COMPLETED_KEY, true)
-      return
-    }
-
-    // Perform migration
-    const conversations = loadConversationsFromLocalStorage()
-    if (conversations.length > 0) {
-      await saveConversationsInAppStorage(conversations)
-      console.log(`Migrated conversations from LocalStorage to AppStorage`)
-      localStorage.removeItem(CONVERSATIONS_STORAGE_KEY)
-    }
-
-    await migrateNumber(AUTO_CLEAR_VALUE_KEY)
-    await migrateNumber(AUTO_SAVE_SEC_KEY)
-    await migrateBoolean(AUDIO_ENABLED_KEY)
-
-    // Mark migration as completed
-    await saveBooleanInAppStorage(MIGRATION_COMPLETED_KEY, true)
-
-    console.log('Migration from LocalStorage to AppStorage complete')
-  }
+// Add this new function to the file
+export const saveHasSeenOnboarding = async (value: boolean): Promise<void> => {
+  await saveBooleanInAppStorage(HAS_SEEN_ONBOARDING_KEY, value)
 }
 
-// Helper functions remain the same
-async function migrateNumber(key: string): Promise<void> {
-  const value = localStorage.getItem(key)
-  if (value !== null) {
-    await saveNumberInAppStorage(key, Number(value))
-    localStorage.removeItem(key)
-  }
-}
-
-async function migrateBoolean(key: string): Promise<void> {
-  const value = localStorage.getItem(key)
-  if (value !== null) {
-    await saveBooleanInAppStorage(key, value === 'true')
-    localStorage.removeItem(key)
-  }
+// Also, let's add a function to retrieve this value
+export const getHasSeenOnboarding = async (): Promise<boolean> => {
+  return await getBooleanFromAppStorage(HAS_SEEN_ONBOARDING_KEY, false)
 }
 
 export async function getAccessToken() {

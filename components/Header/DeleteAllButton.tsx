@@ -1,4 +1,5 @@
 import React from 'react';
+import { useConversations } from '@/contexts/ConversationContext';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,11 +13,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 
-interface DeleteAllButtonProps {
-  onDeleteAllConversations: () => void;
-}
+const DeleteAllButton: React.FC = () => {
+  const { deleteAllConversations } = useConversations();
 
-const DeleteAllButton: React.FC<DeleteAllButtonProps> = ({ onDeleteAllConversations }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -31,7 +30,7 @@ const DeleteAllButton: React.FC<DeleteAllButtonProps> = ({ onDeleteAllConversati
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onDeleteAllConversations}>Delete All</AlertDialogAction>
+          <AlertDialogAction onClick={deleteAllConversations}>Delete All</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

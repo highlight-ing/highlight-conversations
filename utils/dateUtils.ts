@@ -1,11 +1,17 @@
 // utils/dateUtils.ts
 
-export const formatTimestamp = (date: Date, locale?: string): string => {
+export const formatTimestamp = (date: Date | string | number, locale?: string): string => {
   // Default to 'en-US' if no locale is provided
   const userLocale = locale || 'en-US';
 
-  // Check if we're in a browser environment
-  const isBrowser = typeof window !== 'undefined';
+  // Convert to Date object if it's not already
+  const dateObject = date instanceof Date ? date : new Date(date);
+
+  // Check if the date is valid
+  if (isNaN(dateObject.getTime())) {
+    console.error('Invalid date input:', date);
+    return 'Invalid date';
+  }
 
   // Use Intl.DateTimeFormat for consistent formatting in all environments
   const formatter = new Intl.DateTimeFormat(userLocale, {
@@ -18,7 +24,7 @@ export const formatTimestamp = (date: Date, locale?: string): string => {
       timeZoneName: 'short'
   });
 
-  return formatter.format(date);
+  return formatter.format(dateObject);
 };
   
   export const getTimeDifference = (date: Date, now: Date = new Date()): number => {
@@ -42,10 +48,17 @@ export const formatTimestamp = (date: Date, locale?: string): string => {
     return days;
   };
 
-  export function getRelativeTimeString(date: Date): string {
+  export function getRelativeTimeString(date: Date | unknown): string {
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+      console.error('Invalid date input:', date);
+      console.error('Type:', typeof date);
+      console.error('JSON representation:', JSON.stringify(date));
+      return 'Invalid date';
+    }
+
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  
+
     if (diffInSeconds < 300) { // Less than 5 minutes
       return "Moments ago";
     } else if (diffInSeconds < 3600) { // Less than 1 hour
