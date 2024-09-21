@@ -18,7 +18,6 @@ interface ConversationCardProps {
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initialConversation }) => {
   const { updateConversation, deleteConversation, searchQuery } = useConversations();
-  const { } = useAppSettings(); // Add any needed app settings
 
   const {
     localConversation,

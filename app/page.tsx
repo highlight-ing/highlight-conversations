@@ -46,10 +46,10 @@ const MainPageContent: React.FC = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <AudioPermissionDialog 
+      {/* <AudioPermissionDialog 
         isAudioPermissionGranted={isAudioPermissionEnabled} 
         onTogglePermission={toggleAudioPermission}
-      />
+      /> */}
       <Header />
       <main className="flex-grow p-4">
         <SearchBar />
