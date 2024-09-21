@@ -2,7 +2,6 @@
 'use client'
 import Highlight from '@highlight-ai/app-runtime'
 import { GeneratedPrompt, LLMMessage } from '../types/types'
-import { loadConversations as loadConversationsFromLocalStorage } from '@/utils/localStorage'
 import { ConversationData } from '@/data/conversations'
 
 export const CONVERSATIONS_STORAGE_KEY = 'conversations'

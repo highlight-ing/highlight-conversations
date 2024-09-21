@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import Highlight, { ConversationData } from '@highlight-ai/app-runtime'
 import { ConversationData as ConversationDataFromData } from '@/data/conversations'
+import { getConversationsFromAppStorage } from '@/services/highlightService'
 
 const POLL_MIC_ACTIVITY = 300
 const AUDIO_ENABLED_KEY = 'audioEnabled'
@@ -26,6 +27,7 @@ interface ConversationContextType {
   setSearchQuery: (query: string) => void
   isSaving: boolean
   getWordCount: (transcript: string) => number
+  updateConversations: (conversations: ConversationData[]) => Promise<void>
 }
 
 const ConversationContext = createContext<ConversationContextType | undefined>(undefined)
@@ -127,15 +129,42 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const allConversations = await Highlight.conversations.getAllConversations()
     console.log('All conversations:', allConversations)
     
-    // Ensure timestamps are Date objects
-    const processedConversations = allConversations.map((conv: ConversationDataFromData) => ({
-      ...conv,
-      timestamp: new Date(conv.timestamp),
-      startedAt: new Date(conv.startedAt),
-      endedAt: new Date(conv.endedAt)
-    }))
-    
-    setConversations(processedConversations)
+    if (allConversations.length === 0) {
+      console.log('No conversations found in GlobalStore, checking AppStorage...')
+      const appStorageConversations = await getConversationsFromAppStorage()
+      
+      if (appStorageConversations.length > 0) {
+        console.log('Found conversations in AppStorage, performing backup migration...')
+        
+        // Update ConversationData objects to include new fields
+        const updatedConversations = appStorageConversations.map((conv: ConversationDataFromData) => ({
+          ...conv,
+          startedAt: conv.startedAt || conv.timestamp, // Use timestamp as fallback if startedAt is not present
+          endedAt: conv.endedAt || new Date(), // Use current date as fallback if endedAt is not present
+          timestamp: new Date(conv.timestamp),
+        }))
+        
+        // Update conversations in the GlobalStore
+        await Highlight.conversations.updateConversations(updatedConversations)
+        
+        // The listener will be triggered, but let's set the state here as well
+        setConversations(updatedConversations)
+        console.log('Backup migration completed')
+      } else {
+        console.log('No conversations found in AppStorage')
+        setConversations([])
+      }
+    } else {
+      // Ensure timestamps are Date objects
+      const processedConversations = allConversations.map((conv: ConversationDataFromData) => ({
+        ...conv,
+        timestamp: new Date(conv.timestamp),
+        startedAt: new Date(conv.startedAt),
+        endedAt: new Date(conv.endedAt)
+      }))
+      
+      setConversations(processedConversations)
+    }
 
     const currentConv = await Highlight.conversations.getCurrentConversation()
     console.log('Current conversation:', currentConv)
@@ -231,6 +260,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setSearchQuery,
     isSaving,
     getWordCount,
+    updateConversations: Highlight.conversations.updateConversations,
   }
 
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
