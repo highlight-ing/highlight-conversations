@@ -15,10 +15,11 @@ export const ViewTranscriptDialog: React.FC<{
     onClose: () => void;
     conversation: ConversationData;
     onDelete: (id: string) => void;
-    onSummarize: () => void;
+    onSummarize: () => Promise<void>;
   }> = ({ isOpen, onClose, conversation, onDelete, onSummarize }) => {
     const [relativeTime, setRelativeTime] = useState(getRelativeTimeString(conversation.timestamp));
     const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
+    const [isSummarizing, setIsSummarizing] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef);
 
@@ -54,6 +55,15 @@ export const ViewTranscriptDialog: React.FC<{
       }, 300);
     }
 
+    const handleSummarize = async () => {
+      setIsSummarizing(true);
+      try {
+        await onSummarize();
+      } finally {
+        setIsSummarizing(false);
+      }
+    };
+
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-[80vw] max-w-[1200px] h-[80vh] flex flex-col">
@@ -70,7 +80,8 @@ export const ViewTranscriptDialog: React.FC<{
             onDelete={handleDeleteTranscript}
             copyState={copyTooltipState}
             setCopyTooltipState={setCopyTooltipState}
-            onSummarize={onSummarize}
+            onSummarize={handleSummarize}
+            isSummarizing={isSummarizing}
           />
           <div className="h-px bg-foreground/10 w-full flex-shrink-0" />
           {conversation.summarized ? (
