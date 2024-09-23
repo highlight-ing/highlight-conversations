@@ -5,7 +5,11 @@ import { getConversationsFromAppStorage } from '@/services/highlightService'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
 
 const POLL_MIC_ACTIVITY = 300
-const AUDIO_ENABLED_KEY = 'audioEnabled'
+const HOUR_IN_MS = 60 * 60 * 1000
+const DAY_IN_MS = 24 * 60 * 60 * 1000
+
+const AUTO_SAVE_TIME_DEFAULT = 30
+const AUTO_CLEAR_DAYS_DEFAULT = 7
 
 interface ConversationContextType {
   conversations: ConversationData[]
@@ -37,8 +41,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [conversations, setConversations] = useState<ConversationData[]>([])
   const [currentConversation, setCurrentConversation] = useState<string>('')
   const [elapsedTime, setElapsedTime] = useState<number>(0)
-  const [autoSaveTime, setAutoSaveTime] = useState<number>(0)
-  const [autoClearDays, setAutoClearDays] = useState<number>(0)
+  const [autoSaveTime, setAutoSaveTime] = useState<number>(AUTO_SAVE_TIME_DEFAULT)
+  const [autoClearDays, setAutoClearDays] = useState<number>(AUTO_CLEAR_DAYS_DEFAULT)
   const [micActivity, setMicActivity] = useState(0)
   const [isSaving, setIsSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -196,6 +200,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setElapsedTime(elapsedTime)
     
     console.log('Finished fetching latest data')
+
   }, [])
 
   useEffect(() => {
@@ -205,11 +210,13 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       const autoSaveTime = await Highlight.conversations.getAutoSaveTime()
       console.log('Auto-save time:', autoSaveTime)
-      setAutoSaveTime(autoSaveTime)
+      setAutoSaveTime(autoSaveTime !== 0 ? autoSaveTime : AUTO_SAVE_TIME_DEFAULT)
 
       const autoClearDays = await Highlight.conversations.getAutoClearDays()
       console.log('Auto-clear days:', autoClearDays)
-      setAutoClearDays(autoClearDays)
+      setAutoClearDays(autoClearDays !== 0 ? autoClearDays : AUTO_CLEAR_DAYS_DEFAULT)
+
+      await autoClearConversations()
 
       console.log('Finished fetching initial data')
     }
@@ -271,14 +278,36 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     updateConversation: Highlight.conversations.updateConversation,
     deleteConversation: Highlight.conversations.deleteConversation,
     deleteAllConversations: Highlight.conversations.deleteAllConversations,
-    setAutoSaveTime: Highlight.conversations.setAutoSaveTime,
-    setAutoClearDays: Highlight.conversations.setAutoClearDays,
+    setAutoSaveTime: async (time: number) => {
+      const validTime = time !== 0 ? time : AUTO_SAVE_TIME_DEFAULT
+      await Highlight.conversations.setAutoSaveTime(validTime)
+      setAutoSaveTime(validTime)
+    },
+    setAutoClearDays: async (days: number) => {
+      const validDays = days !== 0 ? days : AUTO_CLEAR_DAYS_DEFAULT
+      await Highlight.conversations.setAutoClearDays(validDays)
+      setAutoClearDays(validDays)
+    },
     setIsAudioOn: setIsAudioOnAndSave,
     setSearchQuery,
     isSaving,
     getWordCount,
     updateConversations: Highlight.conversations.updateConversations,
   }
+
+  const autoClearConversations = useCallback(async () => {
+    const now = new Date()
+    const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
+
+    const updatedConversations = conversations.filter(conversation => {
+      return conversation.timestamp >= cutoffDate
+    })
+
+    if (updatedConversations.length !== conversations.length) {
+      setConversations(updatedConversations)
+      await Highlight.conversations.updateConversations(updatedConversations)
+    }
+  }, [conversations, autoClearDays])
 
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
 }
