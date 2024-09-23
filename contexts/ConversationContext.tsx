@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
-import Highlight, { ConversationData } from '@highlight-ai/app-runtime'
-import { ConversationData as ConversationDataFromData } from '@/data/conversations'
+import Highlight from '@highlight-ai/app-runtime'
+import { ConversationData } from '@/data/conversations'
 import { getConversationsFromAppStorage } from '@/services/highlightService'
+import { useAudioPermission } from '@/hooks/useAudioPermission'
 
 const POLL_MIC_ACTIVITY = 300
 const AUDIO_ENABLED_KEY = 'audioEnabled'
@@ -39,9 +40,11 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [autoSaveTime, setAutoSaveTime] = useState<number>(0)
   const [autoClearDays, setAutoClearDays] = useState<number>(0)
   const [micActivity, setMicActivity] = useState(0)
-  const [isAudioOn, setIsAudioOn] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+
+  // Use the useAudioPermission hook
+  const { isAudioPermissionEnabled: isAudioOn, toggleAudioPermission } = useAudioPermission()
 
   const setupListeners = useCallback(() => {
     const removeCurrentConversationListener = Highlight.app.addListener(
@@ -124,55 +127,74 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return () => removeListeners()
   }, [setupListeners])
 
+  const fetchConversations = async () => {
+    try {
+      const [allConversations, appStorageConversations] = await Promise.all([
+        Highlight.conversations.getAllConversations(),
+        getConversationsFromAppStorage()
+      ])
+      return { allConversations, appStorageConversations }
+    } catch (error) {
+      console.error('Error fetching conversations:', error)
+      return { allConversations: [], appStorageConversations: [] }
+    }
+  }
+
+  const mergeConversations = (allConversations: ConversationData[], appStorageConversations: ConversationData[]) => {
+    const mergedConversations = [...allConversations, ...appStorageConversations]
+      .reduce((acc, conv) => {
+        if (!acc.some(existingConv => existingConv.id === conv.id)) {
+          acc.push({
+            ...conv,
+            startedAt: conv.startedAt || conv.timestamp,
+            endedAt: conv.endedAt || new Date(),
+            timestamp: new Date(conv.timestamp)
+          })
+        }
+        return acc
+      }, [] as ConversationData[])
+    return mergedConversations
+  }
+
+  const updateConversationsData = async (mergedConversations: ConversationData[]) => {
+    try {
+      await Highlight.conversations.updateConversations(mergedConversations)
+    } catch (error) {
+      console.error('Error updating conversations:', error)
+    }
+  }
+
+  const fetchAdditionalData = async () => {
+    try {
+      const currentConv = await Highlight.conversations.getCurrentConversation()
+      const elapsedTime = await Highlight.conversations.getElapsedTime()
+      return { currentConv, elapsedTime }
+    } catch (error) {
+      console.error('Error fetching additional data:', error)
+      return { currentConv: '', elapsedTime: 0 }
+    }
+  }
+
   const fetchLatestData = useCallback(async () => {
     console.log('Fetching latest data...')
-    const allConversations = await Highlight.conversations.getAllConversations()
-    console.log('All conversations:', allConversations)
     
-    if (allConversations.length === 0) {
-      console.log('No conversations found in GlobalStore, checking AppStorage...')
-      const appStorageConversations = await getConversationsFromAppStorage()
-      
-      if (appStorageConversations.length > 0) {
-        console.log('Found conversations in AppStorage, performing backup migration...')
-        
-        // Update ConversationData objects to include new fields
-        const updatedConversations = appStorageConversations.map((conv: ConversationDataFromData) => ({
-          ...conv,
-          startedAt: conv.startedAt || conv.timestamp, // Use timestamp as fallback if startedAt is not present
-          endedAt: conv.endedAt || new Date(), // Use current date as fallback if endedAt is not present
-          timestamp: new Date(conv.timestamp),
-        }))
-        
-        // Update conversations in the GlobalStore
-        await Highlight.conversations.updateConversations(updatedConversations)
-        
-        // The listener will be triggered, but let's set the state here as well
-        setConversations(updatedConversations)
-        console.log('Backup migration completed')
-      } else {
-        console.log('No conversations found in AppStorage')
-        setConversations([])
-      }
-    } else {
-      // Ensure timestamps are Date objects
-      const processedConversations = allConversations.map((conv: ConversationDataFromData) => ({
-        ...conv,
-        timestamp: new Date(conv.timestamp),
-        startedAt: new Date(conv.startedAt),
-        endedAt: new Date(conv.endedAt)
-      }))
-      
-      setConversations(processedConversations)
-    }
-
-    const currentConv = await Highlight.conversations.getCurrentConversation()
+    const { allConversations, appStorageConversations } = await fetchConversations()
+    console.log('All conversations from API:', allConversations)
+    console.log('All conversations from AppStorage:', appStorageConversations)
+    
+    const mergedConversations = mergeConversations(allConversations, appStorageConversations)
+    console.log('Merged conversations:', mergedConversations)
+    
+    await updateConversationsData(mergedConversations)
+    setConversations(mergedConversations)
+    
+    const { currentConv, elapsedTime } = await fetchAdditionalData()
     console.log('Current conversation:', currentConv)
     setCurrentConversation(currentConv)
-
-    const elapsedTime = await Highlight.conversations.getElapsedTime()
+    
     console.log('Elapsed time:', elapsedTime)
     setElapsedTime(elapsedTime)
+    
     console.log('Finished fetching latest data')
   }, [])
 
@@ -189,10 +211,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       console.log('Auto-clear days:', autoClearDays)
       setAutoClearDays(autoClearDays)
 
-      // Load isAudioOn from appStorage
-      const storedIsAudioOn = await Highlight.appStorage.get(AUDIO_ENABLED_KEY)
-      console.log('Stored isAudioOn:', storedIsAudioOn)
-      setIsAudioOn(storedIsAudioOn === false ? false : true)
       console.log('Finished fetching initial data')
     }
     fetchInitialData()
@@ -214,8 +232,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const setIsAudioOnAndSave = useCallback(
     async (isOn: boolean) => {
-      setIsAudioOn(isOn)
-      await Highlight.appStorage.set(AUDIO_ENABLED_KEY, isOn)
+      await toggleAudioPermission(isOn)
 
       if (isOn) {
         await fetchLatestData()
@@ -224,7 +241,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setElapsedTime(0)
       }
     },
-    [fetchLatestData],
+    [fetchLatestData, toggleAudioPermission],
   )
 
   const getWordCount = useCallback((transcript: string): number => {

@@ -10,7 +10,6 @@ import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips'
 import { useAppInitialization } from '@/hooks/useAppInitialization'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
 import { useConversations } from '@/contexts/ConversationContext'
-import { AppSettingsProvider, useAppSettings } from '@/contexts/AppSettingsContext'
 import { ConversationProvider } from '@/contexts/ConversationContext'
 import { useAmplitude } from '@/hooks/useAmplitude'
 import { useOnboarding } from '@/hooks/useOnboarding'
@@ -75,11 +74,9 @@ const MainPageContent: React.FC = () => {
 
 const MainPage: React.FC = () => {
   return (
-    <AppSettingsProvider>
       <ConversationProvider>
         <MainPageContent />
       </ConversationProvider>
-    </AppSettingsProvider>
   )
 }
 
