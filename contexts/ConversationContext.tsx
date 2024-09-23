@@ -33,7 +33,6 @@ interface ConversationContextType {
   isSaving: boolean
   getWordCount: (transcript: string) => number
   updateConversations: (conversations: ConversationData[]) => Promise<void>
-  clearOldConversations: () => void
 }
 
 const ConversationContext = createContext<ConversationContextType | undefined>(undefined)
@@ -180,19 +179,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }
 
-  const clearOldConversations = useCallback(() => {
-    const now = new Date()
-    const filteredConversations = conversations.filter((conversation) => {
-      const conversationDate = new Date(conversation.timestamp)
-      const diffMs = now.getTime() - conversationDate.getTime()
-      const diffDays = diffMs / DAY_IN_MS
-      return diffDays < autoClearDays
-    })
-
-    setConversations(filteredConversations)
-    Highlight.conversations.updateConversations(filteredConversations)
-  }, [conversations, autoClearDays])
-
   const fetchLatestData = useCallback(async () => {
     console.log('Fetching latest data...')
     
@@ -215,9 +201,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     
     console.log('Finished fetching latest data')
 
-    // Call clearOldConversations at the end of fetchLatestData
-    clearOldConversations()
-  }, [clearOldConversations])
+  }, [])
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -232,15 +216,12 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       console.log('Auto-clear days:', autoClearDays)
       setAutoClearDays(autoClearDays !== 0 ? autoClearDays : AUTO_CLEAR_DAYS_DEFAULT)
 
+      await autoClearConversations()
+
       console.log('Finished fetching initial data')
     }
     fetchInitialData()
   }, [fetchLatestData])
-
-  useEffect(() => {
-    const intervalId = setInterval(clearOldConversations, HOUR_IN_MS)
-    return () => clearInterval(intervalId)
-  }, [clearOldConversations])
 
   const pollMicActivity = useCallback(async () => {
     if (!isAudioOn) {
@@ -312,8 +293,21 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     isSaving,
     getWordCount,
     updateConversations: Highlight.conversations.updateConversations,
-    clearOldConversations,
   }
+
+  const autoClearConversations = useCallback(async () => {
+    const now = new Date()
+    const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
+
+    const updatedConversations = conversations.filter(conversation => {
+      return conversation.timestamp >= cutoffDate
+    })
+
+    if (updatedConversations.length !== conversations.length) {
+      setConversations(updatedConversations)
+      await Highlight.conversations.updateConversations(updatedConversations)
+    }
+  }, [conversations, autoClearDays])
 
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
 }
