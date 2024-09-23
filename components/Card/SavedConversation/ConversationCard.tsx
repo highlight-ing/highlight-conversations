@@ -9,7 +9,6 @@ import { useConversationActions } from './useConversationsActions'
 import { Toaster, toast } from 'sonner'
 import { ShareButton } from './ShareButton'
 import { useConversations } from "@/contexts/ConversationContext";
-import { useAppSettings } from "@/contexts/AppSettingsContext";
 import { ConversationData } from '@/data/conversations'
 
 interface ConversationCardProps {

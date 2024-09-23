@@ -1,5 +1,4 @@
 import React from 'react'
-import { useAppSettings } from '@/contexts/AppSettingsContext'
 import { useConversations } from '@/contexts/ConversationContext'
 import AutoClearSelection from './AutoClearSelection'
 import AudioSwitch from './AudioSwitch'
