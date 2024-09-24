@@ -4,7 +4,7 @@ import { SectionHeader } from './SectionHeader'
 import { ConversationData } from '@/data/conversations'
 
 interface ConversationListProps {
-  title: string
+  title?: string
   conversations: ConversationData[]
 }
 

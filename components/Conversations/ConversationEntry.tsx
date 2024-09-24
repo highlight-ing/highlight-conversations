@@ -41,6 +41,10 @@ export function ConversationEntry({ conversation, isFirst, isLast, isShowMore = 
     }
   }
 
+  const handleShare = async () => { 
+
+  }
+
   if (isShowMore) {
     return (
       <div
@@ -66,7 +70,7 @@ export function ConversationEntry({ conversation, isFirst, isLast, isShowMore = 
 
   return (
     <div
-      className={`w-full border-t border-[#0F0F0F] bg-tertiary p-6 transition-all duration-300 ease-in-out ${roundedClasses}`}
+      className={`w-full border-t border-[#010101] bg-tertiary p-6 transition-all duration-300 ease-in-out ${roundedClasses}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -74,7 +78,7 @@ export function ConversationEntry({ conversation, isFirst, isLast, isShowMore = 
           <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
         </div>
         <button
-          onClick={() => {}}
+          onClick={handleShare}
           className="px-5 h-[24px] text-[13px] text-primary bg-white/10 rounded-[6px] leading-tight hover:bg-white/20"
         >
           Share
