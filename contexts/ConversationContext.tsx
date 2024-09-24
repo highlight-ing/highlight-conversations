@@ -131,6 +131,20 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return () => removeListeners()
   }, [setupListeners])
 
+  const autoClearConversations = useCallback(async () => {
+    const now = new Date()
+    const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
+
+    const updatedConversations = conversations.filter(conversation => {
+      return conversation.timestamp >= cutoffDate
+    })
+
+    if (updatedConversations.length !== conversations.length) {
+      setConversations(updatedConversations)
+      await Highlight.conversations.updateConversations(updatedConversations)
+    }
+  }, [conversations, autoClearDays])
+
   const fetchConversations = async () => {
     try {
       const [allConversations, appStorageConversations] = await Promise.all([
@@ -212,11 +226,28 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       console.log('Auto-save time:', autoSaveTime)
       setAutoSaveTime(autoSaveTime !== 0 ? autoSaveTime : AUTO_SAVE_TIME_DEFAULT)
 
-      const autoClearDays = await Highlight.conversations.getAutoClearDays()
-      console.log('Auto-clear days:', autoClearDays)
-      setAutoClearDays(autoClearDays !== 0 ? autoClearDays : AUTO_CLEAR_DAYS_DEFAULT)
+      const autoClearDaysFromAPI = await Highlight.conversations.getAutoClearDays()
+      console.log('Auto-clear days:', autoClearDaysFromAPI)
+      const validAutoClearDays = autoClearDaysFromAPI !== 0 ? autoClearDaysFromAPI : AUTO_CLEAR_DAYS_DEFAULT
+      setAutoClearDays(validAutoClearDays)
 
-      await autoClearConversations()
+      // Fetch conversations again after setting autoClearDays
+      const { allConversations, appStorageConversations } = await fetchConversations()
+      const mergedConversations = mergeConversations(allConversations, appStorageConversations)
+
+      const now = new Date()
+      const cutoffDate = new Date(now.getTime() - validAutoClearDays * DAY_IN_MS)
+
+      const updatedConversations = mergedConversations.filter(conversation => {
+        return conversation.timestamp >= cutoffDate
+      })
+
+      if (updatedConversations.length !== mergedConversations.length) {
+        setConversations(updatedConversations)
+        await Highlight.conversations.updateConversations(updatedConversations)
+      } else {
+        setConversations(mergedConversations)
+      }
 
       console.log('Finished fetching initial data')
     }
@@ -294,20 +325,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     getWordCount,
     updateConversations: Highlight.conversations.updateConversations,
   }
-
-  const autoClearConversations = useCallback(async () => {
-    const now = new Date()
-    const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
-
-    const updatedConversations = conversations.filter(conversation => {
-      return conversation.timestamp >= cutoffDate
-    })
-
-    if (updatedConversations.length !== conversations.length) {
-      setConversations(updatedConversations)
-      await Highlight.conversations.updateConversations(updatedConversations)
-    }
-  }, [conversations, autoClearDays])
 
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
 }

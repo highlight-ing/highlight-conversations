@@ -17,6 +17,7 @@ import SearchBar from '@/components/Search/SearchBar'
 import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import ConversationGrid from '@/components/Card/ConversationGrid'
 import { saveHasSeenOnboarding, getHasSeenOnboarding } from '@/services/highlightService';
+import { ConversationLayout } from '@/components/Conversations/ConversationLayout'
 
 const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
 
@@ -49,14 +50,14 @@ const MainPageContent: React.FC = () => {
         isAudioPermissionGranted={isAudioPermissionEnabled} 
         onTogglePermission={toggleAudioPermission}
       /> */}
-      <Header />
+      {/* <Header /> */}
       <main className="flex-grow p-4">
-        <SearchBar />
+        {/* <SearchBar />
         {searchQuery && (
           <SearchResultsSummary count={filteredConversations.length} />
-        )}
+        )} */}
         <AnimatePresence>
-          <ConversationGrid />
+          <ConversationLayout />
         </AnimatePresence>
       </main>
       {showOnboardingTooltips && tooltipsReady && (
