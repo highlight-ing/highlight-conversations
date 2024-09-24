@@ -84,7 +84,7 @@ export default function ActiveConversationComponent() {
     const formattedTime = formatElapsedTime(elapsedTime)
 
     return (
-      <div className="flex-grow min-w-0 flex items-center">
+      <div className="flex-grow flex items-center">
         <p className="whitespace-nowrap overflow-hidden text-ellipsis font-medium text-xs">
           {audioState === 'saving' ? (
             <span className="inline-block">Saving Transcript</span>
@@ -97,7 +97,7 @@ export default function ActiveConversationComponent() {
   }
 
   const containerClasses = `
-    mx-auto flex w-full items-center justify-between rounded-[20px] py-1.5 px-3
+    mx-auto flex w-full items-center justify-between rounded-[20px] py-[20px] px-3
     transition-all duration-300 ease-in-out
     ${
       visualState === 'active' || visualState === 'saving'
@@ -123,7 +123,11 @@ export default function ActiveConversationComponent() {
       </div>
       <div className="flex items-center">
         {(visualState === 'active' || visualState === 'saving') && (
-          <Button onClick={saveCurrentConversation} disabled={isSaving} className="px-3 text-xs bg-white/10 rounded-[6px]">
+          <Button
+            onClick={saveCurrentConversation}
+            disabled={isSaving}
+            className="px-3 h-[24px] text-[12px] bg-white/10 rounded-[6px] leading-tight"
+          >
             {isSaving ? 'Saving...' : 'View'}
           </Button>
         )}
