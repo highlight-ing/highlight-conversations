@@ -80,76 +80,24 @@ export default function ActiveConversationComponent() {
     return `${minutes}min ${remainingSeconds}s`
   }
 
-  const currentConversationPreview = useMemo(() => {
-    if (!currentConversation) return 'Waiting for transcript...'
-
-    // Remove timestamp and diarization
-    const parts = currentConversation.split(':')
-    const content = parts.slice(3).join(':').trim()
-
-    // Take first 100 characters
-    const preview = content.length > 100 ? content.slice(0, 100) + '...' : content
-
-    return preview
-  }, [currentConversation])
-
   const getContent = () => {
     const formattedTime = formatElapsedTime(elapsedTime)
 
     return (
-      <>
-        <div
-          className={`absolute left-[44px] transition-opacity duration-300 ease-in-out ${visualState === 'active' || visualState === 'saving' ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <div className="flex items-center">
-            <p className="w-[190px] overflow-hidden text-[16px] font-medium">
-              <span
-                className="inline-block transition-all duration-300 ease-in-out"
-                style={{
-                  transform: audioState === 'saving' ? 'translateY(-100%)' : 'translateY(0)',
-                  opacity: audioState === 'saving' ? 0 : 1,
-                }}
-              >
-                Transcribing | {formattedTime}
-              </span>
-              <span
-                className="absolute left-0 top-0 inline-block transition-all duration-300 ease-in-out"
-                style={{
-                  transform: audioState === 'saving' ? 'translateY(0)' : 'translateY(100%)',
-                  opacity: audioState === 'saving' ? 1 : 0,
-                }}
-              >
-                Saving Transcript
-              </span>
-            </p>
-            {audioState !== 'saving' && (
-              <p className="w-[400px] truncate text-[14px] text-subtle transition-opacity duration-300 ease-in-out">
-                {currentConversationPreview}
-              </p>
-            )}
-          </div>
-        </div>
-        <p
-          className={`absolute left-[44px] text-[16px] font-medium text-subtle transition-opacity duration-300 ease-in-out ${visualState === 'inactive' ? 'opacity-100' : 'opacity-0'}`}
-        >
-          No active audio...
+      <div className="flex-grow min-w-0 flex items-center">
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis font-medium text-xs">
+          {audioState === 'saving' ? (
+            <span className="inline-block">Saving Transcript</span>
+          ) : (
+            <span className="inline-block">Transcribing | {formattedTime}</span>
+          )}
         </p>
-        <p
-          className={`absolute left-[44px] text-[16px] font-medium text-subtle transition-opacity duration-300 ease-in-out ${audioState === 'off' ? 'opacity-100' : 'opacity-0'}`}
-        >
-          Turn on microphone to transcribe real time audio
-        </p>
-        {/* <p
-          className={`absolute left-[44px] text-[16px] font-medium text-subtle transition-opacity duration-300 ease-in-out ${audioState === 'noPermissions' ? 'opacity-100' : 'opacity-0'}`}
-        >
-          Magically capture and transcribe audio with Highlight
-        </p> */}
-      </>
+      </div>
     )
   }
 
   const containerClasses = `
-    mx-auto flex w-full items-center justify-between rounded-[20px] p-6
+    mx-auto flex w-full items-center justify-between rounded-[20px] py-1.5 px-3
     transition-all duration-300 ease-in-out
     ${
       visualState === 'active' || visualState === 'saving'
@@ -160,21 +108,23 @@ export default function ActiveConversationComponent() {
 
   return (
     <div className={containerClasses}>
-      <div className="relative flex w-full items-center gap-3">
-        <AnimatedVoiceSquare
-          width={32}
-          height={32}
-          backgroundColor="transparent"
-          lineColor={visualState === 'active' || visualState === 'saving' ? ACTIVE_LINE_COLOR : INACTIVE_LINE_COLOR}
-          shouldAnimate={visualState === 'active' || visualState === 'saving'}
-          transitionDuration={2500}
-        />
+      <div className="flex w-full items-center gap-2">
+        <div className="flex-shrink-0">
+          <AnimatedVoiceSquare
+            width={20}
+            height={20}
+            backgroundColor="transparent"
+            lineColor={visualState === 'active' || visualState === 'saving' ? ACTIVE_LINE_COLOR : INACTIVE_LINE_COLOR}
+            shouldAnimate={visualState === 'active' || visualState === 'saving'}
+            transitionDuration={2500}
+          />
+        </div>
         {getContent()}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center">
         {(visualState === 'active' || visualState === 'saving') && (
-          <Button onClick={handleSave} disabled={isSaving} className="px-3 py-1 text-sm">
-            {isSaving ? 'Saving...' : 'Save'}
+          <Button onClick={saveCurrentConversation} disabled={isSaving} className="px-3 text-xs bg-white/10 rounded-[6px]">
+            {isSaving ? 'Saving...' : 'View'}
           </Button>
         )}
       </div>

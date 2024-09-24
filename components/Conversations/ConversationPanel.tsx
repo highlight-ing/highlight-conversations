@@ -6,7 +6,7 @@ const ConversationPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full">
       <PanelHeader />
-      <div className="flex-grow overflow-y-auto p-10">
+      <div className="flex-grow overflow-y-auto px-6 py-[39px]">
         <ActiveConversationComponent />
       </div>
     </div>
