@@ -85,7 +85,7 @@ export default function ActiveConversationComponent() {
 
     return (
       <div className="flex-grow flex items-center">
-        <p className="whitespace-nowrap overflow-hidden text-ellipsis font-medium text-xs">
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis font-medium text-sm">
           {audioState === 'saving' ? (
             <span className="inline-block">Saving Transcript</span>
           ) : (
@@ -111,8 +111,8 @@ export default function ActiveConversationComponent() {
       <div className="flex w-full items-center gap-2">
         <div className="flex-shrink-0">
           <AnimatedVoiceSquare
-            width={20}
-            height={20}
+            width={24}
+            height={24}
             backgroundColor="transparent"
             lineColor={visualState === 'active' || visualState === 'saving' ? ACTIVE_LINE_COLOR : INACTIVE_LINE_COLOR}
             shouldAnimate={visualState === 'active' || visualState === 'saving'}
@@ -126,7 +126,7 @@ export default function ActiveConversationComponent() {
           <Button
             onClick={saveCurrentConversation}
             disabled={isSaving}
-            className="px-3 h-[24px] text-[12px] bg-white/10 rounded-[6px] leading-tight"
+            className="px-5 h-[24px] text-[13px] text-primary bg-white/10 rounded-[6px] leading-tight"
           >
             {isSaving ? 'Saving...' : 'View'}
           </Button>
