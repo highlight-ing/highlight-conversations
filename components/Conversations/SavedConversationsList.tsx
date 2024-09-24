@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { ConversationEntry } from './ConversationEntry'
 import { SectionHeader } from './SectionHeader'
-import { useConversations } from '@/contexts/ConversationContext'
+import { useConversations } from "@/contexts/ConversationContext"
 
 type TimeFrame = 'today' | 'week' | 'two-weeks' | 'month'
 

@@ -1,9 +1,8 @@
 import React from 'react'
-import { ConversationData } from '@/types/conversations'
-import { useConversations } from '@/context/ConversationContext'
+import { ConversationData } from '@/data/conversations'
+import { useConversations } from '@/contexts/ConversationContext'
 import Highlight from '@highlight-ai/app-runtime'
-import { EntryAttachment } from './EntryAttachment'
-import { ConversationsIcon } from '@/icons/icons' // Import the new icon
+import { ConversationsIcon } from '@/components/ui/icons/ConversationIcon'
 
 interface ConversationEntryProps {
   conversation?: ConversationData
@@ -45,7 +44,7 @@ export function ConversationEntry({ conversation, isFirst, isLast, isShowMore = 
   if (isShowMore) {
     return (
       <div
-        className={`w-full border-t border-[#0F0F0F] bg-secondary p-6 transition-all duration-300 ease-in-out ${roundedClasses}`}
+        className={`w-full border-t border-[#0F0F0F] bg-tertiary p-6 transition-all duration-300 ease-in-out ${roundedClasses}`}
       >
         <div className="flex justify-center">
           <button
@@ -67,16 +66,16 @@ export function ConversationEntry({ conversation, isFirst, isLast, isShowMore = 
 
   return (
     <div
-      className={`w-full border-t border-[#0F0F0F] bg-secondary p-6 transition-all duration-300 ease-in-out ${roundedClasses}`}
+      className={`w-full border-t border-[#0F0F0F] bg-tertiary p-6 transition-all duration-300 ease-in-out ${roundedClasses}`}
     >
-      <div className="mb-2 flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <ConversationsIcon width={28} height={28} color="#4D8C6E" />
-          <h3 className="text-[16px] font-medium text-white">{displayTitle}</h3>
+          <ConversationsIcon width={24} height={24} color="#4D8C6E" />
+          <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
         </div>
         <button
           onClick={() => {}}
-          className="rounded-[6px] bg-tertiary px-5 py-1 font-[13px] text-secondary transition-colors duration-200 hover:bg-white/20"
+          className="px-5 h-[24px] text-[13px] text-primary bg-white/10 rounded-[6px] leading-tight hover:bg-white/20"
         >
           Share
         </button>

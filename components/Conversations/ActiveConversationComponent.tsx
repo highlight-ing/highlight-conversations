@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import AnimatedVoiceSquare from '@/components/Conversations/icons/AnimatedVoiceSquare'
+import AnimatedVoiceSquare from '@/components/ui/icons/AnimatedVoiceSquare'
 import { useConversations } from '@/contexts/ConversationContext'
 import { useDebouncedCallback } from 'use-debounce'
 import { Button } from '@/components/ui/button' // Make sure to import the Button component

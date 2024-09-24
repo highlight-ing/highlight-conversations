@@ -5,5 +5,5 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title }: SectionHeaderProps) {
-  return <h2 className="mb-4 text-[16px] font-medium text-subtle">{title}</h2>
+  return <h2 className="mb-4 mt-4 text-[16px] font-medium text-secondary">{title}</h2>
 }
