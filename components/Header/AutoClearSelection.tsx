@@ -68,4 +68,4 @@ const AutoClearSelection: React.FC<AutoClearSelectionProps> = ({
   )
 }
 
-export default Selection;
+export default AutoClearSelection
