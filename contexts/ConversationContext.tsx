@@ -8,7 +8,7 @@ const POLL_MIC_ACTIVITY = 300
 const HOUR_IN_MS = 60 * 60 * 1000
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
-const AUTO_SAVE_TIME_DEFAULT = 60 * 5
+const AUTO_SAVE_TIME_DEFAULT = 60 * 2
 const AUTO_CLEAR_DAYS_DEFAULT = 7
 
 interface ConversationContextType {
