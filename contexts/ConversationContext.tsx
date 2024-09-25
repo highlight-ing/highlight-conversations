@@ -8,7 +8,7 @@ const POLL_MIC_ACTIVITY = 300
 const HOUR_IN_MS = 60 * 60 * 1000
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
-const AUTO_SAVE_TIME_DEFAULT = 30
+const AUTO_SAVE_TIME_DEFAULT = 60 * 2
 const AUTO_CLEAR_DAYS_DEFAULT = 7
 
 interface ConversationContextType {
@@ -45,7 +45,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [autoClearDays, setAutoClearDays] = useState<number>(AUTO_CLEAR_DAYS_DEFAULT)
   const [micActivity, setMicActivity] = useState(0)
   const [isSaving, setIsSaving] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Use the useAudioPermission hook
   const { isAudioPermissionEnabled: isAudioOn, toggleAudioPermission } = useAudioPermission()
@@ -58,7 +58,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           console.log('New current conversation:', conversation)
           setCurrentConversation(conversation)
         }
-      },
+      }
     )
 
     const removeConversationsUpdatedListener = Highlight.app.addListener(
@@ -66,7 +66,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       (updatedConversations: ConversationData[]) => {
         if (isAudioOn) {
           console.log('Updated conversations:', updatedConversations)
-          const processedConversations = updatedConversations.map(conv => ({
+          const processedConversations = updatedConversations.map((conv) => ({
             ...conv,
             timestamp: new Date(conv.timestamp),
             startedAt: new Date(conv.startedAt),
@@ -74,7 +74,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           }))
           setConversations(processedConversations)
         }
-      },
+      }
     )
 
     const removeElapsedTimeUpdatedListener = Highlight.app.addListener(
@@ -83,7 +83,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (isAudioOn) {
           setElapsedTime(time)
         }
-      },
+      }
     )
 
     const removeAutoSaveUpdatedListener = Highlight.app.addListener(
@@ -91,7 +91,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       (time: number) => {
         console.log('Updated auto-save time:', time)
         setAutoSaveTime(time)
-      },
+      }
     )
 
     const removeAutoClearUpdatedListener = Highlight.app.addListener(
@@ -99,7 +99,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       (days: number) => {
         console.log('Updated auto-clear days:', days)
         setAutoClearDays(days)
-      },
+      }
     )
 
     const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => {
@@ -145,18 +145,17 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }
 
   const mergeConversations = (allConversations: ConversationData[], appStorageConversations: ConversationData[]) => {
-    const mergedConversations = [...allConversations, ...appStorageConversations]
-      .reduce((acc, conv) => {
-        if (!acc.some(existingConv => existingConv.id === conv.id)) {
-          acc.push({
-            ...conv,
-            startedAt: conv.startedAt || conv.timestamp,
-            endedAt: conv.endedAt || new Date(),
-            timestamp: new Date(conv.timestamp)
-          })
-        }
-        return acc
-      }, [] as ConversationData[])
+    const mergedConversations = [...allConversations, ...appStorageConversations].reduce((acc, conv) => {
+      if (!acc.some((existingConv) => existingConv.id === conv.id)) {
+        acc.push({
+          ...conv,
+          startedAt: conv.startedAt || conv.timestamp,
+          endedAt: conv.endedAt || new Date(),
+          timestamp: new Date(conv.timestamp)
+        })
+      }
+      return acc
+    }, [] as ConversationData[])
     return mergedConversations
   }
 
@@ -181,26 +180,25 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const fetchLatestData = useCallback(async () => {
     console.log('Fetching latest data...')
-    
+
     const { allConversations, appStorageConversations } = await fetchConversations()
     console.log('All conversations from API:', allConversations)
     console.log('All conversations from AppStorage:', appStorageConversations)
-    
+
     const mergedConversations = mergeConversations(allConversations, appStorageConversations)
     console.log('Merged conversations:', mergedConversations)
-    
+
     await updateConversationsData(mergedConversations)
     setConversations(mergedConversations)
-    
+
     const { currentConv, elapsedTime } = await fetchAdditionalData()
     console.log('Current conversation:', currentConv)
     setCurrentConversation(currentConv)
-    
+
     console.log('Elapsed time:', elapsedTime)
     setElapsedTime(elapsedTime)
-    
-    console.log('Finished fetching latest data')
 
+    console.log('Finished fetching latest data')
   }, [])
 
   useEffect(() => {
@@ -248,7 +246,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setElapsedTime(0)
       }
     },
-    [fetchLatestData, toggleAudioPermission],
+    [fetchLatestData, toggleAudioPermission]
   )
 
   const getWordCount = useCallback((transcript: string): number => {
@@ -256,7 +254,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [])
 
   const filteredConversations = useMemo(() => {
-    return conversations.filter(conversation => {
+    return conversations.filter((conversation) => {
       const matchTranscript = conversation.transcript.toLowerCase().includes(searchQuery.toLowerCase())
       const matchSummary = conversation.summary.toLowerCase().includes(searchQuery.toLowerCase())
       return matchTranscript || matchSummary
@@ -292,14 +290,14 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setSearchQuery,
     isSaving,
     getWordCount,
-    updateConversations: Highlight.conversations.updateConversations,
+    updateConversations: Highlight.conversations.updateConversations
   }
 
   const autoClearConversations = useCallback(async () => {
     const now = new Date()
     const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
 
-    const updatedConversations = conversations.filter(conversation => {
+    const updatedConversations = conversations.filter((conversation) => {
       return conversation.timestamp >= cutoffDate
     })
 
