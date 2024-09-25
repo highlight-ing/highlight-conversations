@@ -11,6 +11,9 @@ const DAY_IN_MS = 24 * 60 * 60 * 1000
 const AUTO_SAVE_TIME_DEFAULT = 60 * 2
 const AUTO_CLEAR_DAYS_DEFAULT = 7
 
+const MIN_AUTO_SAVE_TIME = 60
+const DEFAULT_AUTO_SAVE_TIME = 120
+
 interface ConversationContextType {
   conversations: ConversationData[]
   filteredConversations: ConversationData[]
@@ -90,7 +93,9 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       'onConversationsAutoSaveUpdated',
       (time: number) => {
         console.log('Updated auto-save time:', time)
-        setAutoSaveTime(time)
+        const validTime = time < MIN_AUTO_SAVE_TIME ? DEFAULT_AUTO_SAVE_TIME : time
+        setAutoSaveTime(validTime)
+        // Removed the backend sync to avoid potential infinite loop
       }
     )
 
@@ -208,7 +213,12 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       const autoSaveTime = await Highlight.conversations.getAutoSaveTime()
       console.log('Auto-save time:', autoSaveTime)
-      setAutoSaveTime(autoSaveTime !== 0 ? autoSaveTime : AUTO_SAVE_TIME_DEFAULT)
+      const validAutoSaveTime = autoSaveTime < MIN_AUTO_SAVE_TIME ? DEFAULT_AUTO_SAVE_TIME : autoSaveTime
+      setAutoSaveTime(validAutoSaveTime)
+      // Sync the valid time back to the backend if it was adjusted
+      if (validAutoSaveTime !== autoSaveTime) {
+        await Highlight.conversations.setAutoSaveTime(validAutoSaveTime)
+      }
 
       const autoClearDays = await Highlight.conversations.getAutoClearDays()
       console.log('Auto-clear days:', autoClearDays)
