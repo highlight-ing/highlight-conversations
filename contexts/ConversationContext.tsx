@@ -224,8 +224,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       console.log('Auto-clear days:', autoClearDays)
       setAutoClearDays(autoClearDays !== 0 ? autoClearDays : AUTO_CLEAR_DAYS_DEFAULT)
 
-      await autoClearConversations()
-
       console.log('Finished fetching initial data')
     }
     fetchInitialData()
@@ -302,20 +300,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     getWordCount,
     updateConversations: Highlight.conversations.updateConversations
   }
-
-  const autoClearConversations = useCallback(async () => {
-    const now = new Date()
-    const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
-
-    const updatedConversations = conversations.filter((conversation) => {
-      return conversation.timestamp >= cutoffDate
-    })
-
-    if (updatedConversations.length !== conversations.length) {
-      setConversations(updatedConversations)
-      await Highlight.conversations.updateConversations(updatedConversations)
-    }
-  }, [conversations, autoClearDays])
 
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
 }
