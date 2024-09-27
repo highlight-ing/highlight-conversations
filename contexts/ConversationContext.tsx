@@ -3,6 +3,7 @@ import Highlight from '@highlight-ai/app-runtime'
 import { ConversationData } from '@/data/conversations'
 import { getConversationsFromAppStorage } from '@/services/highlightService'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
+import { amplitude } from '@/hooks/amplitudeService'
 
 const POLL_MIC_ACTIVITY = 300
 const HOUR_IN_MS = 60 * 60 * 1000
