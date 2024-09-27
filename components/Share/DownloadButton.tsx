@@ -2,7 +2,7 @@
 
 import React, { useCallback } from 'react'
 import { Button } from "@/components/ui/button"
-import { trackEvent } from '@/lib/amplitude'
+import { useAmplitude } from '@/hooks/useAmplitude'
 
 type PageType = 'SharePage' | 'NotFoundPage'
 
@@ -11,7 +11,7 @@ interface DownloadButtonProps {
 }
 
 const DownloadButton: React.FC<DownloadButtonProps> = ({ page }) => {
-
+  const { trackEvent } = useAmplitude()
   const handleDownload = useCallback(() => {
     trackEvent(`${page}: Download Button Clicked`, {});
     window.open("https://highlight.ing/apps/conversations", "_blank", "noopener,noreferrer");

@@ -1,7 +1,7 @@
   import React, { useEffect, useCallback } from 'react';
   import WelcomeScreen from './WelcomeScreen';
   import PermissionsScreen from './PermissionsScreen';
-  import { trackEvent } from '@/lib/amplitude'
+  import { useAmplitude } from '@/hooks/useAmplitude'
 
   type OnboardingFlowProps = {
       onComplete: () => void;
@@ -9,7 +9,7 @@
 
   const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
     const [currentStep, setCurrentStep] = React.useState(0);
-
+    const { trackEvent } = useAmplitude()
     const handleNext = useCallback(() => {
       setCurrentStep(1);
       trackEvent('Onboarding: Moved to Permissions Screen', {});

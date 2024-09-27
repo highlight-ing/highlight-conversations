@@ -79,6 +79,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             endedAt: new Date(conv.endedAt)
           }))
           setConversations(processedConversations)
+          trackEvent('conversations_updated', { conversationsCount: processedConversations.length })
         }
       }
     )
