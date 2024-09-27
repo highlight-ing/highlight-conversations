@@ -84,6 +84,10 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        searchBar: {
+          DEFAULT: 'hsl(var(--searchbar-bg))',
+          active: 'hsl(var(--searchbar-bg-active))',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
