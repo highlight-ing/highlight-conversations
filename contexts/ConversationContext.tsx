@@ -133,7 +133,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       removeSaveConversationListener()
       removeConversationSavedListener()
     }
-  }, [isAudioOn])
+  }, [isAudioOn, trackEvent])
 
   useEffect(() => {
     const removeListeners = setupListeners()
@@ -234,7 +234,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       console.log('Finished fetching initial data')
     }
     fetchInitialData()
-  }, [fetchLatestData])
+// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const pollMicActivity = useCallback(async () => {
     if (!isAudioOn) {
