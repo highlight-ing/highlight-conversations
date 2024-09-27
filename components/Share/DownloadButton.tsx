@@ -15,7 +15,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({ page }) => {
   const handleDownload = useCallback(() => {
     trackEvent(`${page}: Download Button Clicked`, {});
     window.open("https://highlight.ing/apps/conversations", "_blank", "noopener,noreferrer");
-  }, [page])
+  }, [page, trackEvent])
   
   return (
     <Button 

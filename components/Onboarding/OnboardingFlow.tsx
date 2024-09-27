@@ -13,12 +13,12 @@
     const handleNext = useCallback(() => {
       setCurrentStep(1);
       trackEvent('Onboarding: Moved to Permissions Screen', {});
-    }, [])
+    }, [trackEvent])
 
     const handleOnPermissionGranted = useCallback(() => {
       trackEvent('Onboarding: Permission Granted Moved to Main App', {});
       onComplete();
-    }, [onComplete])
+    }, [onComplete, trackEvent])
 
     const steps = [
       <WelcomeScreen key="welcome" onNext={handleNext} />,

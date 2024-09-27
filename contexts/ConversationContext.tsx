@@ -155,7 +155,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const mergeConversations = (allConversations: ConversationData[], appStorageConversations: ConversationData[]) => {
     const mergedConversations = [...allConversations, ...appStorageConversations].reduce((acc, conv) => {
-      if (!acc.some((existingConv) => existingConv.id === conv.id)) {
+      if (!acc.some((existingConv) => existingConv.id === conv.id) && conv.transcript.trim() !== '') {
         acc.push({
           ...conv,
           startedAt: conv.startedAt || conv.timestamp,
@@ -170,7 +170,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const updateConversationsData = async (mergedConversations: ConversationData[]) => {
     try {
-      await Highlight.conversations.updateConversations(mergedConversations)
+      const filteredConversations = mergedConversations.filter(conv => conv.transcript.trim() !== '')
+      await Highlight.conversations.updateConversations(filteredConversations)
     } catch (error) {
       console.error('Error updating conversations:', error)
     }
@@ -318,7 +319,11 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setSearchQuery,
     isSaving,
     getWordCount,
-    updateConversations: Highlight.conversations.updateConversations
+    updateConversations: async (conversations: ConversationData[]) => {
+      const filteredConversations = conversations.filter(conv => conv.transcript.trim() !== '')
+      await Highlight.conversations.updateConversations(filteredConversations)
+      setConversations(filteredConversations)
+    }
   }
 
   const autoClearConversations = useCallback(async () => {
