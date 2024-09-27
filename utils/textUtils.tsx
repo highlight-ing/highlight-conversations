@@ -1,11 +1,23 @@
 import React from 'react'
 
-export const highlightText = (text: string, query: string) => {
-  if (!query) return text
+const MAX_QUERY_LENGTH = 250 // Adjust as needed
 
-  const parts = text.split(new RegExp(`(${query})`, 'gi'))
-  return parts.map((part, i) => 
-    part.toLowerCase() === query.toLowerCase() ? 
-      <mark key={i} className="bg-brand text-brand/5">{part}</mark> : part
-  )
+export const highlightText = (text: string, query: string) => {
+  if (!query || query.length > MAX_QUERY_LENGTH) return text
+
+  // Escape special regex characters
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  // Use a try-catch block to handle any potential regex errors
+  try {
+    const regex = new RegExp(`(${escapedQuery})`, 'gi')
+    const parts = text.split(regex)
+    return parts.map((part, i) => 
+      part.toLowerCase() === query.toLowerCase() ? 
+        <mark key={i} className="bg-brand text-brand/5">{part}</mark> : part
+    )
+  } catch (error) {
+    console.error('Error in highlightText:', error)
+    return text // Return the original text if there's an error
+  }
 }
