@@ -133,7 +133,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       removeSaveConversationListener()
       removeConversationSavedListener()
     }
-  }, [isAudioOn])
+  }, [isAudioOn, trackEvent])
 
   useEffect(() => {
     const removeListeners = setupListeners()
@@ -234,7 +234,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       console.log('Finished fetching initial data')
     }
     fetchInitialData()
-  }, [fetchLatestData])
+// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const pollMicActivity = useCallback(async () => {
     if (!isAudioOn) {
@@ -269,9 +270,12 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [])
 
   const filteredConversations = useMemo(() => {
+    if (!searchQuery) return conversations
+
+    const lowerQuery = searchQuery.toLowerCase()
     return conversations.filter((conversation) => {
-      const matchTranscript = conversation.transcript.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchSummary = conversation.summary.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchTranscript = conversation.transcript.toLowerCase().includes(lowerQuery)
+      const matchSummary = conversation.summary.toLowerCase().includes(lowerQuery)
       return matchTranscript || matchSummary
     })
   }, [conversations, searchQuery])

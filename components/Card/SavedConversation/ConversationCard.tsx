@@ -8,15 +8,15 @@ import { ConversationCardContent } from './ConversationCardContent'
 import { useConversationActions } from './useConversationsActions'
 import { Toaster, toast } from 'sonner'
 import { ShareButton } from './ShareButton'
-import { useConversations } from "@/contexts/ConversationContext";
+import { useConversations } from "@/contexts/ConversationContext"
 import { ConversationData } from '@/data/conversations'
 
 interface ConversationCardProps {
-  conversation: ConversationData;
+  conversation: ConversationData
 }
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initialConversation }) => {
-  const { updateConversation, deleteConversation, searchQuery } = useConversations();
+  const { updateConversation, deleteConversation, searchQuery } = useConversations()
 
   const {
     localConversation,
@@ -94,15 +94,15 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initi
 }
 
 const ConversationCardActions: React.FC<{
-  onAttach: () => void;
-  onShare: () => void;
-  isSharing: boolean;
-  isDeleting: boolean;
-  hasExistingShareLink: boolean;
-  onGenerateShareLink: () => void;
-  onDownloadAsFile: () => void;
-  onCopyLink: () => void;
-  onDeleteLink: () => void;
+  onAttach: () => void
+  onShare: () => void
+  isSharing: boolean
+  isDeleting: boolean
+  hasExistingShareLink: boolean
+  onGenerateShareLink: () => void
+  onDownloadAsFile: () => void
+  onCopyLink: () => void
+  onDeleteLink: () => void
 }> = ({ onAttach, onShare, isSharing, isDeleting, hasExistingShareLink, onGenerateShareLink, onDownloadAsFile, onCopyLink, onDeleteLink }) => (
   <div className="flex w-full gap-2">
     <Button
