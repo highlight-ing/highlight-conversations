@@ -21,7 +21,7 @@ import { saveHasSeenOnboarding, getHasSeenOnboarding } from '@/services/highligh
 const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
 
 const MainPageContent: React.FC = () => {
-  const { isInitialized, showOnboarding, conversations: initialConversations, setShowOnboarding } = useAppInitialization(DEBUG_ONBOARDING);
+  const { isInitialized, showOnboarding, setShowOnboarding } = useAppInitialization(DEBUG_ONBOARDING);
   const { isAudioPermissionEnabled, toggleAudioPermission } = useAudioPermission();
   const { filteredConversations, autoSaveTime } = useConversations();
   const { trackEvent } = useAmplitude();

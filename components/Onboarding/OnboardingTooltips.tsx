@@ -3,12 +3,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-    ONBOARDING_HEADER,
-    ONBOARDING_SEARCH,
     ONBOARDING_CURRENT_CARD,
     ONBOARDING_SAVED_CARD
 } from "@/constants/appConstants"
-import { trackEvent } from '@/lib/amplitude';
+import { useAmplitude } from '@/hooks/useAmplitude';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface OnboardingTooltipsProps {
@@ -17,6 +15,7 @@ interface OnboardingTooltipsProps {
 }
 
 const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ autoSaveSeconds, onComplete }) => {
+  const { trackEvent } = useAmplitude()
   const [currentTooltip, setCurrentTooltip] = useState(0);
   const [overlayStyle, setOverlayStyle] = useState({});
   const [tooltipStyle, setTooltipStyle] = useState({});
@@ -116,7 +115,7 @@ const OnboardingTooltips: React.FC<OnboardingTooltipsProps> = ({ autoSaveSeconds
 
   useEffect(() => {
     trackEvent('Onboarding Tooltips Started', {});
-  }, []);
+  }, [trackEvent]);
 
   const currentTooltipData = tooltips[currentTooltip];
 

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { processConversation } from '@/services/processConversationService'
 import { sendAttachmentAndOpen } from '@/services/highlightService'
-import { trackEvent } from '@/lib/amplitude'
+import { useAmplitude } from '@/hooks/useAmplitude'
 import { getShareLink, deleteShareLink } from '@/app/actions/shareConversation'
 import { getUserId } from '@/utils/userUtils'
 import { generateMarkdownContent } from '@/utils/markdownUtils'
@@ -19,7 +19,7 @@ export const useConversationActions = (
   const [shareStatus, setShareStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
   const [shareMessage, setShareMessage] = useState<{ type: 'success' | 'error', message: string, description?: string } | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-
+  const { trackEvent } = useAmplitude()
   const handleSummarize = async () => {
     setIsProcessing(true)
     try {

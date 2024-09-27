@@ -3,6 +3,7 @@ import Highlight from '@highlight-ai/app-runtime'
 import { ConversationData } from '@/data/conversations'
 import { getConversationsFromAppStorage } from '@/services/highlightService'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
+import { useAmplitude } from '@/hooks/useAmplitude'
 
 const POLL_MIC_ACTIVITY = 300
 const HOUR_IN_MS = 60 * 60 * 1000
@@ -53,6 +54,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Use the useAudioPermission hook
   const { isAudioPermissionEnabled: isAudioOn, toggleAudioPermission } = useAudioPermission()
 
+  const { trackEvent } = useAmplitude()
+
   const setupListeners = useCallback(() => {
     const removeCurrentConversationListener = Highlight.app.addListener(
       'onCurrentConversationUpdate',
@@ -76,6 +79,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             endedAt: new Date(conv.endedAt)
           }))
           setConversations(processedConversations)
+          trackEvent('conversations_updated', { conversationsCount: processedConversations.length })
         }
       }
     )
@@ -151,7 +155,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const mergeConversations = (allConversations: ConversationData[], appStorageConversations: ConversationData[]) => {
     const mergedConversations = [...allConversations, ...appStorageConversations].reduce((acc, conv) => {
-      if (!acc.some((existingConv) => existingConv.id === conv.id)) {
+      if (!acc.some((existingConv) => existingConv.id === conv.id) && conv.transcript.trim() !== '') {
         acc.push({
           ...conv,
           startedAt: conv.startedAt || conv.timestamp,
@@ -166,7 +170,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const updateConversationsData = async (mergedConversations: ConversationData[]) => {
     try {
-      await Highlight.conversations.updateConversations(mergedConversations)
+      const filteredConversations = mergedConversations.filter(conv => conv.transcript.trim() !== '')
+      await Highlight.conversations.updateConversations(filteredConversations)
     } catch (error) {
       console.error('Error updating conversations:', error)
     }
@@ -281,26 +286,44 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     micActivity,
     isAudioOn,
     searchQuery,
-    saveCurrentConversation: Highlight.conversations.saveCurrentConversation,
-    addConversation: Highlight.conversations.addConversation,
+    saveCurrentConversation: async () => {
+      const savedConversation = await Highlight.conversations.saveCurrentConversation()
+      trackEvent('conversation_added', { })
+    },
+    addConversation: async (conversation: ConversationData) => {
+      await Highlight.conversations.addConversation(conversation)
+      trackEvent('conversation_added', { conversationId: conversation.id })
+    },
     updateConversation: Highlight.conversations.updateConversation,
-    deleteConversation: Highlight.conversations.deleteConversation,
-    deleteAllConversations: Highlight.conversations.deleteAllConversations,
+    deleteConversation: async (id: string) => {
+      await Highlight.conversations.deleteConversation(id)
+      trackEvent('conversation_deleted', { conversationId: id })
+    },
+    deleteAllConversations: async () => {
+      await Highlight.conversations.deleteAllConversations()
+      trackEvent('delete_all_conversations', { })
+    },
     setAutoSaveTime: async (time: number) => {
       const validTime = time !== 0 ? time : AUTO_SAVE_TIME_DEFAULT
       await Highlight.conversations.setAutoSaveTime(validTime)
       setAutoSaveTime(validTime)
+      trackEvent('changed_auto_save_value', { newValue: validTime })
     },
     setAutoClearDays: async (days: number) => {
       const validDays = days !== 0 ? days : AUTO_CLEAR_DAYS_DEFAULT
       await Highlight.conversations.setAutoClearDays(validDays)
       setAutoClearDays(validDays)
+      trackEvent('changed_auto_clear_value', { newValue: validDays })
     },
     setIsAudioOn: setIsAudioOnAndSave,
     setSearchQuery,
     isSaving,
     getWordCount,
-    updateConversations: Highlight.conversations.updateConversations
+    updateConversations: async (conversations: ConversationData[]) => {
+      const filteredConversations = conversations.filter(conv => conv.transcript.trim() !== '')
+      await Highlight.conversations.updateConversations(filteredConversations)
+      setConversations(filteredConversations)
+    }
   }
 
   const autoClearConversations = useCallback(async () => {
