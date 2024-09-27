@@ -4,88 +4,80 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import styles from "@/styles/CurrentConversationCard.module.css"
 import useScrollGradient from "@/hooks/useScrollGradient"
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion"
 import { ClipboardIcon, SaveIcon } from '@/components/ui/icons'
 import { Tooltip, TooltipState, TooltipType } from "@/components/Tooltip/Tooltip"
 import { Button } from "@/components/ui/button"
 import { formatTranscript } from '@/data/conversations'
-import { useConversations } from "@/contexts/ConversationContext";
-import { useAudioPermission } from "@/hooks/useAudioPermission";
-
-const highlightText = (text: string, query: string) => {
-  if (!query) return text;
-  const parts = text.split(new RegExp(`(${query})`, 'gi'));
-  return parts.map((part, i) => 
-    part.toLowerCase() === query.toLowerCase() ? 
-      <span key={i} className="bg-yellow-200 text-black">{part}</span> : part
-  );
-};
+import { useConversations } from "@/contexts/ConversationContext"
+import { useAudioPermission } from "@/hooks/useAudioPermission"
+import { highlightText } from '@/utils/textUtils'
 
 const CurrentConversationCard: React.FC = () => {
-  const { currentConversation, micActivity, saveCurrentConversation, searchQuery, autoSaveTime } = useConversations();
-  const { isAudioPermissionEnabled } = useAudioPermission();
+  const { currentConversation, micActivity, saveCurrentConversation, searchQuery, autoSaveTime } = useConversations()
+  const { isAudioPermissionEnabled } = useAudioPermission()
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const { showTopGradient, showBottomGradient } = useScrollGradient(scrollRef)
 
-  const [isActive, setIsActive] = useState(false);
-  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const borderClass = isActive ? styles.activeBorder : styles.inactiveBorder;
+  const [isActive, setIsActive] = useState(false)
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const borderClass = isActive ? styles.activeBorder : styles.inactiveBorder
 
-  const skeletonCorner = "rounded-lg";
+  const skeletonCorner = "rounded-lg"
 
-  const isSaveDisabled = currentConversation.trim().length === 0;
+  const isSaveDisabled = currentConversation.trim().length === 0
 
-  const [transcriptKey, setTranscriptKey] = useState(0);
+  const [transcriptKey, setTranscriptKey] = useState(0)
 
   useEffect(() => {
-    setTranscriptKey(prevKey => prevKey + 1);
-  }, [currentConversation]);
+    setTranscriptKey(prevKey => prevKey + 1)
+  }, [currentConversation])
 
   useEffect(() => {
     if (micActivity > 0) {
-      setIsActive(true);
+      setIsActive(true)
       if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-        inactivityTimerRef.current = null;
+        clearTimeout(inactivityTimerRef.current)
+        inactivityTimerRef.current = null
       }
     } else {
       if (!inactivityTimerRef.current) {
         inactivityTimerRef.current = setTimeout(() => {
-          setIsActive(false);
-          inactivityTimerRef.current = null;
-        }, 1500);
+          setIsActive(false)
+          inactivityTimerRef.current = null
+        }, 1500)
       }
     }
 
     return () => {
       if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
+        clearTimeout(inactivityTimerRef.current)
       }
-    };
-  }, [micActivity]);
+    }
+  }, [micActivity])
 
-  const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle');
-  const [saveTooltipState, setSaveTooltipState] = useState<TooltipState>('idle');
+  const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle')
+  const [saveTooltipState, setSaveTooltipState] = useState<TooltipState>('idle')
 
   const handleCopyTranscript = () => {
     if (isSaveDisabled) return
     navigator.clipboard.writeText(currentConversation)
       .then(() => {
-        setCopyTooltipState('success');
-        setTimeout(() => setCopyTooltipState('hiding'), 1500);
-        setTimeout(() => setCopyTooltipState('idle'), 1700);
+        setCopyTooltipState('success')
+        setTimeout(() => setCopyTooltipState('hiding'), 1500)
+        setTimeout(() => setCopyTooltipState('idle'), 1700)
       })
       .catch((error) => {
-        console.error("Failed to copy transcript:", error);
-      });
-  };
+        console.error("Failed to copy transcript:", error)
+      })
+  }
 
   const handleSaveTranscript = () => {
     saveCurrentConversation()
-    setSaveTooltipState('success');
-    setTimeout(() => setSaveTooltipState('hiding'), 1500);
-    setTimeout(() => setSaveTooltipState('idle'), 1700);
+    setSaveTooltipState('success')
+    setTimeout(() => setSaveTooltipState('hiding'), 1500)
+    setTimeout(() => setSaveTooltipState('idle'), 1700)
   }
 
   return (
@@ -192,4 +184,4 @@ const CurrentConversationCard: React.FC = () => {
   )
 }
 
-export default CurrentConversationCard;
+export default CurrentConversationCard
