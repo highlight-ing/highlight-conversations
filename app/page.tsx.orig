@@ -14,9 +14,13 @@ import { useOnboarding } from '@/hooks/useOnboarding'
 import SearchBar from '@/components/Search/SearchBar'
 import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
 import ConversationGrid from '@/components/Card/ConversationGrid'
+<<<<<<< HEAD
+import { saveHasSeenOnboarding, getHasSeenOnboarding } from '@/services/highlightService';
 import { ConversationLayout } from '@/components/Conversations/ConversationLayout'
+=======
 import { saveHasSeenOnboarding, getHasSeenOnboarding } from '@/services/highlightService'
 import EnhancedSearchBar from '@/components/Search/EnhancedSearchBar'
+>>>>>>> ba51fecb1a536c20a7852083755323555f55acb9
 
 const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
 
@@ -45,6 +49,7 @@ const MainPageContent: React.FC = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
+<<<<<<< HEAD
       {/* <AudioPermissionDialog 
         isAudioPermissionGranted={isAudioPermissionEnabled} 
         onTogglePermission={toggleAudioPermission}
@@ -58,6 +63,19 @@ const MainPageContent: React.FC = () => {
         <AnimatePresence>
           <ConversationLayout />
         </AnimatePresence>
+=======
+      <Header />
+      <main className="flex-grow p-4">
+        <div className="max-w-7xl mx-auto w-full"> {/* Add this container */}
+          <EnhancedSearchBar />
+          {searchQuery && (
+            <SearchResultsSummary count={filteredConversations.length} />
+          )}
+          <AnimatePresence>
+            <ConversationGrid />
+          </AnimatePresence>
+        </div>
+>>>>>>> ba51fecb1a536c20a7852083755323555f55acb9
       </main>
       {showOnboardingTooltips && tooltipsReady && (
         <OnboardingTooltips 

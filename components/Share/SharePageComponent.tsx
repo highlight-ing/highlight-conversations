@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { ConversationData } from '@/data/conversations'
 import ScrollableTranscript from './ScrollableTranscript'
-import { trackEvent } from '@/lib/amplitude'
+import { useAmplitude } from '@/hooks/useAmplitude'
 import { ClipboardIcon } from '@/components/ui/icons'
 import { Tooltip, TooltipState } from '@/components/Tooltip/Tooltip'
 
@@ -14,6 +14,7 @@ interface SharePageComponentProps {
 }
 
 const SharePageComponent: React.FC<SharePageComponentProps> = ({ conversation, error }) => {
+  const { trackEvent } = useAmplitude()
   const [copyTooltipState, setCopyTooltipState] = useState<TooltipState>('idle')
 
   useEffect(() => {
@@ -22,7 +23,7 @@ const SharePageComponent: React.FC<SharePageComponentProps> = ({ conversation, e
     } else if (error) {
       trackEvent('share_page_viewed', { status: 'error', error });
     }
-  }, [conversation, error]);
+  }, [conversation, error, trackEvent]);
 
   const handleCopyTranscript = () => {
     if (conversation) {

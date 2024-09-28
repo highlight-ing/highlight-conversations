@@ -3,12 +3,12 @@ import { Label } from '../ui/label'
 import { Switch } from '../ui/switch'
 import InfoTooltip from './InfoTooltip'
 import { TOOLTIP_CONTENT } from '@/constants/tooltipConstants'
-import { trackEvent } from '@/lib/amplitude'
+import { useAmplitude } from '@/hooks/useAmplitude'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
 
 const AudioSwitch: React.FC = () => {
   const { isAudioPermissionEnabled, toggleAudioPermission } = useAudioPermission()
-
+  const { trackEvent } = useAmplitude()
   const handleToggle = (checked: boolean) => {
     toggleAudioPermission(checked)
     trackEvent('Changed Mic Input', {

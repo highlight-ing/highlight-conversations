@@ -38,6 +38,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+<<<<<<< HEAD
         green: {
           DEFAULT: 'rgba(76, 237, 160, 1.0)',
           90: 'rgba(76, 237, 160, 0.9)',
@@ -75,10 +76,12 @@ const config = {
         tertiary: 'rgba(135, 135, 135, 1.0)',
         subtle: 'rgba(72, 72, 72, 1.0)',
         black: '#0F0F0F',
-      },
-      searchBar: {
-        DEFAULT: 'hsl(var(--searchbar-bg))',
-        active: 'hsl(var(--searchbar-bg-active))',
+=======
+        searchBar: {
+          DEFAULT: 'hsl(var(--searchbar-bg))',
+          active: 'hsl(var(--searchbar-bg-active))',
+        },
+>>>>>>> ba51fecb1a536c20a7852083755323555f55acb9
       },
       borderRadius: {
         lg: "var(--radius)",

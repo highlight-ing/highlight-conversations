@@ -140,6 +140,20 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return () => removeListeners()
   }, [setupListeners])
 
+  const autoClearConversations = useCallback(async () => {
+    const now = new Date()
+    const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
+
+    const updatedConversations = conversations.filter(conversation => {
+      return conversation.timestamp >= cutoffDate
+    })
+
+    if (updatedConversations.length !== conversations.length) {
+      setConversations(updatedConversations)
+      await Highlight.conversations.updateConversations(updatedConversations)
+    }
+  }, [conversations, autoClearDays])
+
   const fetchConversations = async () => {
     try {
       const [allConversations, appStorageConversations] = await Promise.all([
@@ -347,6 +361,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }
 
+<<<<<<< HEAD
+=======
   const autoClearConversations = useCallback(async () => {
     const now = new Date()
     const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
@@ -361,6 +377,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [conversations, autoClearDays])
 
+>>>>>>> ba51fecb1a536c20a7852083755323555f55acb9
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
 }
 
