@@ -30,16 +30,16 @@ const formatDate = (date: Date): string => {
 export const createConversation = (
   params: Partial<Omit<ConversationData, 'id' | 'summarized'>> = {}
 ): ConversationData => {
-  
   const now = new Date()
+  const endedAt = params.endedAt || now
   return {
     id: uuidv4(),
-    title: `Conversation ended at ${formatDate(params.endedAt || now)}`,
+    title: params.title || `Conversation ended at ${formatDate(endedAt)}`,
     summary: '',
     topic: '',
     transcript: '',
     startedAt: params.startedAt || now,
-    endedAt: params.endedAt || now,
+    endedAt,
     timestamp: params.timestamp || now,
     summarized: params.summary !== undefined && params.summary !== '',
     shareLink: '',
