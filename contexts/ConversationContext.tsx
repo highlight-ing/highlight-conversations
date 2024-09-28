@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import Highlight from '@highlight-ai/app-runtime'
-import { ConversationData } from '@/data/conversations'
-import { getConversationsFromAppStorage } from '@/services/highlightService'
+import { ConversationData, createConversation, formatTranscript } from '@/data/conversations'
+import { getConversationsFromAppStorage, summarizeConversation, SummarizedConversationData } from '@/services/highlightService'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
 import { useAmplitude } from '@/hooks/useAmplitude'
 
@@ -160,7 +160,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }
 
-  const mergeConversations = (allConversations: ConversationData[], appStorageConversations: ConversationData[]) => {
+  const migrateAppStorageConversations = (allConversations: ConversationData[], appStorageConversations: ConversationData[]) => {
     const mergedConversations = [...allConversations, ...appStorageConversations].reduce((acc, conv) => {
       if (!acc.some((existingConv) => existingConv.id === conv.id) && conv.transcript.trim() !== '') {
         acc.push({
@@ -202,11 +202,11 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     console.log('All conversations from API:', allConversations)
     console.log('All conversations from AppStorage:', appStorageConversations)
 
-    const mergedConversations = mergeConversations(allConversations, appStorageConversations)
-    console.log('Merged conversations:', mergedConversations)
+    const migratedConversations = migrateAppStorageConversations(allConversations, appStorageConversations)
+    console.log('Migrated conversations:', migratedConversations.length)
 
-    await updateConversationsData(mergedConversations)
-    setConversations(mergedConversations)
+    await updateConversationsData(migratedConversations)
+    setConversations(migratedConversations)
 
     const { currentConv, elapsedTime } = await fetchAdditionalData()
     console.log('Current conversation:', currentConv)
@@ -239,7 +239,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       // Fetch conversations again after setting autoClearDays
       const { allConversations, appStorageConversations } = await fetchConversations()
-      const mergedConversations = mergeConversations(allConversations, appStorageConversations)
+      const mergedConversations = migrateAppStorageConversations(allConversations, appStorageConversations)
 
       const now = new Date()
       const cutoffDate = new Date(now.getTime() - validAutoClearDays * DAY_IN_MS)
@@ -318,17 +318,64 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [conversations])
 
+  const addConversation = useCallback(async (conversation: ConversationData) => {
+    await Highlight.conversations.addConversation(conversation)
+    trackEvent('conversation_added', { conversationId: conversation.id })
+  }, [trackEvent])
+
+  const deleteConversation = useCallback(async (id: string) => {
+    await Highlight.conversations.deleteConversation(id)
+    trackEvent('conversation_deleted', { conversationId: id })
+  }, [trackEvent])
+
   const mergeSelectedConversations = useCallback(async () => {
     if (selectedConversations.length >= 2) {
-      // We need merge conversations in two different ways:
+      const sortedConversations = selectedConversations.sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime())
+      const oldestConversation = sortedConversations[0]
+      const newestConversation = sortedConversations[sortedConversations.length - 1]
 
-      // 1. If the conversation is not summarized, create a new ConversationData, determine the date of each selected conversation, starting with the oldest, append that to the new .transcript field, and repeat in chronological order for each selected conversation. For .timestamp, make a new Date object with now's date. For .startedAt field, use the .startedAt field from the oldest selected conversation. For .endedAt, use the .endedAt field from the newest selected conversation.
-      // 2. If the conversation is summarized, create a new ConversationData, determine the date of each selected conversation, starting with the oldest, append that to the new .transcript field, and repeat in chronological order for each selected conversation. For .timestamp, make a new Date object with now's date. For .startedAt field, use the .startedAt field from the oldest selected conversation. For .endedAt, use the .endedAt field from the newest selected conversation. We will also need to resummarize the merged conversation -- we'll use from highlightService "getTextPredictionFromHighlight (async)" function, we must await this or error if the call fails -- if the call succeeds, we will set the new .summary field. If it fails, we'll keep summary blank for now.
-      
-      
-    
+      const mergedTranscript = sortedConversations
+        .map(conv => `[${conv.startedAt.toLocaleString()}]\n${conv.transcript}`)
+        .join('\n\n')
+
+      const formattedTranscript = formatTranscript(mergedTranscript, 'DialogueTranscript')
+
+      let summarizedData: SummarizedConversationData | null = null
+      if (sortedConversations.some(conv => conv.summarized)) {
+        try {
+          summarizedData = await summarizeConversation(formattedTranscript)
+        } catch (error) {
+          console.error('Failed to generate summary for merged conversation:', error)
+        }
+      }
+
+      const newConversation = createConversation({
+        title: summarizedData?.title || `Merged Conversation (${sortedConversations.length})`,
+        transcript: formattedTranscript,
+        summary: summarizedData?.summary || '',
+        topic: summarizedData?.topics?.join(', ') || sortedConversations.map(conv => conv.topic).join(', '),
+        startedAt: oldestConversation.startedAt,
+        endedAt: newestConversation.endedAt,
+        timestamp: new Date(),
+        userId: oldestConversation.userId // Assuming all conversations have the same userId
+      })
+
+      // Add the new merged conversation
+      await addConversation(newConversation)
+
+      // Delete the original conversations
+      for (const conv of selectedConversations) {
+        await deleteConversation(conv.id)
+      }
+
+      // Clear selected conversations and update the conversations list
+      setSelectedConversations([])
+      await fetchLatestData()
+
+      // Track the merge event
+      trackEvent('conversations_merged', { count: selectedConversations.length })
     }
-  }, [selectedConversations])
+  }, [selectedConversations, addConversation, deleteConversation, fetchLatestData, trackEvent])
 
   const contextValue: ConversationContextType = {
     conversations,
@@ -346,15 +393,9 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const savedConversation = await Highlight.conversations.saveCurrentConversation()
       trackEvent('conversation_added', { })
     },
-    addConversation: async (conversation: ConversationData) => {
-      await Highlight.conversations.addConversation(conversation)
-      trackEvent('conversation_added', { conversationId: conversation.id })
-    },
+    addConversation,
     updateConversation: Highlight.conversations.updateConversation,
-    deleteConversation: async (id: string) => {
-      await Highlight.conversations.deleteConversation(id)
-      trackEvent('conversation_deleted', { conversationId: id })
-    },
+    deleteConversation,
     deleteAllConversations: async () => {
       await Highlight.conversations.deleteAllConversations()
       trackEvent('delete_all_conversations', { })
