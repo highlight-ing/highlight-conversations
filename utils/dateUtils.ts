@@ -1,5 +1,5 @@
 // utils/dateUtils.ts
-import { format, isToday as isTodayDate, isWithinInterval, subDays } from 'date-fns'
+import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours } from 'date-fns'
 
 export const formatTimestamp = (date: Date | string | number, locale?: string): string => {
   // Default to 'en-US' if no locale is provided
@@ -88,4 +88,8 @@ export function isPast7Days(date: Date): boolean {
 
 export function isOlderThan7Days(date: Date): boolean {
   return date < subDays(new Date(), 7)
+}
+
+export function isLast24Hours(date: Date): boolean {
+  return isWithinInterval(date, { start: subHours(new Date(), 24), end: new Date() })
 }
