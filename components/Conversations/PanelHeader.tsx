@@ -1,13 +1,13 @@
 import React from 'react'
-import { Trash, Setting2 } from 'iconsax-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Trash, Setting2, ForwardItem } from 'iconsax-react'
+import { IconButton } from '@/components/ui/IconButton'
 
-const PanelHeader: React.FC = () => {
+interface PanelHeaderProps {
+  onMergeActivate: () => void
+  isMergeActive: boolean
+}
+
+const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActive }) => {
   const handleDeleteAll = () => {
     // Implement delete all conversations logic
   }
@@ -22,36 +22,24 @@ const PanelHeader: React.FC = () => {
         Conversations
       </h1>
       <div className="flex items-center gap-5 py-5 pr-[30px]">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={handleDeleteAll}
-                className="text-[#EEEEEE] hover:text-[#FF395D]"
-              >
-                <Trash variant="Bold" size={24} />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Delete all Conversations</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={handleSettings}
-                className="text-[#EEEEEE] hover:text-[#FFA500]"
-              >
-                <Setting2 variant="Bold" size={24} />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Settings</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <IconButton
+          icon={<ForwardItem variant="Bold" size={24} />}
+          onClick={onMergeActivate}
+          tooltip={isMergeActive ? 'Cancel Merge' : 'Merge Conversations'}
+          className={isMergeActive ? 'text-[#4CEDA0]' : 'hover:text-[#4CEDA0]'}
+        />
+        <IconButton
+          icon={<Trash variant="Bold" size={24} />}
+          onClick={handleDeleteAll}
+          tooltip="Delete all Conversations"
+          className="hover:text-[#FF395D]"
+        />
+        <IconButton
+          icon={<Setting2 variant="Bold" size={24} />}
+          onClick={handleSettings}
+          tooltip="Settings"
+          className="hover:text-[#4CEDA0]"
+        />
       </div>
     </div>
   )

@@ -4,6 +4,7 @@ import ActiveConversationComponent from './ActiveConversationComponent'
 import ConversationList from './ConversationList'
 import { useConversations } from '@/contexts/ConversationContext'
 import { isLast24Hours, isPast7Days, isOlderThan7Days } from '@/utils/dateUtils'
+import EnhancedSearchBar from '@/components/Search/EnhancedSearchBar'
 
 const ConversationPanel: React.FC = () => {
   const { conversations } = useConversations()
@@ -23,6 +24,7 @@ const ConversationPanel: React.FC = () => {
     <div className="flex flex-col h-full">
       <PanelHeader />
       <div className="flex-grow overflow-y-auto px-6 py-[39px]">
+        <EnhancedSearchBar />
         <ActiveConversationComponent />
         <ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />
         <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />

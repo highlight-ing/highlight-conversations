@@ -17,6 +17,7 @@ const DEFAULT_AUTO_SAVE_TIME = 120
 
 interface ConversationContextType {
   conversations: ConversationData[]
+  selectedConversations: ConversationData[]
   filteredConversations: ConversationData[]
   currentConversation: string
   elapsedTime: number
@@ -25,6 +26,7 @@ interface ConversationContextType {
   micActivity: number
   isAudioOn: boolean
   searchQuery: string
+  isMergeActive: boolean
   saveCurrentConversation: () => Promise<void>
   addConversation: (conversation: ConversationData) => Promise<void>
   updateConversation: (conversation: ConversationData) => Promise<void>
@@ -37,12 +39,16 @@ interface ConversationContextType {
   isSaving: boolean
   getWordCount: (transcript: string) => number
   updateConversations: (conversations: ConversationData[]) => Promise<void>
+  toggleMergeActive: () => void
+  handleConversationSelect: (id: string) => void
+  mergeSelectedConversations: () => Promise<void>
 }
 
 const ConversationContext = createContext<ConversationContextType | undefined>(undefined)
 
 export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [conversations, setConversations] = useState<ConversationData[]>([])
+  const [selectedConversations, setSelectedConversations] = useState<ConversationData[]>([])
   const [currentConversation, setCurrentConversation] = useState<string>('')
   const [elapsedTime, setElapsedTime] = useState<number>(0)
   const [autoSaveTime, setAutoSaveTime] = useState<number>(AUTO_SAVE_TIME_DEFAULT)
@@ -50,6 +56,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [micActivity, setMicActivity] = useState(0)
   const [isSaving, setIsSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isMergeActive, setIsMergeActive] = useState(false)
 
   // Use the useAudioPermission hook
   const { isAudioPermissionEnabled: isAudioOn, toggleAudioPermission } = useAudioPermission()
@@ -297,8 +304,35 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     })
   }, [conversations, searchQuery])
 
+  const toggleMergeActive = useCallback(() => {
+    setIsMergeActive(prev => !prev)
+    setSelectedConversations([])
+  }, [])
+
+  const handleConversationSelect = useCallback((id: string) => {
+    const conversation = conversations.find(conv => conv.id === id)
+    if (conversation) {
+      setSelectedConversations(prev => 
+        prev.includes(conversation) ? prev.filter(conv => conv.id !== conversation.id) : [...prev, conversation]
+      )
+    }
+  }, [conversations])
+
+  const mergeSelectedConversations = useCallback(async () => {
+    if (selectedConversations.length >= 2) {
+      // We need merge conversations in two different ways:
+
+      // 1. If the conversation is not summarized, create a new ConversationData, determine the date of each selected conversation, starting with the oldest, append that to the new .transcript field, and repeat in chronological order for each selected conversation. For .timestamp, make a new Date object with now's date. For .startedAt field, use the .startedAt field from the oldest selected conversation. For .endedAt, use the .endedAt field from the newest selected conversation.
+      // 2. If the conversation is summarized, create a new ConversationData, determine the date of each selected conversation, starting with the oldest, append that to the new .transcript field, and repeat in chronological order for each selected conversation. For .timestamp, make a new Date object with now's date. For .startedAt field, use the .startedAt field from the oldest selected conversation. For .endedAt, use the .endedAt field from the newest selected conversation. We will also need to resummarize the merged conversation -- we'll use from highlightService "getTextPredictionFromHighlight (async)" function, we must await this or error if the call fails -- if the call succeeds, we will set the new .summary field. If it fails, we'll keep summary blank for now.
+      
+      
+    
+    }
+  }, [selectedConversations])
+
   const contextValue: ConversationContextType = {
     conversations,
+    selectedConversations,
     filteredConversations,
     currentConversation,
     elapsedTime,
@@ -307,6 +341,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     micActivity,
     isAudioOn,
     searchQuery,
+    isMergeActive,
     saveCurrentConversation: async () => {
       const savedConversation = await Highlight.conversations.saveCurrentConversation()
       trackEvent('conversation_added', { })
@@ -344,7 +379,10 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const filteredConversations = conversations.filter(conv => conv.transcript.trim() !== '')
       await Highlight.conversations.updateConversations(filteredConversations)
       setConversations(filteredConversations)
-    }
+    },
+    toggleMergeActive,
+    handleConversationSelect,
+    mergeSelectedConversations
   }
 
   const autoClearConversations = useCallback(async () => {
