@@ -47,7 +47,7 @@ export function ConversationEntry({
     <div
       className={`w-full border-t border-[#010101] bg-tertiary p-4 transition-all duration-300 ease-in-out ${roundedClasses} ${
         isMergeActive ? 'cursor-pointer hover:bg-tertiary-hover' : ''
-      } ${isSelected ? 'bg-tertiary-selected' : ''}`}
+      } ${isSelected ? 'border border-green' : ''}`}
       onClick={handleClick}
     >
       <div className="flex items-center justify-between mb-2">

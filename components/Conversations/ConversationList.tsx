@@ -3,6 +3,7 @@ import { ConversationData } from '@/data/conversations'
 import { ConversationEntry } from './ConversationEntry'
 import { useConversations } from '@/contexts/ConversationContext'
 import { motion, AnimatePresence } from 'framer-motion'
+import { SectionHeader } from './SectionHeader'
 
 interface ConversationListProps {
   title?: string
@@ -19,7 +20,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
   return (
     <div className="mb-6">
-      {title && <h2 className="text-secondary mb-2">{title}</h2>}
+      <SectionHeader title={title} />
       <AnimatePresence initial={false}>
         {conversations.map((conversation, index) => (
           <motion.div
