@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Trash, Setting2, ForwardItem } from 'iconsax-react'
 import { IconButton } from '@/components/ui/IconButton'
 
@@ -26,19 +26,19 @@ const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActiv
           icon={<ForwardItem variant="Bold" size={24} />}
           onClick={onMergeActivate}
           tooltip={isMergeActive ? 'Cancel Merge' : 'Merge Conversations'}
-          className={isMergeActive ? 'text-[#4CEDA0]' : 'hover:text-[#4CEDA0]'}
+          className={isMergeActive ? 'text-[#4CEDA0]' : 'text-[#EEEEEE] hover:text-[#4CEDA0]'}
         />
         <IconButton
           icon={<Trash variant="Bold" size={24} />}
           onClick={handleDeleteAll}
           tooltip="Delete all Conversations"
-          className="hover:text-[#FF395D]"
+          className="text-[#EEEEEE] hover:text-[#FF395D]"
         />
         <IconButton
           icon={<Setting2 variant="Bold" size={24} />}
           onClick={handleSettings}
           tooltip="Settings"
-          className="hover:text-[#4CEDA0]"
+          className="text-[#EEEEEE] hover:text-[#4CEDA0]"
         />
       </div>
     </div>

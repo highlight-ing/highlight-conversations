@@ -2,6 +2,7 @@ import React from 'react'
 import { ConversationData } from '@/data/conversations'
 import { ConversationEntry } from './ConversationEntry'
 import { useConversations } from '@/contexts/ConversationContext'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ConversationListProps {
   title?: string
@@ -19,16 +20,25 @@ const ConversationList: React.FC<ConversationListProps> = ({
   return (
     <div className="mb-6">
       {title && <h2 className="text-secondary mb-2">{title}</h2>}
-      {conversations.map((conversation, index) => (
-        <ConversationEntry
-          key={conversation.id}
-          conversation={conversation}
-          isFirst={index === 0}
-          isLast={index === conversations.length - 1}
-          isMergeActive={isMergeActive}
-          isSelected={selectedConversations.some(conv => conv.id === conversation.id)}
-        />
-      ))}
+      <AnimatePresence initial={false}>
+        {conversations.map((conversation, index) => (
+          <motion.div
+            key={conversation.id}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ConversationEntry
+              conversation={conversation}
+              isFirst={index === 0}
+              isLast={index === conversations.length - 1}
+              isMergeActive={isMergeActive}
+              isSelected={selectedConversations.some(conv => conv.id === conversation.id)}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   )
 }

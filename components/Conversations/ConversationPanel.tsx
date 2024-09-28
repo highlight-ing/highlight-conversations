@@ -28,20 +28,20 @@ const ConversationPanel: React.FC = () => {
   const olderTitle = olderConversations.length > 0 ? 'Older' : undefined
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
       <PanelHeader onMergeActivate={toggleMergeActive} isMergeActive={isMergeActive} />
       <div className="flex-grow overflow-y-auto px-6 py-[39px]">
         <EnhancedSearchBar />
         <ActiveConversationComponent />
         {isMergeActive && (
-          <div className="mb-4 flex justify-between items-center">
+          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-background border border-input shadow-lg rounded-lg p-4 flex items-center justify-between w-[calc(100%-3rem)] max-w-md">
             <p className="text-primary">{selectedConversations.length} conversations selected</p>
             <Button 
               onClick={mergeSelectedConversations} 
               disabled={selectedConversations.length < 2}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              Merge Selected
+              Merge
             </Button>
           </div>
         )}
