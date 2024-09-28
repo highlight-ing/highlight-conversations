@@ -41,7 +41,7 @@ export function ConversationEntry({
 
   const previewText = conversation.summary 
     ? truncateText(conversation.summary, 100) 
-    : truncateText(conversation.transcript, 100)
+    : truncateText(removeTimestamps(conversation.transcript), 100)
 
   return (
     <div
@@ -101,4 +101,8 @@ function formatDate(date: Date): string {
     hour: '2-digit', 
     minute: '2-digit' 
   }).format(date)
+}
+
+function removeTimestamps(text: string): string {
+  return text.replace(/\d{2}:\d{2}:\d{2} [AP]M - (other\(s\)|self):/g, '').trim()
 }
