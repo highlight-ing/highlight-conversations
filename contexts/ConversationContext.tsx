@@ -42,6 +42,8 @@ interface ConversationContextType {
   toggleMergeActive: () => void
   handleConversationSelect: (id: string) => void
   mergeSelectedConversations: () => Promise<void>
+  selectedConversationId: string | null
+  setSelectedConversationId: (id: string | null) => void
 }
 
 const ConversationContext = createContext<ConversationContextType | undefined>(undefined)
@@ -57,6 +59,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isSaving, setIsSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isMergeActive, setIsMergeActive] = useState(false)
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
 
   // Use the useAudioPermission hook
   const { isAudioPermissionEnabled: isAudioOn, toggleAudioPermission } = useAudioPermission()
@@ -310,13 +313,17 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [])
 
   const handleConversationSelect = useCallback((id: string) => {
-    const conversation = conversations.find(conv => conv.id === id)
-    if (conversation) {
-      setSelectedConversations(prev => 
-        prev.includes(conversation) ? prev.filter(conv => conv.id !== conversation.id) : [...prev, conversation]
-      )
+    if (isMergeActive) {
+      const conversation = conversations.find(conv => conv.id === id)
+      if (conversation) {
+        setSelectedConversations(prev => 
+          prev.includes(conversation) ? prev.filter(conv => conv.id !== conversation.id) : [...prev, conversation]
+        )
+      }
+    } else {
+      setSelectedConversationId(prev => prev === id ? null : id)
     }
-  }, [conversations])
+  }, [conversations, isMergeActive])
 
   const addConversation = useCallback(async (conversation: ConversationData) => {
     await Highlight.conversations.addConversation(conversation)
@@ -424,7 +431,9 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     },
     toggleMergeActive,
     handleConversationSelect,
-    mergeSelectedConversations
+    mergeSelectedConversations,
+    selectedConversationId,
+    setSelectedConversationId
   }
 
   const autoClearConversations = useCallback(async () => {

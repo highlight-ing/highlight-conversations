@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useConversations } from '@/contexts/ConversationContext'
 import ConversationPanel from './ConversationPanel'
 import ConversationDetail from './ConversationDetail'
 
 export const ConversationLayout: React.FC = () => {
-  const [selectedConversation, setSelectedConversation] = useState(null)
+  const { selectedConversationId, conversations } = useConversations()
+
+  const selectedConversation = conversations.find(conv => conv.id === selectedConversationId)
 
   return (
-    <div className="flex flex-col sm:flex-row h-screen"> {/* Added px-6 for 24px padding */}
+    <div className="flex flex-col sm:flex-row h-screen">
       {/* Left Panel */}
       <div className="w-full lg:w-1/2 border-r border-tertiary">
         <ConversationPanel />
@@ -14,7 +16,7 @@ export const ConversationLayout: React.FC = () => {
 
       {/* Right Panel */}
       <div className="w-full lg:w-1/2">
-        <ConversationDetail />
+        <ConversationDetail conversation={selectedConversation} />
       </div>
     </div>
   )

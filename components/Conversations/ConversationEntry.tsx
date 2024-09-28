@@ -19,7 +19,7 @@ export function ConversationEntry({
   isMergeActive, 
   isSelected 
 }: ConversationEntryProps) {
-  const { getWordCount, handleConversationSelect } = useConversations()
+  const { getWordCount, handleConversationSelect, selectedConversationId } = useConversations()
   const roundedClasses = isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
 
   const handleShare = async () => {
@@ -27,12 +27,11 @@ export function ConversationEntry({
   }
 
   const handleClick = () => {
-    if (isMergeActive) {
-      handleConversationSelect(conversation.id)
-    } else {
-      // Handle normal conversation selection
-    }
+    handleConversationSelect(conversation.id)
   }
+
+  const isSelectedConversation = isMergeActive ? isSelected : selectedConversationId === conversation.id
+
 
   const isDefaultTitle = conversation.title?.startsWith('Conversation ended at')
   const displayTitle = !conversation.title || isDefaultTitle
@@ -47,7 +46,7 @@ export function ConversationEntry({
     <div
       className={`w-full border-t border-[#010101] bg-tertiary p-4 transition-all duration-300 ease-in-out ${roundedClasses} ${
         isMergeActive ? 'cursor-pointer hover:bg-tertiary-hover' : ''
-      } ${isSelected ? 'border border-green' : ''}`}
+      } ${isSelectedConversation ? 'border border-green' : ''}`}
       onClick={handleClick}
     >
       <div className="flex items-center justify-between mb-2">
