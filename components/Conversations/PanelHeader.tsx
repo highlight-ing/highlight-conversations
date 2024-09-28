@@ -23,7 +23,7 @@ const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActiv
       </h1>
       <div className="flex items-center gap-5 py-5 pr-[30px]">
         <IconButton
-          icon={<ForwardItem variant="Bold" size={24} />}
+          icon={<ForwardItem variant={isMergeActive ? "Bold" : "Linear"} size={24} />}
           onClick={onMergeActivate}
           tooltip={isMergeActive ? 'Cancel Merge' : 'Merge Conversations'}
           className={isMergeActive ? 'text-[#4CEDA0]' : 'text-[#EEEEEE] hover:text-[#4CEDA0]'}

@@ -369,7 +369,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         await deleteConversation(conv.id)
       }
 
-      // Clear selected conversations and update the conversations list
+      // Clear selected conversations and update the conversations list and set merge active to false
+      setIsMergeActive(false)
       setSelectedConversations([])
 
       // Track the merge event

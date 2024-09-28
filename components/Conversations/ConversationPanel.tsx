@@ -6,6 +6,7 @@ import EnhancedSearchBar from '@/components/Search/EnhancedSearchBar'
 import FloatingMergeControl from './FloatingMergeControl'
 import { useConversations } from '@/contexts/ConversationContext'
 import { isLast24Hours, isPast7Days, isOlderThan7Days } from '@/utils/dateUtils'
+import { AnimatePresence, motion } from 'framer-motion'
 
 const ConversationPanel: React.FC = () => {
   const { 
@@ -44,7 +45,19 @@ const ConversationPanel: React.FC = () => {
           conversations={olderConversations}
         />
       </div>
-      {isMergeActive && <FloatingMergeControl />}
+      <AnimatePresence>
+        {isMergeActive && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+            className="absolute bottom-0 left-0 right-0"
+          >
+            <FloatingMergeControl />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
