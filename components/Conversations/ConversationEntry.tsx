@@ -32,6 +32,9 @@ export function ConversationEntry({
 
   const isSelectedConversation = isMergeActive ? isSelected : selectedConversationId === conversation.id
 
+  const selectedClass = isSelectedConversation 
+    ? 'shadow-[inset_0_0_0_2px_#4CEDA0]' 
+    : ''
 
   const isDefaultTitle = conversation.title?.startsWith('Conversation ended at')
   const displayTitle = !conversation.title || isDefaultTitle
@@ -46,7 +49,7 @@ export function ConversationEntry({
     <div
       className={`w-full border-t border-[#010101] bg-tertiary p-4 transition-all duration-300 ease-in-out ${roundedClasses} ${
         isMergeActive ? 'cursor-pointer hover:bg-tertiary-hover' : ''
-      } ${isSelectedConversation ? 'border border-green' : ''}`}
+      } ${selectedClass}`}
       onClick={handleClick}
     >
       <div className="flex items-center justify-between mb-2">
