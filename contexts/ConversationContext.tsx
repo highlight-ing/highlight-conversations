@@ -335,7 +335,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const newestConversation = sortedConversations[sortedConversations.length - 1]
 
       const mergedTranscript = sortedConversations
-        .map(conv => `[${conv.startedAt.toLocaleString()}]\n${conv.transcript}`)
+        .map(conv => `${conv.transcript}`)
         .join('\n\n')
 
       const formattedTranscript = formatTranscript(mergedTranscript, 'DialogueTranscript')
