@@ -3,17 +3,15 @@ import PanelHeader from './PanelHeader'
 import ActiveConversationComponent from './ActiveConversationComponent'
 import ConversationList from './ConversationList'
 import EnhancedSearchBar from '@/components/Search/EnhancedSearchBar'
+import FloatingMergeControl from './FloatingMergeControl'
 import { useConversations } from '@/contexts/ConversationContext'
 import { isLast24Hours, isPast7Days, isOlderThan7Days } from '@/utils/dateUtils'
-import { Button } from '@/components/ui/button'
 
 const ConversationPanel: React.FC = () => {
   const { 
     filteredConversations, 
     isMergeActive,
-    selectedConversations,
-    toggleMergeActive,
-    mergeSelectedConversations
+    toggleMergeActive
   } = useConversations()
 
   const last24HoursConversations = filteredConversations.filter(convo => isLast24Hours(new Date(convo.timestamp)))
@@ -33,18 +31,6 @@ const ConversationPanel: React.FC = () => {
       <div className="flex-grow overflow-y-auto px-6 py-[39px]">
         <EnhancedSearchBar />
         <ActiveConversationComponent />
-        {isMergeActive && (
-          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-background border border-input shadow-lg rounded-lg p-4 flex items-center justify-between w-[calc(100%-3rem)] max-w-md">
-            <p className="text-primary">{selectedConversations.length} conversations selected</p>
-            <Button 
-              onClick={mergeSelectedConversations} 
-              disabled={selectedConversations.length < 2}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              Merge
-            </Button>
-          </div>
-        )}
         <ConversationList 
           title={last24HoursTitle} 
           conversations={last24HoursConversations}
@@ -58,6 +44,7 @@ const ConversationPanel: React.FC = () => {
           conversations={olderConversations}
         />
       </div>
+      {isMergeActive && <FloatingMergeControl />}
     </div>
   )
 }
