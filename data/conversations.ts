@@ -16,19 +16,31 @@ export interface ConversationData {
 
 export type FormatType = "CardTranscript" | "DialogueTranscript"
 
+const formatDate = (date: Date): string => {
+  return date.toLocaleString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  })
+}
+
 export const createConversation = (
   params: Partial<Omit<ConversationData, 'id' | 'summarized'>> = {}
 ): ConversationData => {
+  
   const now = new Date()
   return {
     id: uuidv4(),
-    title: '',
+    title: `Conversation ended at ${formatDate(params.endedAt || now)}`,
     summary: '',
     topic: '',
     transcript: '',
-    startedAt: now,
-    endedAt: now,
-    timestamp: now,
+    startedAt: params.startedAt || now,
+    endedAt: params.endedAt || now,
+    timestamp: params.timestamp || now,
     summarized: params.summary !== undefined && params.summary !== '',
     shareLink: '',
     userId: '',

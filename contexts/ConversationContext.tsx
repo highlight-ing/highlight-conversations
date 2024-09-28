@@ -350,7 +350,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       const newConversation = createConversation({
-        title: summarizedData?.title || `Merged Conversation (${sortedConversations.length})`,
+        title: summarizedData?.title,
         transcript: formattedTranscript,
         summary: summarizedData?.summary || '',
         topic: summarizedData?.topics?.join(', ') || sortedConversations.map(conv => conv.topic).join(', '),
@@ -359,6 +359,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         timestamp: new Date(),
         userId: oldestConversation.userId // Assuming all conversations have the same userId
       })
+      console.log('New merged conversation:', newConversation)
 
       // Add the new merged conversation
       await addConversation(newConversation)
@@ -370,7 +371,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       // Clear selected conversations and update the conversations list
       setSelectedConversations([])
-      await fetchLatestData()
 
       // Track the merge event
       trackEvent('conversations_merged', { count: selectedConversations.length })
