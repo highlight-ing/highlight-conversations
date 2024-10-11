@@ -1,14 +1,9 @@
 import React from 'react'
-import { ConversationData, panelFormatDate } from '@/data/conversations'
+import { ConversationData } from '@/data/conversations'
 import Header from '../Components/Header'
 import Actions from '../Components/Actions'
 import Transcript from '../Components/Transcript'
 import Summary from '../Components/Summary'
-
-// icons 
-import ClipboardTextIcon from './Icon/clipboard-text'
-import TrashIcon from './Icon/trash'
-import FlashIcon from './Icon/flash'
 
 interface ConversationDetailProps {
   conversation: ConversationData | undefined

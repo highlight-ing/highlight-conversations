@@ -1,7 +1,6 @@
 import React from 'react';
 import { panelFormatDate } from '@/data/conversations';
 import FlashIcon from '../Detail/Icon/flash';
-// TODO: Need to think about locations of icons 
 import TrashIcon from '../Detail/Icon/trash';
 import ClipboardTextIcon from '../Detail/Icon/clipboard-text';
 
@@ -14,13 +13,14 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title, startedAt, endedAt }) => {
     return (
         <div
-            className="relative w-[746px] h-[48px] border-b border-black mb-4"
+            className="relative max-w-full h-[48px] border-b border-black mb-4"
             style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px', 
                 padding: '8px 16px',
                 boxSizing: 'border-box',
+                overflow: 'hidden', // Prevent overflow
             }}
         >
             {/* Icon on the left */}
@@ -35,13 +35,16 @@ const Header: React.FC<HeaderProps> = ({ title, startedAt, endedAt }) => {
             />
 
             {/* Title and Date Information */}
-            <div style={{ flexGrow: 1 }}>
+            <div style={{ flexGrow: 1, minWidth: '0' }}>
                 <h1
                     className="font-inter text-[13px] font-medium"
                     style={{
                         color: 'var(--White, #FFF)',
                         lineHeight: '1.2',
                         margin: '0',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap', 
                     }}
                 >
                     {title}
@@ -59,12 +62,15 @@ const Header: React.FC<HeaderProps> = ({ title, startedAt, endedAt }) => {
                 </span>
             </div>
 
-            {/* Flash Icon (on the right) */}
-            <div style={{
+            {/* Icons on the right, aligned horizontally */}
+            <div
+                style={{
                     display: 'flex',
                     gap: '12px', 
-                    marginLeft: 'auto', 
-                }}>
+                    marginLeft: 'auto',
+                    flexShrink: 0, 
+                }}
+            >
                 <ClipboardTextIcon />
                 <TrashIcon />
                 <FlashIcon />
