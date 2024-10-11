@@ -8,14 +8,15 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => (
   <div
     className="flex flex-col items-start gap-3 p-4 rounded-lg"
     style={{
-      width: '712px',
+      maxWidth: '100%',
       padding: '16px',
       flexDirection: 'column',
       alignItems: 'flex-start',
       gap: '12px',
       borderRadius: '20px',
       background: 'var(--Background-Tertiary, #222)',
-      position: 'relative', 
+      position: 'relative',
+      overflow: 'auto',
     }}
   >
     <h2
