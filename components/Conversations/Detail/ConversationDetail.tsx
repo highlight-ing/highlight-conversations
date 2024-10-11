@@ -16,7 +16,21 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">{conversation.title}</h1>
+        <div className="flex items-center justify-between w-[746px] h-[48px] border-b border-black mb-4">
+        <h1 className="font-inter text-[13px] font-medium" style={{
+          color: 'var(--White, #FFF)',
+          lineHeight: 'normal'
+        }}>{conversation.title}</h1>
+          <div className="flex items-center space-x-4">
+          <span className="font-inter text-[13px] font-medium" style={{
+            color: 'var(--White, #FFF)',
+            lineHeight: 'normal'
+          // need to find time for this 
+          }}>{conversation.time}</span>
+          <button className="px-3 py-1 bg-blue-500 text-white rounded">Summarize</button>
+          {/* Add more buttons */}
+        </div>
+      </div>
       <p className="text-gray-600 mb-4">{conversation.summary}</p>
       <div className="flex flex-col items-start gap-3 p-4 rounded-lg" style={{
         width: '712px',
