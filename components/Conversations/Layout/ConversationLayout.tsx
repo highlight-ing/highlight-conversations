@@ -1,6 +1,6 @@
 import { useConversations } from '@/contexts/ConversationContext'
-import ConversationPanel from './ConversationPanel'
-import ConversationDetail from './ConversationDetail'
+import ConversationPanel from '../Panel/ConversationPanel'
+import ConversationDetail from '../Detail/ConversationDetail'
 
 export const ConversationLayout: React.FC = () => {
   const { selectedConversationId, conversations } = useConversations()
