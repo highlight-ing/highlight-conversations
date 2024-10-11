@@ -8,6 +8,7 @@ const Actions: React.FC = () => (
       justifyContent: 'space-between',
       alignItems: 'center',
       alignSelf: 'stretch',
+      marginTop: '16px', 
     }}
   >
     <div
@@ -51,13 +52,14 @@ const Actions: React.FC = () => (
       </span>
     </div>
     <span
-      className="absolute font-inter text-[13px] font-medium"
+      className="font-inter text-[13px] font-medium"
       style={{
         color: 'var(--Text-Subtle, #484848)',
         lineHeight: '20px',
         letterSpacing: '-0.26px',
-        bottom: '16px', 
-        left: '600px',  
+        position: 'relative', 
+        bottom: '0', 
+        left: '0', 
       }}
     >
       Send Feedback
