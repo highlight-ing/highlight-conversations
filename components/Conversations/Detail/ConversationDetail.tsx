@@ -1,5 +1,8 @@
 import React from 'react'
 import { ConversationData, panelFormatDate } from '@/data/conversations'
+import ClipboardTextIcon from './Icon/clipboard-text'
+import TrashIcon from './Icon/trash'
+import FlashIcon from './Icon/flash'
 
 interface ConversationDetailProps {
   conversation: ConversationData | undefined
