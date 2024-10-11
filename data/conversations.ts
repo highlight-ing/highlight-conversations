@@ -24,6 +24,7 @@ export const formatDate = (date: Date): string => {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
+    timeZoneName: 'short'
   })
 }
 
