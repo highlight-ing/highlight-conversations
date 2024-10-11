@@ -36,15 +36,10 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
           lineHeight: '20px',
           letterSpacing: '-0.26px'
         }}>Transcript:</h2>
-        <p style={{
-          alignSelf: 'stretch',
-          color: 'var(--Text-Primary, #EEE)',
-          fontFamily: 'Inter',
-          fontSize: '15px',
-          fontStyle: 'normal',
-          fontWeight: 400,
-          lineHeight: '160%'
-        }} className="whitespace-pre-wrap">{conversation.transcript}</p>
+        <p className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter" style={{
+          alignSelf: 'stretch'
+        }}>
+          {conversation.transcript}</p>
       </div>
     </div>
   )
