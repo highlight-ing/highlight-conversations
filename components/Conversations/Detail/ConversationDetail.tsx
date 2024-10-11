@@ -27,7 +27,6 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
             lineHeight: 'normal'
           // need to find time for this 
           }}>{conversation.time}</span>
-          <button className="px-3 py-1 bg-blue-500 text-white rounded">Summarize</button>
           {/* Add more buttons */}
         </div>
       </div>
