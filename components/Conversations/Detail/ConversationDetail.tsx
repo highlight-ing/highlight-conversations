@@ -27,15 +27,10 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
         alignItems: 'flex-start',
         gap: '12px'
       }}>
-        <h2 style={{
+         <h2 className="font-inter text-[13px] font-medium leading-[20px] tracking-tight" style={{
           color: 'var(--Text-Secondary, #B4B4B4)',
-          fontFamily: 'Inter',
-          fontSize: '13px',
-          fontStyle: 'normal',
-          fontWeight: 500,
-          lineHeight: '20px',
           letterSpacing: '-0.26px'
-        }}>Transcript:</h2>
+        }}>Transcript</h2>
         <p className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter" style={{
           alignSelf: 'stretch'
         }}>
