@@ -50,26 +50,98 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
       </div>
       
       <p className="text-gray-600 mb-4">{conversation.summary}</p>
-      <div className="flex flex-col items-start gap-3 p-4 rounded-lg" style={{
-        width: '712px',
-        background: 'var(--Background-Tertiary, #222)',
-        borderRadius: '20px',
-        padding: '16px',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: '12px'
-      }}>
-        <h2 className="font-inter text-[13px] font-medium leading-[20px] tracking-tight" style={{
-          color: 'var(--Text-Secondary, #B4B4B4)',
-          letterSpacing: '-0.26px'
-        }}>Transcript</h2>
-        <p className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter" 
+      <div
+        className="flex flex-col items-start gap-3 p-4 rounded-lg"
         style={{
-          alignSelf: 'stretch',
+          width: '712px',
+          padding: '16px',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          gap: '12px',
+          borderRadius: '20px',
+          background: 'var(--Background-Tertiary, #222)',
+          position: 'relative', 
         }}
       >
-        {conversation.transcript}
-      </p>
+        <h2
+          className="font-inter text-[13px] font-medium leading-[20px] tracking-tight"
+          style={{
+            color: 'var(--Text-Secondary, #B4B4B4)',
+            letterSpacing: '-0.26px',
+          }}
+        >
+          Transcript
+        </h2>
+        <p
+          className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter"
+          style={{
+            alignSelf: 'stretch',
+          }}
+        >
+          {conversation.transcript}
+        </p>
+        <div
+          className="flex justify-between items-center self-stretch mt-4"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            alignSelf: 'stretch',
+          }}
+        >
+          <div
+            className="flex items-center gap-4"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            {/* Icons can be added here */}
+            <span
+              className="font-inter text-[13px] font-medium"
+              style={{
+                color: 'var(--Text-Subtle, #484848)',
+                lineHeight: '20px',
+                letterSpacing: '-0.26px',
+              }}
+            >
+              Copy
+            </span>
+            <span
+              className="font-inter text-[13px] font-medium"
+              style={{
+                color: 'var(--Text-Subtle, #484848)',
+                lineHeight: '20px',
+                letterSpacing: '-0.26px',
+              }}
+            >
+              Share
+            </span>
+            <span
+              className="font-inter text-[13px] font-medium"
+              style={{
+                color: 'var(--Text-Subtle, #484848)',
+                lineHeight: '20px',
+                letterSpacing: '-0.26px',
+              }}
+            >
+              Save
+            </span>
+          </div>
+        </div>
+        <span
+          className="absolute font-inter text-[13px] font-medium"
+          style={{
+            color: 'var(--Text-Subtle, #484848)',
+            lineHeight: '20px',
+            letterSpacing: '-0.26px',
+            bottom: '16px', 
+            left: '600px',  
+          }}
+        >
+          Send Feedback
+        </span>
       </div>
     </div>
   )
