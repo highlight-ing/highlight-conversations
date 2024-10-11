@@ -22,11 +22,14 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
           lineHeight: 'normal'
         }}>{conversation.title}</h1>
           <div className="flex items-center space-x-4">
-          <span className="font-inter text-[13px] font-medium" style={{
-            color: 'var(--White, #FFF)',
-            lineHeight: 'normal'
-          // need to find time for this 
-          }}>{formatDate(conversation.startedAt)} - {formatDate(conversation.endedAt)}
+          <span
+            className="font-inter text-[13px] font-medium"
+            style={{
+              color: 'var(--White, #FFF)',
+              lineHeight: 'normal',
+              opacity: 0.3,
+            }}
+          >{formatDate(conversation.startedAt)} - {formatDate(conversation.endedAt)}
         </span>
           {/* Add more buttons */}
         </div>
