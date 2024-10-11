@@ -1,5 +1,5 @@
 import React from 'react'
-import { ConversationData } from '@/data/conversations'
+import { ConversationData, formatDate } from '@/data/conversations'
 
 interface ConversationDetailProps {
   conversation: ConversationData | undefined
@@ -26,7 +26,8 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
             color: 'var(--White, #FFF)',
             lineHeight: 'normal'
           // need to find time for this 
-          }}>{conversation.time}</span>
+          }}>{formatDate(conversation.startedAt)} - {formatDate(conversation.endedAt)}
+        </span>
           {/* Add more buttons */}
         </div>
       </div>
