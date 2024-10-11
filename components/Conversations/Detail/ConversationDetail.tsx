@@ -16,12 +16,12 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
 
   return (
     <div className="p-6">
-        <div className="flex items-center justify-between w-[746px] h-[48px] border-b border-black mb-4">
+      <div className="w-[746px] h-[48px] border-b border-black mb-4">
         <h1 className="font-inter text-[13px] font-medium" style={{
           color: 'var(--White, #FFF)',
           lineHeight: 'normal'
         }}>{conversation.title}</h1>
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between">
           <span
             className="font-inter text-[13px] font-medium"
             style={{
@@ -29,9 +29,10 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
               lineHeight: 'normal',
               opacity: 0.3,
             }}
-          >{formatDate(conversation.startedAt)} - {formatDate(conversation.endedAt)}
-        </span>
-          {/* Add more buttons */}
+          >
+            {formatDate(conversation.startedAt)} - {formatDate(conversation.endedAt)}
+          </span>
+          {/* Add more buttons or elements as needed */}
         </div>
       </div>
       <p className="text-gray-600 mb-4">{conversation.summary}</p>
@@ -44,14 +45,13 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
         alignItems: 'flex-start',
         gap: '12px'
       }}>
-         <h2 className="font-inter text-[13px] font-medium leading-[20px] tracking-tight" style={{
+        <h2 className="font-inter text-[13px] font-medium leading-[20px] tracking-tight" style={{
           color: 'var(--Text-Secondary, #B4B4B4)',
           letterSpacing: '-0.26px'
         }}>Transcript</h2>
         <p className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter" style={{
           alignSelf: 'stretch'
-        }}>
-          {conversation.transcript}</p>
+        }}>{conversation.transcript}</p>
       </div>
     </div>
   )
