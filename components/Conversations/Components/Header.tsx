@@ -1,5 +1,9 @@
 import React from 'react';
 import { panelFormatDate } from '@/data/conversations';
+import FlashIcon from '../Detail/Icon/flash';
+// TODO: Need to think about locations of icons 
+import TrashIcon from '../Detail/Icon/trash';
+import ClipboardTextIcon from '../Detail/Icon/clipboard-text';
 
 interface HeaderProps {
     title: string;
@@ -13,12 +17,13 @@ const Header: React.FC<HeaderProps> = ({ title, startedAt, endedAt }) => {
             className="relative w-[746px] h-[48px] border-b border-black mb-4"
             style={{
                 display: 'flex',
-                alignItems: 'center', 
-                gap: '12px',
-                padding: '8px 16px', 
+                alignItems: 'center',
+                gap: '12px', 
+                padding: '8px 16px',
                 boxSizing: 'border-box',
             }}
         >
+            {/* Icon on the left */}
             <div
                 style={{
                     width: '32px',
@@ -29,7 +34,8 @@ const Header: React.FC<HeaderProps> = ({ title, startedAt, endedAt }) => {
                 }}
             />
 
-            <div>
+            {/* Title and Date Information */}
+            <div style={{ flexGrow: 1 }}>
                 <h1
                     className="font-inter text-[13px] font-medium"
                     style={{
@@ -51,6 +57,17 @@ const Header: React.FC<HeaderProps> = ({ title, startedAt, endedAt }) => {
                 >
                     {panelFormatDate(startedAt)} - {panelFormatDate(endedAt)}
                 </span>
+            </div>
+
+            {/* Flash Icon (on the right) */}
+            <div style={{
+                    display: 'flex',
+                    gap: '12px', 
+                    marginLeft: 'auto', 
+                }}>
+                <ClipboardTextIcon />
+                <TrashIcon />
+                <FlashIcon />
             </div>
         </div>
     );
