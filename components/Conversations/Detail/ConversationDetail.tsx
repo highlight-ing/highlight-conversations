@@ -1,5 +1,5 @@
 import React from 'react'
-import { ConversationData, formatDate } from '@/data/conversations'
+import { ConversationData, panelFormatDate } from '@/data/conversations'
 
 interface ConversationDetailProps {
   conversation: ConversationData | undefined
@@ -15,8 +15,14 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
   }
 
   return (
-    <div className="p-6">
-      <div className="relative w-[746px] h-[48px] border-b border-black mb-4">
+    <div className="p-6"
+      style={{
+        background: 'var(--Background-primary, #0F0F0F)',
+        minHeight: '100vh',
+      }}
+    >
+      <div
+        className="relative w-[746px] h-[48px] border-b border-black mb-4">
         <h1 className="font-inter text-[13px] font-medium" style={{
           color: 'var(--White, #FFF)',
           lineHeight: 'normal'
@@ -30,23 +36,9 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
               opacity: 0.3,
             }}
           >
-            {formatDate(conversation.startedAt)} - {formatDate(conversation.endedAt)}
+            {panelFormatDate(conversation.startedAt)} - {panelFormatDate(conversation.endedAt)}
           </span>
         </div>
-        <button
-          className="absolute font-inter"
-          style={{
-            top: '16px',
-            right: '28px',
-            color: 'var(--White, #FFF)',
-            fontFamily: 'Inter, sans-serif', 
-            fontSize: '13px',
-            fontWeight: 500,
-            lineHeight: '16px',
-          }}
-        >
-          Summarize
-        </button>
       </div>
       
       <p className="text-gray-600 mb-4">{conversation.summary}</p>
