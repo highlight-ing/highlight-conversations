@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ title, startedAt, endedAt }) => {
                 gap: '12px', 
                 padding: '8px 16px',
                 boxSizing: 'border-box',
-                overflow: 'hidden', // Prevent overflow
+                overflow: 'hidden', 
             }}
         >
             {/* Icon on the left */}
