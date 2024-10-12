@@ -1,7 +1,6 @@
 import React from 'react'
 import { ConversationData } from '@/data/conversations'
 import Header from '../Components/Header'
-import Actions from '../Components/Actions'
 import Transcript from '../Components/Transcript'
 import Summary from '../Components/Summary'
 
@@ -28,7 +27,6 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
       <Header title={conversation.title} startedAt={conversation.startedAt} endedAt={conversation.endedAt} />
       <Summary summary={conversation.summary} />
       <Transcript transcript={conversation.transcript} />
-      <Actions />
     </div>
   )
 }

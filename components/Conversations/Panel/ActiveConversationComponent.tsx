@@ -72,7 +72,7 @@ export default function ActiveConversationComponent() {
   }
 
   const formatElapsedTime = (seconds: number): string => {
-    // bug fix for getting -1s when not being recorded
+    // bug fix for showing 0s when not being recorded 
     if (seconds < 0) {
       return '0s';
     }
