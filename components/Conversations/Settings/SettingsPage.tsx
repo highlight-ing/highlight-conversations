@@ -3,43 +3,55 @@ import React from 'react';
 const SettingsPage: React.FC = () => {
   return (
     <>
-      <div className="w-[467px] h-[137px] flex-col justify-start items-center gap-px inline-flex">
-        <div className="self-stretch pl-6 pr-3 py-3 bg-white/0 rounded-tl-2xl rounded-tr-2xl justify-between items-center inline-flex">
-          <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Auto Save</div>
-          <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
-            <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">After 2 Minutes</div>
+      {/* Auto Save */}
+      <div className="flex flex-col gap-px">
+        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
+          <div className="text-[#EEEEEE] text-[15px] font-medium font-inter leading-6">Auto Save</div>
+          <div className="px-4 py-1.5 bg-white/[0.08] rounded-[10px] flex justify-center items-center">
+            <div className="text-[#B4B4B4] text-[15px] font-medium font-inter leading-5">After 2 Minutes</div>
           </div>
         </div>
-        <div className="self-stretch px-6 py-4 bg-white/0 rounded-bl-2xl rounded-br-2xl justify-start items-center gap-2.5 inline-flex">
-          <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">
+
+        <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
+          <div className="opacity-50 text-[#B4B4B4] text-[15px] font-normal font-inter leading-6">
             Highlight will automatically save your conversation transcript after this duration of silence
           </div>
         </div>
       </div>
 
-      <div className="h-14 pl-6 pr-3 py-3 bg-white/0 rounded-tl-2xl rounded-tr-2xl justify-between items-center inline-flex">
+    {/* Auto Clear */}
+    <div className="flex flex-col gap-px">
+        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
         <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Auto Clear</div>
-        <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
-          <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">Every 2 Weeks</div>
+            <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
+            <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">Every 2 Weeks</div>
         </div>
-      </div>
+    </div>
+    <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
+        <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">Highlight will automatically delete all of your conversation transcripts based on this setting</div>
+        </div>
+    </div>
 
-      <div className="w-[467px] h-[161px] flex-col justify-start items-center gap-px inline-flex">
-        <div className="self-stretch pl-6 pr-3 py-3 bg-white/0 rounded-tl-2xl rounded-tr-2xl justify-between items-center inline-flex">
+
+    {/* Audio Transcript Duration */}
+    <div className="flex flex-col gap-px">
+        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcript Duration</div>
           <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
             <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">8 Hours</div>
           </div>
         </div>
-        <div className="self-stretch px-6 py-4 bg-white/0 rounded-bl-2xl rounded-br-2xl justify-start items-center gap-2.5 inline-flex">
+
+        <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
           <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">
             Length of audio transcript duration that will be stored in memory. In the interest of your privacy, there is no data saved anywhere.
           </div>
         </div>
       </div>
 
-      <div className="w-[467px] h-[161px] flex-col justify-start items-center gap-px inline-flex">
-        <div className="self-stretch pl-6 pr-3 py-[15px] bg-white/0 rounded-tl-2xl rounded-tr-2xl justify-between items-center inline-flex">
+    {/* Cloud Transcript */}
+    <div className="flex flex-col gap-px">
+        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Cloud Transcript</div>
           <div className="h-[26px] justify-end items-center gap-1.5 flex">
             <div className="text-right text-white/40 text-xs font-normal font-['Public Sans'] leading-snug">ON</div>
@@ -49,18 +61,22 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="self-stretch px-6 py-4 bg-white/0 rounded-bl-2xl rounded-br-2xl justify-start items-center gap-2.5 inline-flex">
+
+        <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
           <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">
             Allow transcription to work in the cloud whenever your device is unable to transcribe your conversations locally. No audio or text transcription is stored anywhere to protect your privacy.
           </div>
         </div>
       </div>
 
-      <div className="w-[467px] h-12 px-8 py-3 bg-white/10 rounded-xl justify-center items-center gap-2 inline-flex">
+        {/* Delete Button */}
+      <div className="flex flex-col gap-px">
+        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
         <div className="text-[#ff3333] text-[17px] font-medium font-inter leading-tight">Delete All Transcripts</div>
+        </div>
       </div>
-    </>
+      </>
   );
 };
 
-export default SettingsPage;
+export default SettingsPage
