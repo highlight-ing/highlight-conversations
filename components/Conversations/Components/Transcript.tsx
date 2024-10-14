@@ -4,7 +4,6 @@ interface TranscriptProps {
   transcript: string
 }
 
-
 const Actions: React.FC = () => (
     <div
       className="flex justify-between items-center self-stretch mt-4"
