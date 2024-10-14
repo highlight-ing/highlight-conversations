@@ -32,7 +32,9 @@ const MyTranscriptPanel: React.FC<MyTranscriptPanelProps> = ({ setIsSettingsActi
                    className={`px-2 py-1.5 rounded-lg justify-center items-center gap-2.5 flex cursor-pointer ${isSettingsActive ? 'text-white' : 'text-[#484848]'}`}
                     onClick={handleSettingsClick}
                 >
-                    <div className={`text-[15px] font-medium font-inter leading-none ${isSettingsActive ? 'text-white' : 'text-[#484848]'}`}>Settings</div>
+                    <div className={`text-[15px] font-medium font-inter leading-none ${isSettingsActive ? 'text-white' : 'text-[#484848]'}`}>
+                        Settings
+                    </div>
                 </div>
             </div>
         </div>
