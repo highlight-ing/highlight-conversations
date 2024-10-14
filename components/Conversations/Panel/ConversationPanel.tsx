@@ -46,9 +46,10 @@ const ConversationPanel: React.FC = () => {
         <AnimatePresence mode="wait">
           <motion.div
             key={isSettingsActive ? 'settings' : 'conversations'}
-            initial="initial"
-            animate="in"
-            exit="out"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
             className="h-full overflow-y-auto px-6 py-[39px]"
           >
             {isSettingsActive ? (
