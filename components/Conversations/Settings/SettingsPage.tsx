@@ -4,7 +4,7 @@ const SettingsPage: React.FC = () => {
   return (
     <>
       {/* Auto Save */}
-      <div className="flex flex-col gap-px mb-6">
+      <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#EEEEEE] text-[15px] font-medium font-inter leading-6">Auto Save</div>
           <div className="px-4 py-1.5 bg-white/[0.08] rounded-[10px] flex justify-center items-center">
@@ -20,7 +20,7 @@ const SettingsPage: React.FC = () => {
       </div>
 
     {/* Auto Clear */}
-    <div className="flex flex-col gap-px mb-6">
+    <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
         <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Auto Clear</div>
             <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
@@ -34,7 +34,7 @@ const SettingsPage: React.FC = () => {
 
 
     {/* Audio Transcript Duration */}
-    <div className="flex flex-col gap-px mb-6">
+    <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcript Duration</div>
           <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
@@ -50,7 +50,7 @@ const SettingsPage: React.FC = () => {
       </div>
 
     {/* Cloud Transcript */}
-    <div className="flex flex-col gap-px mb-6">
+    <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Cloud Transcript</div>
           <div className="h-[26px] justify-end items-center gap-1.5 flex">
@@ -70,8 +70,8 @@ const SettingsPage: React.FC = () => {
       </div>
 
         {/* Delete Button */}
-        <div className="flex flex-col gap-px mb-6">
-            <div className="flex items-center justify-center bg-white/10 py-3 px-6 pr-3 bg-white/[0.02] rounded-xl overflow-hidden inline-flex">
+        <div className="flex flex-col gap-px mb-8">
+            <div className="flex items-center justify-center bg-[#222222] py-3 px-6 pr-3 bg-white/[0.02] rounded-xl overflow-hidden inline-flex">
                 <div className="text-[#ff3333] text-[17px] font-medium font-inter leading-tight">Delete All Transcripts</div>
             </div>
         </div>
