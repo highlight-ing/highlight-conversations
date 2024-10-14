@@ -42,7 +42,7 @@ const ConversationPanel: React.FC = () => {
           isSettingsActive={isSettingsActive}
       />
 
-<div className="flex-grow overflow-hidden">
+      <div className="flex-grow overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={isSettingsActive ? 'settings' : 'conversations'}

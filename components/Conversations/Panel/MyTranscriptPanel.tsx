@@ -15,24 +15,24 @@ const MyTranscriptPanel: React.FC<MyTranscriptPanelProps> = ({ setIsSettingsActi
     }
 
     return (
-        <div className="w-[531px] h-[52px] px-5 py-3 border-b border-white/5 justify-start items-center gap-1.5 inline-flex">
-            <div className="justify-start items-center gap-3 flex">
+        <div className="w-full h-[52px] px-5 py-3 border-b border-white/5 flex items-center">
+            <div className="flex w-full">
                 {/* My Transcripts Button */}
                 <div 
-                    className={`px-2 py-1.5 rounded-md justify-center items-center gap-2.5 flex cursor-pointer ${!isSettingsActive ? 'text-white' : 'text-gray-500'}`}
+                    className="h-7 px-2 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex cursor-pointer"
                     onClick={handleTranscriptsClick}
                 >
-                    <div className={`text-[15px] font-medium font-inter leading-none ${!isSettingsActive ? 'text-white' : 'text-[#484848]'}`}>
+                    <div className="text-[#484848] text-[15px] font-medium font-inter leading-none">
                         My Transcripts
                     </div>
                 </div>
 
                 {/* Settings Button */}
                 <div 
-                   className={`px-2 py-1.5 rounded-lg justify-center items-center gap-2.5 flex cursor-pointer ${isSettingsActive ? 'text-white' : 'text-[#484848]'}`}
+                    className="h-7 px-2 py-1.5 rounded-md justify-center items-center gap-2.5 inline-flex cursor-pointer"
                     onClick={handleSettingsClick}
                 >
-                    <div className={`text-[15px] font-medium font-inter leading-none ${isSettingsActive ? 'text-white' : 'text-[#484848]'}`}>
+                    <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-none">
                         Settings
                     </div>
                 </div>
