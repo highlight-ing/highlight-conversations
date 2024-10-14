@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Trash, Setting2, ForwardItem } from 'iconsax-react'
-import { IconButton } from '@/components/ui/IconButton'
+import React from 'react'
+import HighlightGreenLogo from '../Detail/Icon/HighlightGreenLogo'
 
 interface PanelHeaderProps {
   onMergeActivate: () => void
@@ -19,10 +18,12 @@ const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActiv
 
   return (
     <div className="flex items-center justify-between border-b border-tertiary">
-      {/* name changed */}
-      <h1 className="text-primary text-lg font-medium py-6 pl-5">
-        Highlight Meetings
-      </h1>
+      <div className="flex items-center">
+        <HighlightGreenLogo />
+        <h1 className="text-primary text-lg font-medium py-6 pl-5">
+          Highlight Meetings
+        </h1>
+      </div>
 
       <div className="flex items-center gap-5 py-5 pr-[30px]">
 

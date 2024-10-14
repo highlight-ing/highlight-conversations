@@ -26,7 +26,7 @@ const MyTranscriptPanel: React.FC<MyTranscriptPanelProps> = ({ setIsSettingsActi
                     animate={{ opacity: isSettingsActive ? 0.5 : 1 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <div className="text-[#484848] text-[15px] font-medium font-inter leading-none">
+                    <div className={`text-[15px] font-medium font-inter leading-none ${isSettingsActive ? 'text-[#484848]' : 'text-[#eeeeee]'}`}>
                         My Transcripts
                     </div>
                 </motion.div>
