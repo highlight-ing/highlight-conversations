@@ -20,7 +20,7 @@ const MyTranscriptPanel: React.FC<MyTranscriptPanelProps> = ({ setIsSettingsActi
             <div className="flex w-full">
                 {/* My Transcripts Button */}
                 <motion.div 
-                    className="h-7 px-2 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex cursor-pointer"
+                    className="h-7 px-2 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex cursor-pointer mr-4"
                     onClick={handleTranscriptsClick}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isSettingsActive ? 0.5 : 1 }}
