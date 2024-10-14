@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PanelHeader from '../Panel/PanelHeader'
 import ActiveConversationComponent from '../Panel/ActiveConversationComponent'
 import ConversationList from '../Panel/ConversationList'
@@ -9,7 +9,9 @@ import { useConversations } from '@/contexts/ConversationContext'
 import { isLast24Hours, isPast7Days, isOlderThan7Days } from '@/utils/dateUtils'
 import { AnimatePresence, motion } from 'framer-motion'
 
-const ConversationPanel: React.FC = () => {
+const ConversationPanel: React.FC = () => { 
+  const [isSettingsActive, setIsSettingsActive] = useState(false);
+
   const { 
     filteredConversations, 
     isMergeActive,
@@ -29,8 +31,13 @@ const ConversationPanel: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full relative">
-      <PanelHeader onMergeActivate={toggleMergeActive} isMergeActive={isMergeActive} />
-      <MyTranscriptPanel />
+      <PanelHeader 
+          onMergeActivate={toggleMergeActive} 
+          isMergeActive={isMergeActive}
+           setIsSettingsActive={setIsSettingsActive} 
+      />
+      <MyTranscriptPanel setIsSettingsActive={setIsSettingsActive}/>
+      
       <div className="flex-grow overflow-y-auto px-6 py-[39px]">
         <ActiveConversationComponent />
         <ConversationList 

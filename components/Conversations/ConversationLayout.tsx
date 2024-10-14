@@ -1,11 +1,10 @@
 import { useConversations } from '@/contexts/ConversationContext'
 import ConversationPanel from './Panel/ConversationPanel'
 import ConversationDetail from './Detail/ConversationDetail'
-
+import SettingsPage from './Settings/SettingsPage'
 
 export const ConversationLayout: React.FC = () => {
   const { selectedConversationId, conversations } = useConversations()
-
   const selectedConversation = conversations.find(conv => conv.id === selectedConversationId)
 
   return (
