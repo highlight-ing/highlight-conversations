@@ -30,8 +30,8 @@ const ConversationPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full relative">
       <PanelHeader onMergeActivate={toggleMergeActive} isMergeActive={isMergeActive} />
+      <MyTranscriptPanel />
       <div className="flex-grow overflow-y-auto px-6 py-[39px]">
-        <MyTranscriptPanel />
         <ActiveConversationComponent />
         <ConversationList 
           title={last24HoursTitle} 
