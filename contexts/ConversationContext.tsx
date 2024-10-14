@@ -385,6 +385,22 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [selectedConversations, addConversation, deleteConversation, fetchLatestData, trackEvent])
 
+  const updateConversation = useCallback(async (updatedConversation: ConversationData) => {
+    // Update the local state
+    setConversations(prevConversations => 
+      prevConversations.map(conv => 
+        conv.id === updatedConversation.id ? updatedConversation : conv
+      )
+    )
+
+    try {
+      await Highlight.conversations.updateConversation(updatedConversation)
+      console.log('Conversation updated successfully:', updatedConversation.id)
+    } catch (error) {
+      console.error('Error updating conversation:', error)
+    }
+  }, [])
+
   const contextValue: ConversationContextType = {
     conversations,
     selectedConversations,
@@ -402,7 +418,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       trackEvent('conversation_added', { })
     },
     addConversation,
-    updateConversation: Highlight.conversations.updateConversation,
+    updateConversation,
     deleteConversation,
     deleteAllConversations: async () => {
       await Highlight.conversations.deleteAllConversations()

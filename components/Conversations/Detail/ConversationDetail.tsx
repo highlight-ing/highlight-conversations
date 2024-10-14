@@ -24,7 +24,7 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
         minHeight: '100vh',
       }}
     >
-      <Header title={conversation.title} startedAt={conversation.startedAt} endedAt={conversation.endedAt} />
+      <Header conversation={conversation} />
       <Summary summary={conversation.summary} />
       <Transcript transcript={conversation.transcript} />
     </div>
