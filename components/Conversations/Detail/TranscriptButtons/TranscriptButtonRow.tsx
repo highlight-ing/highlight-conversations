@@ -6,7 +6,7 @@ interface TranscriptButtonRowProps {
   buttons: TranscriptButtonConfig[]
 }
 
-const TranscriptButtonRow: React.FC<TranscriptButtonRowProps> = ({ buttons }) => {
+export const TranscriptButtonRow: React.FC<TranscriptButtonRowProps> = ({ buttons }) => {
   return (
     <div className="my-2 mt-4 flex space-x-6">
       {buttons.map((button) => (
@@ -15,5 +15,3 @@ const TranscriptButtonRow: React.FC<TranscriptButtonRowProps> = ({ buttons }) =>
     </div>
   )
 }
-
-export default TranscriptButtonRow

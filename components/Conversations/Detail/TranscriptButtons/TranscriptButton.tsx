@@ -41,11 +41,11 @@ const TranscriptButton: React.FC<TranscriptButtonProps> = ({ type, onClick, stat
   const buttonClass = `group flex items-center transition-colors duration-300 
     ${status === 'success' ? 'animate-gentle-scale' : ''}`
 
-  const iconClass = `text-tertiary transition-colors group-hover:text-teal 
-    ${status === 'success' ? 'text-teal' : ''}`
+  const iconClass = `text-tertiary transition-colors group-hover:text-green 
+    ${status === 'success' ? 'text-green' : ''}`
 
-  const textClass = `ml-2 text-[13px] font-medium text-tertiary transition-colors group-hover:text-teal 
-    ${status === 'success' ? 'text-teal' : ''}`
+  const textClass = `ml-2 text-[13px] font-medium text-tertiary transition-colors group-hover:text-green 
+    ${status === 'success' ? 'text-green' : ''}`
 
   return (
     <button onClick={onClick} className={buttonClass}>
