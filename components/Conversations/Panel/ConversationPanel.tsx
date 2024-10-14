@@ -4,6 +4,7 @@ import ActiveConversationComponent from '../Panel/ActiveConversationComponent'
 import ConversationList from '../Panel/ConversationList'
 import EnhancedSearchBar from '@/components/Search/EnhancedSearchBar'
 import FloatingMergeControl from '../Panel/FloatingMergeControl'
+import MyTranscriptPanel from './MyTranscriptPanel'
 import { useConversations } from '@/contexts/ConversationContext'
 import { isLast24Hours, isPast7Days, isOlderThan7Days } from '@/utils/dateUtils'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -30,7 +31,7 @@ const ConversationPanel: React.FC = () => {
     <div className="flex flex-col h-full relative">
       <PanelHeader onMergeActivate={toggleMergeActive} isMergeActive={isMergeActive} />
       <div className="flex-grow overflow-y-auto px-6 py-[39px]">
-        <EnhancedSearchBar />
+        <MyTranscriptPanel />
         <ActiveConversationComponent />
         <ConversationList 
           title={last24HoursTitle} 
