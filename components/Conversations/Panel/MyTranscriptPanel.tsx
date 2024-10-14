@@ -22,7 +22,9 @@ const MyTranscriptPanel: React.FC<MyTranscriptPanelProps> = ({ setIsSettingsActi
                     className={`px-2 py-1.5 rounded-md justify-center items-center gap-2.5 flex cursor-pointer ${!isSettingsActive ? 'text-white' : 'text-gray-500'}`}
                     onClick={handleTranscriptsClick}
                 >
-                    <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-none">My Transcripts</div>
+                    <div className={`text-[15px] font-medium font-inter leading-none ${!isSettingsActive ? 'text-white' : 'text-[#484848]'}`}>
+                        My Transcripts
+                    </div>
                 </div>
 
                 {/* Settings Button */}
@@ -30,7 +32,7 @@ const MyTranscriptPanel: React.FC<MyTranscriptPanelProps> = ({ setIsSettingsActi
                    className={`px-2 py-1.5 rounded-lg justify-center items-center gap-2.5 flex cursor-pointer ${isSettingsActive ? 'text-white' : 'text-[#484848]'}`}
                     onClick={handleSettingsClick}
                 >
-                    <div className="text-[#484848] text-[15px] font-medium font-inter leading-none">Settings</div>
+                    <div className={`text-[15px] font-medium font-inter leading-none ${isSettingsActive ? 'text-white' : 'text-[#484848]'}`}>Settings</div>
                 </div>
             </div>
         </div>
