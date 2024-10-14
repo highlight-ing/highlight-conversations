@@ -121,6 +121,7 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         fadeIn: 'fadeIn 0.2s ease-in',
         fadeOut: 'fadeOut 0.2s ease-out',
+        gentleScale: 'gentleScale 0.3s ease-in-out',
       },
     },
   },
