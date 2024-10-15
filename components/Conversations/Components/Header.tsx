@@ -7,6 +7,7 @@ import ClipboardTextIcon from '../Detail/Icon/ClipboardIcon'
 import { panelFormatDate } from '@/data/conversations'
 import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { Pencil1Icon } from '@radix-ui/react-icons'
+import { ConversationsIcon } from '@/components/ui/icons/ConversationIcon' // Import your dynamic icon component
 
 interface HeaderProps {
     conversation: ConversationData
@@ -76,17 +77,7 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
                 overflow: 'hidden',
             }}
         >
-            {/* Icon on the left */}
-            <div
-                className="w-8 h-8 flex-shrink-0 rounded-full bg-[var(--neutrals-background-first-layer,#000)]"
-                style={{
-                    width: '32px',
-                    height: '32px',
-                    flexShrink: 0,
-                    borderRadius: '100px',
-                    background: 'var(--neutrals-background-first-layer, #000)',
-                }}
-            />
+
 
             {/* Title and Date Information */}
             <div className="flex-grow min-w-0">
@@ -98,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
                         onChange={handleTitleChange}
                         onBlur={handleTitleBlur}
                         onKeyDown={handleKeyDown}
-                        className="w-full bg-transparent text-[13px] font-medium text-white border-b border-white/20 focus:border-white/50 focus:outline-none"
+                        className="text-white text-2xl font-semibold font-inter leading-[31px]"
                     />
                 ) : (
                     <h1
@@ -109,6 +100,7 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
                         <Pencil1Icon className="ml-2 inline-block h-3 w-3 text-white/50 transition-colors duration-200 group-hover:text-white" />
                     </h1>
                 )}
+            
                 <span className="font-inter text-[8px] font-medium text-white opacity-30 leading-normal m-0">
                     {panelFormatDate(conversation.startedAt)} - {panelFormatDate(conversation.endedAt)}
                 </span>
