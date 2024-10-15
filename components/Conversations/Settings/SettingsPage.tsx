@@ -2,8 +2,6 @@ import React from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
 
 const SettingsPage: React.FC = () => {
-
-
   return (
     <>
       { /* Audio Transcription */ }
@@ -12,6 +10,7 @@ const SettingsPage: React.FC = () => {
             <div className="pr-[166px] justify-start items-center flex">
                 <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
                     <div className="w-6 h-6 justify-center items-center inline-flex">
+                      <SoundIcon />
                     </div>
                     <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcription</div>
                 </div>
