@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PanelHeader from '../Panel/PanelHeader';
 import ActiveConversationComponent from '../Panel/ActiveConversationComponent';
 import ConversationList from '../Panel/ConversationList';
@@ -9,9 +9,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import SettingsPage from '../Settings/SettingsPage';
 import FloatingMergeControl from '../Panel/FloatingMergeControl';
 
+// Define the possible states for audioState
+type AudioState = 'on' | 'off';
 
 const ConversationPanel: React.FC = () => {
   const [isSettingsActive, setIsSettingsActive] = useState(false);
+  const [audioState, setAudioState] = useState<AudioState>('off'); // Initially off, change to "on" when necessary
 
   const {
     filteredConversations,
@@ -29,6 +32,15 @@ const ConversationPanel: React.FC = () => {
 
   const olderConversations = filteredConversations.filter(convo => isOlderThan7Days(new Date(convo.timestamp)));
   const olderTitle = olderConversations.length > 0 ? 'Older' : undefined;
+
+  // Example: Simulate turning on/off the microphone (for testing purposes)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAudioState('on'); // Set to "on" after 2 seconds
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="flex flex-col h-full relative w-full">
@@ -50,16 +62,22 @@ const ConversationPanel: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-            className="h-full w-full flex flex-col overflow-y-auto px-6 py-6" // Ensure full width is used here
+            className="h-full w-full flex flex-col overflow-y-auto px-6 py-6"
           >
             {isSettingsActive ? (
               <SettingsPage />
             ) : (
               <>
-                <ActiveConversationComponent />
-                <ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />
-                <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />
-                <ConversationList title={olderTitle} conversations={olderConversations} />
+                {audioState === 'on' ? (
+                  <>
+                    <ActiveConversationComponent />
+                    <ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />
+                    <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />
+                    <ConversationList title={olderTitle} conversations={olderConversations} />
+                  </>
+                ) : (
+                  <ActiveConversationComponent />
+                )}
               </>
             )}
           </motion.div>

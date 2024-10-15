@@ -95,6 +95,12 @@ export default function ActiveConversationComponent() {
               {audioState === 'inactive' && 'No Audio Detected'}
               {audioState === 'active' && 'Transcribing...'}
               {audioState === 'saving' && 'Saving transcript...'}
+              {audioState === 'off' && (
+                <span className="text-[#3a3a3a]">Enable Highlight Audio transcriptions</span>
+              )}
+              {audioState === 'inactive' && (
+                <span className="text-[#3a3a3a]">No active transcription</span>
+              )}
             </div>
           </div>
         </div>
@@ -134,7 +140,7 @@ export default function ActiveConversationComponent() {
       {(audioState === 'off' || audioState === 'inactive') && (
         <button
           onClick={handleToggle}
-          className="flex flex-col w-full rounded-2xl mb-8 bg-[#00dbfb]/20 gap-2"
+          className="flex flex-col w-full rounded-xl mb-8 bg-[#00dbfb]/20 gap-2"
         >
           <div className="flex justify-center items-center w-full h-12 rounded-xl">
             <div className="text-[#00e6f5] text-[17px] font-medium font-inter leading-tight">
