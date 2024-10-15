@@ -70,6 +70,7 @@ const ConversationPanel: React.FC = () => {
               <>
                 {audioState === 'on' ? (
                   <>
+                    {/** need to change the conditional statement first thing in the morning */}
                     <ActiveConversationComponent />
                     <ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />
                     <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />
