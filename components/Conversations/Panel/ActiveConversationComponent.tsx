@@ -4,7 +4,7 @@ import { useConversations } from '@/contexts/ConversationContext';
 import { useDebouncedCallback } from 'use-debounce';
 import { Button } from '@/components/ui/button';
 import SoundIcon from '../Detail/Icon/SoundIcon';
-import MicrophoneIcon from '../Detail/Icon/MicrophoneIcon'
+import MicrophoneIcon from '../Detail/Icon/MicrophoneIcon';
 
 type AudioState = 'active' | 'inactive' | 'off' | 'noPermissions' | 'saving';
 
@@ -83,22 +83,18 @@ export default function ActiveConversationComponent() {
   };
 
   return (
-    <>
+    <div className="flex flex-col w-full h-full">
       {/* Box 1: No Audio Detected */}
-      <div className="flex flex-col rounded-2xl border mb-8 border-[#222222] gap-px py-2">
-        <div className="flex justify-between items-center py-2 px-6 pr-3 rounded-t-2xl overflow-hidden">
-          <div className="pr-[222px] justify-start items-center flex">
-            <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
-              <div className="w-6 h-6 justify-center items-center flex">
-                <div className="w-6 h-6 justify-center items-center inline-flex">
-                  <SoundIcon color={getSoundIconColor()} />
-                </div>
-              </div>
-              <div className="text-[#3a3a3a] text-[15px] font-medium font-inter leading-normal">
-                {audioState === 'inactive' && 'No Audio Detected'}
-                {audioState === 'active' && 'Transcribing...'}
-                {audioState === 'saving' && 'Saving transcript...'}
-              </div>
+      <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
+        <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
+          <div className="flex items-center gap-4 w-full">
+            <div className="flex items-center">
+              <SoundIcon color={getSoundIconColor()} />
+            </div>
+            <div className="text-[#3a3a3a] text-[15px] font-medium font-inter leading-normal">
+              {audioState === 'inactive' && 'No Audio Detected'}
+              {audioState === 'active' && 'Transcribing...'}
+              {audioState === 'saving' && 'Saving transcript...'}
             </div>
           </div>
         </div>
@@ -106,47 +102,39 @@ export default function ActiveConversationComponent() {
 
       {/* Box 2: Enable Microphone */}
       {(audioState === 'off' || audioState === 'inactive') && (
-        <div className="flex flex-col rounded-2xl border mb-8 border-[#222222] gap-px py-2">
-          <div className="flex justify-between items-center py-2 px-6 pr-3 rounded-t-2xl overflow-hidden">
-            <div className="pr-[169px] justify-start items-center flex">
-              <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
-                <div className="w-6 h-6 justify-center items-center flex">
-                  <MicrophoneIcon />
-                </div>
-                <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">
-                  Enable Microphone
-                </div>
+        <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
+          <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
+            <div className="flex items-center gap-4 w-full">
+              <div className="flex items-center">
+                <MicrophoneIcon />
+              </div>
+              <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">
+                Enable Microphone
               </div>
             </div>
-            <div className="justify-start items-center gap-4 flex">
-              <div className="justify-start items-center gap-2 flex">
-                <div className="h-[26px] justify-end items-center gap-1.5 flex">
-                  <div className="text-right text-white/40 text-xs font-normal font-publicsans leading-snug">
-                    OFF
-                  </div>
-                  <div className="w-[49px] h-[26px] relative rounded-2xl">
-                    <div className="w-[49px] h-[26px] left-0 top-0 absolute bg-black rounded-[100px]" />
-                    <div className="w-6 h-6 left-[1px] top-[1px] absolute bg-white/40 rounded-2xl shadow" />
-                  </div>
+            <div className="flex items-center gap-4">
+              <button onClick={handleToggle} className="flex items-center gap-1.5 text-xs text-white/40 font-publicsans">
+                OFF
+                <div className="w-[49px] h-[26px] relative rounded-2xl">
+                  <div className="w-[49px] h-[26px] left-0 top-0 absolute bg-black rounded-full" />
+                  <div className="w-6 h-6 left-[1px] top-[1px] absolute bg-white/40 rounded-full shadow" />
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Box 3: Enable Audio Transcriptions - Full Width, Light Blue Background */}
+      {/* Box 3: Enable Audio Transcriptions */}
       {(audioState === 'off' || audioState === 'inactive') && (
-        <div className="flex flex-col rounded-2xl mb-8 bg-[#00dbfb]/20 gap-px">
-          <div className="flex justify-center items-center py-1 px-6 pr-3 rounded-t-2xl overflow-hidden">
-            <div className="w-full h-12 px-8 py-2.5 rounded-xl justify-center items-center gap-2 flex">
-              <div className="text-[#00e6f5] text-[17px] font-medium font-inter leading-tight">
-                Enable Audio Transcriptions
-              </div>
+        <div className="flex flex-col w-full rounded-2xl mb-8 bg-[#00dbfb]/20 gap-2 py-1">
+          <div className="flex justify-center items-center w-full h-12 rounded-xl">
+            <div className="text-[#00e6f5] text-[17px] font-medium font-inter leading-tight">
+              Enable Audio Transcriptions
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

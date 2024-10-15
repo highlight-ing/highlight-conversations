@@ -8,14 +8,14 @@ export const ConversationLayout: React.FC = () => {
   const selectedConversation = conversations.find(conv => conv.id === selectedConversationId);
 
   return (
-    <div className="flex flex-col sm:flex-row h-screen">
+    <div className="flex h-screen">
       {/* Left Panel */}
-      <div className="w-full sm:w-[38%] border-r border-tertiary">
+      <div className="w-full sm:w-[38%] border-r border-tertiary flex-shrink-0 h-full">
         <ConversationPanel />
       </div>
 
       {/* Right Panel */}
-      <div className="w-full sm:w-[62%]">
+      <div className="w-full sm:w-[62%] h-full flex-grow">
         <ConversationDetail conversation={selectedConversation} />
       </div>
     </div>
