@@ -5,7 +5,7 @@ const SettingsPage: React.FC = () => {
   return (
     <>
       { /* Audio Transcription */ }
-       <div className="flex flex-col rounded-2xl border mb-8 border-[#222222] gap-px">
+       <div className="flex flex-col rounded-2xl border mb-8 border-[#222222] gap-px py-2">
         <div className="flex justify-between items-center py-3 px-6 pr-3 rounded-t-2xl overflow-hidden">
             <div className="pr-[166px] justify-start items-center flex">
                 <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
