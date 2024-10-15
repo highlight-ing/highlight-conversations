@@ -127,7 +127,7 @@ export default function ActiveConversationComponent() {
 
       {/* Box 3: Enable Audio Transcriptions */}
       {(audioState === 'off' || audioState === 'inactive') && (
-        <div className="flex flex-col w-full rounded-2xl mb-8 bg-[#00dbfb]/20 gap-2 py-1">
+        <div className="flex flex-col w-full rounded-2xl mb-8 bg-[#00dbfb]/20 gap-2">
           <div className="flex justify-center items-center w-full h-12 rounded-xl">
             <div className="text-[#00e6f5] text-[17px] font-medium font-inter leading-tight">
               Enable Audio Transcriptions
