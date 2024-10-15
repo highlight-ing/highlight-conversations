@@ -49,7 +49,7 @@ const ConversationPanel: React.FC = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }} 
             className="h-full overflow-y-auto px-6 py-[39px]"
           >
             {isSettingsActive ? (
@@ -81,7 +81,7 @@ const ConversationPanel: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }} 
             className="absolute bottom-0 left-0 right-0"
           >
             <FloatingMergeControl />

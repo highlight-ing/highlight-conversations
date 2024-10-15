@@ -3,6 +3,31 @@ import React from 'react';
 const SettingsPage: React.FC = () => {
   return (
     <>
+      { /* Audio Transcription */ }
+       <div className="flex flex-col rounded-2xl border mb-8 border-[#222222] gap-px py-1">
+        <div className="flex justify-between items-center py-3 px-6 pr-3 rounded-t-2xl overflow-hidden">
+            <div className="pr-[166px] justify-start items-center flex">
+                <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
+                    <div className="w-6 h-6 justify-center items-center flex">
+                        <div className="w-6 h-6 relative">
+                        </div>
+                    </div>
+                    <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcription</div>
+                </div>
+            </div>
+            <div className="justify-start items-center gap-2 flex">
+                <div className="h-[26px] justify-end items-center gap-1.5 flex">
+                    <div className="text-right text-white/40 text-xs font-normal font-['Public Sans'] leading-snug">OFF</div>
+                    <div className="w-[49px] h-[26px] relative rounded-2xl">
+                        <div className="w-[49px] h-[26px] left-0 top-0 absolute bg-black rounded-[100px]" />
+                        <div className="w-6 h-6 left-[1px] top-[1px] absolute bg-white/40 rounded-2xl shadow" />
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+
+
       {/* Auto Save */}
       <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
