@@ -3,6 +3,7 @@ import AnimatedVoiceSquare from '@/components/ui/icons/AnimatedVoiceSquare'
 import { useConversations } from '@/contexts/ConversationContext'
 import { useDebouncedCallback } from 'use-debounce'
 import { Button } from '@/components/ui/button' // Make sure to import the Button component
+import SoundIcon from '../Detail/Icon/SoundIcon'
 
 type AudioState = 'active' | 'inactive' | 'off' | 'noPermissions' | 'saving'
 
@@ -111,31 +112,20 @@ export default function ActiveConversationComponent() {
   `
 
   return (
-    <div className={containerClasses}>
-      <div className="flex w-full items-center gap-2">
-        <div className="flex-shrink-0">
-          <AnimatedVoiceSquare
-            width={24}
-            height={24}
-            backgroundColor="transparent"
-            lineColor={visualState === 'active' || visualState === 'saving' ? ACTIVE_LINE_COLOR : INACTIVE_LINE_COLOR}
-            shouldAnimate={visualState === 'active' || visualState === 'saving'}
-            transitionDuration={2500}
-          />
+        <div className="flex flex-col rounded-2xl border mb-8 border-[#222222] gap-px py-2">
+            <div className="flex justify-between items-center py-3 px-6 pr-3 rounded-t-2xl overflow-hidden">
+        <div className="pr-[222px] justify-start items-center flex">
+            <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
+                <div className="w-6 h-6 justify-center items-center flex">
+                <div className="w-6 h-6 justify-center items-center inline-flex">
+                        <SoundIcon />
+                    </div>
+                </div>
+                <div className="text-[#3a3a3a] text-[15px] font-medium font-inter leading-normal">No active transcription</div>
+            </div>
         </div>
-        {getContent()}
-      </div>
-      <div className="flex items-center">
-        {(visualState === 'active' || visualState === 'saving') && (
-          <Button
-            onClick={saveCurrentConversation}
-            disabled={isSaving}
-            className="px-5 h-[24px] text-[13px] text-primary bg-white/10 rounded-[6px] leading-tight"
-          >
-            {isSaving ? 'Saving...' : 'View'}
-          </Button>
-        )}
-      </div>
     </div>
+</div>
+
   )
 }
