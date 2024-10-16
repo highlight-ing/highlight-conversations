@@ -5,10 +5,8 @@ import CalendarIcon from '../Icon/CalendarIcon'
 import VideoPlayIcon from '../Icon/VideoPlayIcon'
 import MicrophoneIcon from '../Icon/MicrophoneIcon'
 import getSoundIconColor from '../../Panel/ActiveConversationComponent'
-import { Mic } from 'lucide-react'
 
-// need to put icons and sort the code 
-// comment on these 
+
 const TranscriptionDisabled: React.FC = () => (
     <div className="h-[900px] relative bg-[#0f0f0f]">
         <div className="left-[84px] top-[48px] absolute justify-start items-center gap-[13px] inline-flex">
@@ -23,6 +21,7 @@ const TranscriptionDisabled: React.FC = () => (
             Highlight only captures audio for text-to-speech transcription
         </div>
 
+        { /* first box */ }
         <div className="h-[168px] p-5 left-[64px] top-[176px] absolute rounded-[22px] border border-[#222222]/50 flex-col justify-start items-start gap-4 inline-flex">
             <div className="w-[673px] h-6 justify-between items-start inline-flex">
                 <div className="pr-[378px] justify-start items-center flex">
@@ -39,11 +38,17 @@ const TranscriptionDisabled: React.FC = () => (
                 </div>
         </div>
         <div className="self-stretch pt-4 border-t border-white/0 justify-start items-center gap-2.5 inline-flex">
-        <div className="w-[672px] text-[#6e6e6e] text-[15px] font-normal font-inter leading-normal">No audio is captured or stored anywhere<br/>All transcriptions happen on your computer and can not be seen or accessed by anyone<br/>No data is passed to AIs unless you attach them to a chat</div>
+            <div className="w-[672px] text-[#6e6e6e] text-[15px] font-normal font-inter leading-normal">
+                <ul className="list-disc pl-6">
+                    <li>No audio is captured or stored anywhere</li>
+                    <li>All transcriptions happen on your computer and cannot be seen or accessed by anyone</li>
+                    <li>No data is passed to AIs unless you attach them to a chat</li>
+                </ul>
+            </div>
         </div>
     </div>
 
-    {/* */}
+    {/* second box */}
     <div className="h-36 p-5 left-[64px] top-[368px] absolute rounded-[22px] border border-[#222222]/50 flex-col justify-start items-start gap-4 inline-flex">
         <div className="w-[673px] h-6 justify-between items-start inline-flex">
             <div className="pr-[367px] justify-start items-center flex">
@@ -66,7 +71,7 @@ const TranscriptionDisabled: React.FC = () => (
         </div>
     </div>
 
-
+    { /* third box */ }
     <div className="h-36 p-5 left-[64px] top-[536px] absolute rounded-[22px] border border-[#222222]/50 flex-col justify-start items-start gap-4 inline-flex">
         <div className="w-[673px] h-6 justify-between items-start inline-flex">
             <div className="pr-[339px] justify-start items-center flex">
@@ -90,7 +95,7 @@ const TranscriptionDisabled: React.FC = () => (
         </div>
     </div>
 
-
+    { /* fourth box */ }
     <div className="h-36 p-5 left-[64px] top-[704px] absolute rounded-[22px] border border-[#222222]/50 flex-col justify-start items-start gap-4 inline-flex">
         <div className="w-[673px] h-6 justify-between items-start inline-flex">
             <div className="pr-[357px] justify-start items-center flex">
