@@ -158,11 +158,9 @@ export const getTextPredictionFromHighlight = async (
 
     // Parse the accumulated text as JSON
     const parsedData: ProcessedConversationData = JSON.parse(accumulatedText)
-    console.log('Parsed data:', parsedData)
     return parsedData
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      console.log('Text prediction was aborted')
       throw error
     }
     console.error('Error in text prediction or parsing:', error)
@@ -220,7 +218,6 @@ export const requestAudioPermissionEvents = async (): Promise<void> => {
   if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
     try {
       await window.highlight.internal.requestAudioPermissionEvents()
-      console.log('Audio permission events requested successfully')
     } catch (error) {
       console.error('Error sending audio permission request:', error)
       throw error
@@ -231,9 +228,7 @@ export const requestAudioPermissionEvents = async (): Promise<void> => {
 }
 
 export const setupSimpleAudioPermissionListener = () => {
-  console.log('Setting up simple audio permission listener')
   Highlight.app.addListener('onAudioPermissionUpdate', (event: any) => {
-    console.log('Audio permission event received:', event)
     // If you know the exact structure of the event, you can log specific properties
     // For example, if there's a hasPermission property:
     // console.log('Audio permission changed:', event.hasPermission);
@@ -342,7 +337,6 @@ export const deleteAllConversationsInAppStorage = async (): Promise<void> => {
   if (appStorage) {
     await appStorage.whenHydrated()
     appStorage.delete(CONVERSATIONS_STORAGE_KEY)
-    console.log('Deleted conversations: ', appStorage.get(CONVERSATIONS_STORAGE_KEY))
   }
 }
 

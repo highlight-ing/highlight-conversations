@@ -10,7 +10,6 @@ export async function getShareLink(conversation: ConversationData, userId: strin
             throw new Error('User ID not found')
         }
         conversation.userId = userId
-        console.log('conversation', conversation)
         return await shareConversation(conversation)
     } catch (error) {
         console.error('Error sharing conversation:', error)

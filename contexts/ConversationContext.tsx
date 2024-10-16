@@ -61,7 +61,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       'onCurrentConversationUpdate',
       (conversation: string) => {
         if (isAudioOn) {
-          console.log('New current conversation:', conversation)
           setCurrentConversation(conversation)
         }
       }
@@ -71,7 +70,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       'onConversationsUpdated',
       (updatedConversations: ConversationData[]) => {
         if (isAudioOn) {
-          console.log('Updated conversations:', updatedConversations)
           const processedConversations = updatedConversations.map((conv) => ({
             ...conv,
             timestamp: new Date(conv.timestamp),
@@ -96,7 +94,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const removeAutoSaveUpdatedListener = Highlight.app.addListener(
       'onConversationsAutoSaveUpdated',
       (time: number) => {
-        console.log('Updated auto-save time:', time)
         const validTime = time < MIN_AUTO_SAVE_TIME ? DEFAULT_AUTO_SAVE_TIME : time
         setAutoSaveTime(validTime)
         // Removed the backend sync to avoid potential infinite loop
@@ -106,13 +103,11 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const removeAutoClearUpdatedListener = Highlight.app.addListener(
       'onConversationsAutoClearUpdated',
       (days: number) => {
-        console.log('Updated auto-clear days:', days)
         setAutoClearDays(days)
       }
     )
 
     const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => {
-      console.log('Saving current conversation')
     })
 
     const removeConversationSavedListener = Highlight.app.addListener('onConversationSaved', () => {
@@ -189,35 +184,25 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }
 
   const fetchLatestData = useCallback(async () => {
-    console.log('Fetching latest data...')
-
     const { allConversations, appStorageConversations } = await fetchConversations()
-    console.log('All conversations from API:', allConversations)
-    console.log('All conversations from AppStorage:', appStorageConversations)
 
     const mergedConversations = mergeConversations(allConversations, appStorageConversations)
-    console.log('Merged conversations:', mergedConversations)
 
     await updateConversationsData(mergedConversations)
     setConversations(mergedConversations)
 
     const { currentConv, elapsedTime } = await fetchAdditionalData()
-    console.log('Current conversation:', currentConv)
     setCurrentConversation(currentConv)
 
-    console.log('Elapsed time:', elapsedTime)
     setElapsedTime(elapsedTime)
 
-    console.log('Finished fetching latest data')
   }, [])
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      console.log('Fetching initial data...')
       await fetchLatestData()
 
       const autoSaveTime = await Highlight.conversations.getAutoSaveTime()
-      console.log('Auto-save time:', autoSaveTime)
       const validAutoSaveTime = autoSaveTime < MIN_AUTO_SAVE_TIME ? DEFAULT_AUTO_SAVE_TIME : autoSaveTime
       setAutoSaveTime(validAutoSaveTime)
       // Sync the valid time back to the backend if it was adjusted
@@ -226,12 +211,9 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       const autoClearDays = await Highlight.conversations.getAutoClearDays()
-      console.log('Auto-clear days:', autoClearDays)
       setAutoClearDays(autoClearDays !== 0 ? autoClearDays : AUTO_CLEAR_DAYS_DEFAULT)
 
       await autoClearConversations()
-
-      console.log('Finished fetching initial data')
     }
     fetchInitialData()
 // eslint-disable-next-line react-hooks/exhaustive-deps

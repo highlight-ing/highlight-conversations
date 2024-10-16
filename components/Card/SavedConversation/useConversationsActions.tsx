@@ -88,7 +88,6 @@ export const useConversationActions = (
       trackEvent('Shared (New Link)', {})
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
-        console.log('Share operation was aborted')
         setShareStatus('error')
         setShareMessage({ type: 'error', message: 'Share operation timed out' })
       } else {
