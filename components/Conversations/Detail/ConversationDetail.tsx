@@ -12,6 +12,8 @@ interface ConversationDetailProps {
 const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
   if (!conversation) {
     // change this into different scenarios 
+    // Once the transcription is disabled & for Mac Users, if we have recording access but don't have microphone access : <TranscriptionDisabled />
+    // 
     return (
       <TranscriptionDisabled />
     )

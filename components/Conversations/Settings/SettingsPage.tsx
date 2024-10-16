@@ -75,7 +75,7 @@ const SettingsPage: React.FC = () => {
       </div>
 
     {/* Cloud Transcript */}
-    <div className="flex flex-col gap-px mb-8">
+ <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Cloud Transcript</div>
           <div className="h-[26px] justify-end items-center gap-1.5 flex">
@@ -86,7 +86,7 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
         </div>
-
+   
         <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
           <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">
             Allow transcription to work in the cloud whenever your device is unable to transcribe your conversations locally. No audio or text transcription is stored anywhere to protect your privacy.
