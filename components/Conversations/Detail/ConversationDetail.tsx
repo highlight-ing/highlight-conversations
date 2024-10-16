@@ -3,6 +3,7 @@ import { ConversationData } from '@/data/conversations'
 import Header from '../Components/Header'
 import Transcript from '../Components/Transcript'
 import Summary from '../Components/Summary'
+import TranscriptionDisabled from './ConversationDetail/TranscriptionDisabled'
 
 interface ConversationDetailProps {
   conversation: ConversationData | undefined
@@ -10,10 +11,9 @@ interface ConversationDetailProps {
 
 const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
   if (!conversation) {
+    // change this into different scenarios 
     return (
-      <div className="flex justify-center items-center h-screen">
-        <h1 className="text-3xl font-bold text-gray-800">Select a conversation to view details</h1>
-      </div>
+      <TranscriptionDisabled />
     )
   }
 
