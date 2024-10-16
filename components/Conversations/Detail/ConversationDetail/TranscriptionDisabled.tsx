@@ -4,6 +4,7 @@ import ShieldTickIcon from '../Icon/ShieldTickIcon'
 import CalendarIcon from '../Icon/CalendarIcon'
 import VideoPlayIcon from '../Icon/VideoPlayIcon'
 import MicrophoneIcon from '../Icon/MicrophoneIcon'
+import BigSoundIcon from '../Icon/BigSoundIcon'
 import getSoundIconColor from '../../Panel/ActiveConversationComponent'
 
 
@@ -12,7 +13,7 @@ const TranscriptionDisabled: React.FC = () => (
         <div className="left-[84px] top-[48px] absolute justify-start items-center gap-[13px] inline-flex">
             <div className="w-8 h-8 justify-center items-center flex">
                 <div className="w-8 h-8 relative">
-                    <SoundIcon color={getSoundIconColor()} />
+                    <BigSoundIcon />
                 </div>
             </div>
             <div className="text-white text-2xl font-semibold font-inter leading-[31px]">Highlight Audio Transcription</div>
