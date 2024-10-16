@@ -1,6 +1,7 @@
 import React from 'react'
 
-
+// need to put icons and sort the code 
+// comment on these 
 const TranscriptionDisabled: React.FC = () => (
     <div className="h-[900px] relative bg-[#0f0f0f]">
         <div className="left-[84px] top-[48px] absolute justify-start items-center gap-[13px] inline-flex">
@@ -32,52 +33,60 @@ const TranscriptionDisabled: React.FC = () => (
         </div>
     </div>
     <div className="h-36 p-5 left-[64px] top-[368px] absolute rounded-[22px] border border-[#222222]/50 flex-col justify-start items-start gap-4 inline-flex">
-    <div className="w-[673px] h-6 justify-between items-start inline-flex">
-    <div className="pr-[367px] justify-start items-center flex">
-    <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
-    <div className="w-6 h-6 justify-center items-center flex">
-    <div className="w-6 h-6 relative">
-    </div>
-    </div>
-    <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">Automatically capture meeting notes</div>
-    </div>
-    </div>
-    </div>
-    <div className="self-stretch pt-4 border-t border-white/0 justify-start items-center gap-2.5 inline-flex">
-    <div className="w-[672px] text-[#6e6e6e] text-[15px] font-normal font-inter leading-normal">Highlight automatically detects when your meetings are happening and gets you automatic meeting notes that are totally private to you by default and shareable with a click.</div>
-    </div>
+        <div className="w-[673px] h-6 justify-between items-start inline-flex">
+            <div className="pr-[367px] justify-start items-center flex">
+                <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
+                <div className="w-6 h-6 justify-center items-center flex">
+                    <div className="w-6 h-6 relative">
+                    </div>
+                </div>
+                    <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">
+                        Automatically capture meeting notes
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div className="self-stretch pt-4 border-t border-white/0 justify-start items-center gap-2.5 inline-flex">
+            <div className="w-[672px] text-[#6e6e6e] text-[15px] font-normal font-inter leading-normal">
+                Highlight automatically detects when your meetings are happening and gets you automatic meeting notes that are totally private to you by default and shareable with a click.
+            </div>
+        </div>
     </div>
     <div className="h-36 p-5 left-[64px] top-[536px] absolute rounded-[22px] border border-[#222222]/50 flex-col justify-start items-start gap-4 inline-flex">
-    <div className="w-[673px] h-6 justify-between items-start inline-flex">
-    <div className="pr-[339px] justify-start items-center flex">
-    <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
-    <div className="w-6 h-6 justify-center items-center flex">
-    <div className="w-6 h-6 relative">
-    </div>
-    </div>
-    <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">Transcribe podcasts and youtube videos</div>
-    </div>
-    </div>
-    </div>
-    <div className="self-stretch pt-4 border-t border-white/0 justify-start items-center gap-2.5 inline-flex">
-    <div className="w-[672px] text-[#6e6e6e] text-[15px] font-normal font-inter leading-normal">With audio transcription enabled, Highlight will automatically capture and transcribe anything you’re listening to so you can chat with it using Highlight AI.</div>
-    </div>
+        <div className="w-[673px] h-6 justify-between items-start inline-flex">
+            <div className="pr-[339px] justify-start items-center flex">
+                <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
+                <div className="w-6 h-6 justify-center items-center flex">
+                <div className="w-6 h-6 relative">
+                </div>
+                </div>
+                    <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">
+                        Transcribe podcasts and youtube videos
+                    </div>
+                </div>
+        </div>
+        </div>
+        <div className="self-stretch pt-4 border-t border-white/0 justify-start items-center gap-2.5 inline-flex">
+        <div className="w-[672px] text-[#6e6e6e] text-[15px] font-normal font-inter leading-normal">With audio transcription enabled, Highlight will automatically capture and transcribe anything you’re listening to so you can chat with it using Highlight AI.</div>
+        </div>
     </div>
     <div className="h-36 p-5 left-[64px] top-[704px] absolute rounded-[22px] border border-[#222222]/50 flex-col justify-start items-start gap-4 inline-flex">
-    <div className="w-[673px] h-6 justify-between items-start inline-flex">
-    <div className="pr-[357px] justify-start items-center flex">
-    <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
-    <div className="w-6 h-6 justify-center items-center flex">
-    <div className="w-6 h-6 relative">
-    </div>
-    </div>
-    <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">Capture lecture notes and voice notes </div>
-    </div>
-    </div>
-    </div>
-    <div className="self-stretch pt-4 border-t border-white/0 justify-start items-center gap-2.5 inline-flex">
-    <div className="w-[672px] text-[#6e6e6e] text-[15px] font-normal font-inter leading-normal">Capture your microphone audio to capture lecture notes, in person conversations, and voice notes that you can instantly chat with and format with Highlight AI.</div>
-    </div>
+        <div className="w-[673px] h-6 justify-between items-start inline-flex">
+            <div className="pr-[357px] justify-start items-center flex">
+                <div className="self-stretch pl-0.5 justify-start items-center gap-4 inline-flex">
+                    <div className="w-6 h-6 justify-center items-center flex">
+                        <div className="w-6 h-6 relative">
+                        </div>
+                    </div>
+                <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">Capture lecture notes and voice notes </div>
+                </div>
+            </div>
+        </div>
+        <div className="self-stretch pt-4 border-t border-white/0 justify-start items-center gap-2.5 inline-flex">
+            <div className="w-[672px] text-[#6e6e6e] text-[15px] font-normal font-inter leading-normal">
+                Capture your microphone audio to capture lecture notes, in person conversations, and voice notes that you can instantly chat with and format with Highlight AI.
+            </div>
+        </div>
     </div>
 </div>
 )
