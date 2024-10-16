@@ -14,7 +14,7 @@ type AudioState = 'on' | 'off';
 
 const ConversationPanel: React.FC = () => {
   const [isSettingsActive, setIsSettingsActive] = useState(false);
-  const [audioState, setAudioState] = useState<AudioState>('off'); // Initially off, change to "on" when necessary
+  const [audioState, setAudioState] = useState<AudioState>('off'); 
 
   const {
     filteredConversations,

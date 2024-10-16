@@ -1,7 +1,7 @@
 import React from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
-import { ConversationsIcon } from '@/components/ui/icons/ConversationIcon'
+import VoiceSquareIcon from '../Detail/Icon/VoiceSquareIcon'
 import { truncateText } from '@/utils/textUtils'
 
 interface ConversationEntryProps {
@@ -54,7 +54,7 @@ export function ConversationEntry({
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <ConversationsIcon width={24} height={24} color="#4D8C6E" />
+          <VoiceSquareIcon />
           <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
         </div>
         {!isMergeActive && (
@@ -68,11 +68,6 @@ export function ConversationEntry({
             Share
           </button>
         )}
-      </div>
-      <p className="text-[13px] text-secondary line-clamp-2">{previewText}</p>
-      <div className="flex justify-between items-center mt-2 text-[12px] text-muted-foreground">
-        <span>{getWordCount(conversation.transcript)} words</span>
-        {/* <span>{formatDate(conversation.timestamp)}</span> */}
       </div>
     </div>
   )
