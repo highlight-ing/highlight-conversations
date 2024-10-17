@@ -12,6 +12,8 @@ import NoAudioDetected from './ConversationDetail/NoAudio'
 // TODO: 
 // 1. Finish all the possible pages e.g. NoAudioDetected ... etc
 // 2. Complete this logic and test things 
+// 3. Work on transcript 
+// 4. settings button padding 
 
 type AudioState = 'active' | 'inactive' | 'off' | 'completed';
 
