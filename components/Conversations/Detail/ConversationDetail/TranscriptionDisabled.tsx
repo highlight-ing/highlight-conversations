@@ -9,7 +9,7 @@ import getSoundIconColor from '../../Panel/ActiveConversationComponent'
 
 
 const TranscriptionDisabled: React.FC = () => (
-    <div className="h-[900px] relative bg-[#0f0f0f]">
+    <div className="h-[900px] relative">
         <div className="left-[84px] top-[48px] absolute justify-start items-center gap-[13px] inline-flex">
             <div className="w-8 h-8 justify-center items-center flex">
                 <div className="w-8 h-8 relative">
