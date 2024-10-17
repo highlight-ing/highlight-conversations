@@ -77,8 +77,6 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
                 overflow: 'hidden',
             }}
         >
-
-
             {/* Title and Date Information */}
             <div className="flex-grow min-w-0">
                 {isEditing ? (
@@ -92,15 +90,20 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
                         className="text-white text-2xl font-semibold font-inter leading-[31px]"
                     />
                 ) : (
-                    <h1
-                        className="font-inter text-[13px] font-medium text-white leading-tight m-0 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer group"
-                        onClick={() => setIsEditing(true)}
-                    >
-                        {title}
-                        <Pencil1Icon className="ml-2 inline-block h-3 w-3 text-white/50 transition-colors duration-200 group-hover:text-white" />
-                    </h1>
+                    <>
+                        <h1
+                            className="text-white text-2xl font-semibold font-inter leading-[31px]"
+                            onClick={() => setIsEditing(true)}
+                        >
+                            {title}
+                            <Pencil1Icon className="ml-2 inline-block h-3 w-3 text-white/50 transition-colors duration-200 group-hover:text-white" />
+                        </h1>
+
+         
+          
+                    </>
                 )}
-            
+
                 <span className="font-inter text-[8px] font-medium text-white opacity-30 leading-normal m-0">
                     {panelFormatDate(conversation.startedAt)} - {panelFormatDate(conversation.endedAt)}
                 </span>
@@ -116,9 +119,25 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
                     flexShrink: 0,
                 }}
             >
-                <ClipboardTextIcon />
                 <TrashIcon />
-                <FlashIcon />
+                <div className="flex items-center gap-2 mt-2">
+                            <div className="h-8 px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 inline-flex">
+                                <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
+                                    Open
+                                </div>
+                            </div>
+                            <div className="h-8 px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 inline-flex">
+                                <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
+                                    Copy Link
+                                </div>
+                            </div>
+
+                            <div className="w-6 h-6 opacity-40 justify-center items-center inline-flex">
+                                <div className="w-6 h-6 relative">
+                                    {/* You can add an icon or image here */}
+                                </div>
+                            </div>
+                        </div>
             </div>
         </div>
     )

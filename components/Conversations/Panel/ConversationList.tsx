@@ -35,7 +35,9 @@ const ConversationList: React.FC<ConversationListProps> = ({
               isFirst={index === 0}
               isLast={index === conversations.length - 1}
               isMergeActive={isMergeActive}
-              isSelected={selectedConversations.some(conv => conv.id === conversation.id)}
+              isSelected={selectedConversations.some(
+                (conv) => conv.id === conversation.id
+              )}
             />
           </motion.div>
         ))}

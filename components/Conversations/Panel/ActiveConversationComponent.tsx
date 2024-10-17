@@ -92,7 +92,7 @@ export default function ActiveConversationComponent() {
             <div className="flex items-center">
               <div className="flex items-center gap-4">
                 <div className="w-6 h-6 flex justify-center items-center">
-                  <SoundIcon color="#4CEDA0" />
+                  <SoundIcon color={getSoundIconColor()} />
                 </div>
                 <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">
                   Transcribing Audio...
