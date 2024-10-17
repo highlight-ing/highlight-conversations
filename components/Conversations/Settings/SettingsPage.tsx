@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
+import { useConversations } from '@/contexts/ConversationContext'
+
 
 type AudioState = 'active' | 'inactive' | 'off';
 
 const SettingsPage: React.FC = () => {
   const [audioState, setAudioState] = useState<AudioState>('inactive');
-  const [isAudioOn, setIsAudioOn] = useState(false); 
+  const { micActivity, elapsedTime, isSaving, isAudioOn, setIsAudioOn, saveCurrentConversation } = useConversations();
+
 
   const handleToggle = () => {
     const newIsOn = !isAudioOn; 
@@ -20,7 +23,6 @@ const SettingsPage: React.FC = () => {
   return (
     <>
       { /* Audio Transcription */ }
-      <div className="flex flex-col w-full h-full">
       <div className="w-full h-14 px-5 py-4 rounded-2xl border border-[#4ceda0]/20 flex flex-col justify-start items-start gap-4">
         <div className="w-full h-6 flex justify-between items-center">
           <div className="flex items-center">
@@ -34,22 +36,33 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-[26px] flex justify-end items-center gap-1.5">
-              <div className="text-right text-white/40 text-xs font-normal font-['Public Sans'] leading-snug">
-                {isAudioOn ? 'ON' : 'OFF'}
-              </div>
-              <button
-                onClick={handleToggle}
-                className="w-[49px] h-[26px] relative rounded-2xl flex items-center"
+            <button
+              onClick={handleToggle}
+              className="flex items-center gap-1.5 text-xs font-publicsans"
+            >
+              <div
+                className={`text-right ${
+                  audioState !== 'off' ? 'text-[#00cc88]' : 'text-white/40'
+                } text-xs font-normal font-['Public Sans'] leading-snug`}
               >
-                <div className={`w-[49px] h-[26px] absolute ${isAudioOn ? 'bg-[#00cc88]' : 'bg-[#484848]'} rounded-full`} />
-                <div className={`w-6 h-6 absolute top-[1px] bg-white rounded-full shadow transition-transform ${isAudioOn ? 'left-[24px]' : 'left-[1px]'}`} />
-              </button>
-            </div>
+                {audioState !== 'off' ? 'ON' : 'OFF'}
+              </div>
+              <div className="w-[49px] h-[26px] relative rounded-2xl">
+                <div
+                  className={`w-[49px] h-[26px] left-0 top-0 absolute ${
+                    audioState !== 'off' ? 'bg-[#00cc88]' : 'bg-black'
+                  } rounded-full`}
+                />
+                <div
+                  className={`w-6 h-6 absolute ${
+                    audioState !== 'off' ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
+                  } top-[1px] rounded-full shadow`}
+                />
+              </div>
+            </button>
           </div>
         </div>
       </div>
-    </div>
 
 
       {/* Auto Save */}
