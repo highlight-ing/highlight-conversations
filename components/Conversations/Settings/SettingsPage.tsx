@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
-import { useConversations } from '@/contexts/ConversationContext'
+import { useConversations } from '@/contexts/ConversationContext';
 
 
 type AudioState = 'active' | 'inactive' | 'off';
