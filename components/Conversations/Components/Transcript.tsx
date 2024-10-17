@@ -2,13 +2,19 @@ import React from 'react'
 import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons'
 import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow'
 
-interface TranscriptProps {
-  transcript: string
+interface Message {
+  time: string;
+  sender: 'Me' | 'Others';
+  text: string; 
 }
 
-const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
+interface TranscriptProps {
+  messages?: Message[]; 
+}
+
+const Transcript: React.FC<TranscriptProps> = ({ messages = [] }) => {
   const buttons = useTranscriptButtons({
-    message: transcript,
+    message: messages.map(msg => msg.text).join('\n'),
     buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback'],
   })
 
@@ -36,14 +42,15 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
       >
         Transcript
       </h2>
-      <p
-        className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter"
-        style={{
-          alignSelf: 'stretch',
-        }}
-      >
-        {transcript}
-      </p>
+      {messages.map((message, index) => (
+        <div key={index} 
+            className={`whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter 
+            ${message.sender === 'Me' ? 'text-blue-500' : 'text-gray-500'}`
+        }>
+          <span className="text-xs text-gray-400">{message.time} - {message.sender}:</span>
+          <p>{message.text}</p>
+        </div>
+      ))}
       <TranscriptButtonRow buttons={buttons} />
     </div>
   )

@@ -86,7 +86,6 @@ export default function ActiveConversationComponent() {
     <div className="flex flex-col w-full h-full">
       {/* Box 1 */}
       {audioState === 'active' ? (
-        // New layout when microphone is enabled and audio is active
         <div className="w-full h-14 px-5 py-4 rounded-2xl border border-[#4ceda0]/20 flex flex-col justify-start items-start gap-4">
           <div className="w-full h-6 flex justify-between items-center">
             <div className="flex items-center">
@@ -104,10 +103,13 @@ export default function ActiveConversationComponent() {
                 <div className="text-right text-white/40 text-xs font-normal font-['Public Sans'] leading-snug">
                   ON
                 </div>
-                <div className="w-[49px] h-[26px] relative rounded-2xl">
+                <button
+                  onClick={handleToggle}
+                  className="w-[49px] h-[26px] relative rounded-2xl flex items-center"
+                >
                   <div className="w-[49px] h-[26px] absolute bg-[#00cc88] rounded-full" />
-                  <div className="w-6 h-6 absolute left-[24px] top-[1px] bg-white rounded-full shadow" />
-                </div>
+                  <div className={`w-6 h-6 absolute top-[1px] bg-white rounded-full shadow transition-transform ${isAudioOn ? 'left-[24px]' : 'left-[1px]'}`} />
+                </button>
               </div>
             </div>
           </div>
