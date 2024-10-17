@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
 import { useConversations } from '@/contexts/ConversationContext';
 
-
 type AudioState = 'active' | 'inactive' | 'off';
 
 const SettingsPage: React.FC = () => {
@@ -23,7 +22,7 @@ const SettingsPage: React.FC = () => {
   return (
     <>
       { /* Audio Transcription */ }
-      <div className="w-full h-14 px-5 py-4 rounded-2xl border border-[#4ceda0]/20 flex flex-col justify-start items-start gap-4">
+      <div className="w-full h-14 px-5 py-4 mb-8 rounded-2xl border border-[#4ceda0]/20 flex flex-col justify-start items-start gap-4">
         <div className="w-full h-6 flex justify-between items-center">
           <div className="flex items-center">
             <div className="flex items-center gap-4">
@@ -112,7 +111,7 @@ const SettingsPage: React.FC = () => {
       </div>
 
     {/* Cloud Transcript */}
- <div className="flex flex-col gap-px mb-8">
+    <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Cloud Transcript</div>
           <div className="h-[26px] justify-end items-center gap-1.5 flex">
