@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import SettingsPage from '../Settings/SettingsPage';
 import FloatingMergeControl from '../Panel/FloatingMergeControl';
 
+
 // Define the possible states for audioState
 type AudioState = 'on' | 'off';
 
@@ -20,6 +21,7 @@ const ConversationPanel: React.FC = () => {
     filteredConversations,
     isMergeActive,
     toggleMergeActive,
+    isAudioOn
   } = useConversations();
 
   const last24HoursConversations = filteredConversations.filter(convo => isLast24Hours(new Date(convo.timestamp)));
@@ -68,16 +70,14 @@ const ConversationPanel: React.FC = () => {
               <SettingsPage />
             ) : (
               <>
-                {audioState === 'on' ? (
+                <ActiveConversationComponent />
+                {isAudioOn && (
                   <>
-                    {/** need to change the conditional statement first thing in the morning */}
-                    <ActiveConversationComponent />
                     <ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />
-                    <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />
-                    <ConversationList title={olderTitle} conversations={olderConversations} />
+                    {/* Uncomment these if you want to show them as well */}
+                    {/* <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} /> */}
+                    {/* <ConversationList title={olderTitle} conversations={olderConversations} /> */}
                   </>
-                ) : (
-                  <ActiveConversationComponent />
                 )}
               </>
             )}

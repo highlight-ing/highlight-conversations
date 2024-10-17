@@ -5,10 +5,12 @@ import { useConversations } from '@/contexts/ConversationContext';
 type AudioState = 'active' | 'inactive' | 'off';
 
 const SettingsPage: React.FC = () => {
+  // Audio Transcription State 
   const [audioState, setAudioState] = useState<AudioState>('inactive');
+  // Conversation State 
   const { micActivity, elapsedTime, isSaving, isAudioOn, setIsAudioOn, saveCurrentConversation } = useConversations();
 
-
+  // Toggle Audio Transcription 
   const handleToggle = () => {
     const newIsOn = !isAudioOn; 
     setIsAudioOn(newIsOn);
@@ -34,6 +36,7 @@ const SettingsPage: React.FC = () => {
               </div>
             </div>
           </div>
+          {/* Toggle Audio Transcription */}
           <div className="flex items-center gap-2">
             <button
               onClick={handleToggle}
@@ -111,7 +114,7 @@ const SettingsPage: React.FC = () => {
       </div>
 
     {/* Cloud Transcript */}
-    <div className="flex flex-col gap-px mb-8">
+ <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Cloud Transcript</div>
           <div className="h-[26px] justify-end items-center gap-1.5 flex">
