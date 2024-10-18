@@ -90,7 +90,7 @@ export default function ActiveConversationComponent() {
             <div className="flex items-center">
               <div className="flex items-center gap-4">
                 <div className="w-6 h-6 flex justify-center items-center">
-                <SoundIcon color={getSoundIconColor()} />
+                  <SoundIcon color={getSoundIconColor()} />
                 </div>
                 <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">
                   Transcribing Audio...
@@ -133,48 +133,53 @@ export default function ActiveConversationComponent() {
           </div>
         </div>
       )}
-
+  
       {/* Box 2: Microphone Control */}
-      <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
-        <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
-          <div className="flex items-center gap-4 w-full">
-            <div className="flex items-center">
-              <MicrophoneIcon />
-            </div>
-            <div className={`text-[15px] font-medium font-inter leading-normal ${isAudioOn ? 'text-[#eeeeee]' : 'text-[#b4b4b4]'}`}>
-              {isAudioOn ? 'Microphone Enabled' : 'Enable Microphone'}
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleToggle}
-              className="flex items-center gap-1.5 text-xs font-publicsans"
-            >
+      {audioState !== 'active' && (
+        <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
+          <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
+            <div className="flex items-center gap-4 w-full">
+              <div className="flex items-center">
+                <MicrophoneIcon />
+              </div>
               <div
-                className={`text-right ${
-                  isAudioOn ? 'text-[#00cc88]' : 'text-white/40'
-                } text-xs font-normal font-['Public Sans'] leading-snug`}
+                className={`text-[15px] font-medium font-inter leading-normal ${
+                  isAudioOn ? 'text-[#eeeeee]' : 'text-[#b4b4b4]'
+                }`}
               >
-                {isAudioOn ? 'ON' : 'OFF'}
+                {isAudioOn ? 'Microphone Enabled' : 'Enable Microphone'}
               </div>
-              <div className="w-[49px] h-[26px] relative rounded-2xl">
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleToggle}
+                className="flex items-center gap-1.5 text-xs font-publicsans"
+              >
                 <div
-                  className={`w-[49px] h-[26px] left-0 top-0 absolute ${
-                    isAudioOn ? 'bg-[#00cc88]' : 'bg-black'
-                  } rounded-full`}
-                />
-                <div
-                  className={`w-6 h-6 absolute ${
-                    isAudioOn ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
-                  } top-[1px] rounded-full shadow`}
-                />
-              </div>
-            </button>
+                  className={`text-right ${
+                    isAudioOn ? 'text-[#00cc88]' : 'text-white/40'
+                  } text-xs font-normal font-['Public Sans'] leading-snug`}
+                >
+                  {isAudioOn ? 'ON' : 'OFF'}
+                </div>
+                <div className="w-[49px] h-[26px] relative rounded-2xl">
+                  <div
+                    className={`w-[49px] h-[26px] left-0 top-0 absolute ${
+                      isAudioOn ? 'bg-[#00cc88]' : 'bg-black'
+                    } rounded-full`}
+                  />
+                  <div
+                    className={`w-6 h-6 absolute ${
+                      isAudioOn ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
+                    } top-[1px] rounded-full shadow`}
+                  />
+                </div>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
-
+      )}
+  
       {/* Box 3: Enable Audio Transcriptions */}
       {!isAudioOn && (
         <button
