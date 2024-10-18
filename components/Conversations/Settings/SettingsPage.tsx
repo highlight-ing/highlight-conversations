@@ -11,19 +11,40 @@ const SettingsPage: React.FC = () => {
   // Conversation State 
   const { isAudioOn, setIsAudioOn } = useConversations();
   const [asrDuration, setAsrDuration] = useState<number>(2);
+  const [autoClear, setAutoClear] = useState<number>(2); 
+  const [autoSave, setAutoSave] = useState<number>(1); 
 
-  // Options for the dropdown
+  // Options for the dropdown (box 1)
+  const autoSaveOptions = useMemo(() => {
+    return [
+      { label: 'After 30 Seconds', value: 0.5 },
+      { label: 'After 1 Minute', value: 1 },
+      { label: 'After 2 Minutes', value: 2 },
+    ]
+  }, []);
+
+  // Options for the dropdown (box 2)
+  const autoClearOptions = useMemo(() => {
+    return [
+      { label: 'Every week', value: 1 },
+      { label: 'Every 2 weeks', value: 2 },
+      { label: 'Every month', value: 4 },
+    ]
+  }, []);
+
+  // Options for the dropdown (box 3)
   const asrDurationOptions = useMemo(() => {
     return [
       { label: '2 hours', value: 2 },
       { label: '4 hours', value: 4},
-      { label: '6 hours', value: 6 },
+      { label: '8 hours', value: 8 },
       { label: '12 hours', value: 12 },
       { label: '24 hours', value: 24 },
     ];
   }, []);
 
   // const [asrDuration, setAsrDuration] = useState(getDefaultAudioTranscriberDuration());
+
 
   // handler for dropdown selection
   const handleDurationChange = (option: { value: number }) => {
@@ -92,9 +113,12 @@ const SettingsPage: React.FC = () => {
       <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#EEEEEE] text-[15px] font-medium font-inter leading-6">Auto Save</div>
-          <div className="px-4 py-1.5 bg-white/[0.08] rounded-[10px] flex justify-center items-center">
-            <div className="text-[#B4B4B4] text-[15px] font-medium font-inter leading-5">After 2 Minutes</div>
-          </div>
+            <Dropdown
+              value={autoSave}
+              onSelect={handleDurationChange}
+              options={autoSaveOptions}
+              style={{ minWidth: '100px' }}
+            />
         </div>
 
         <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
@@ -108,9 +132,12 @@ const SettingsPage: React.FC = () => {
     <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
         <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Auto Clear</div>
-            <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
-            <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">Every 2 Weeks</div>
-        </div>
+            <Dropdown
+              value={autoClear}
+              onSelect={handleDurationChange}
+              options={autoClearOptions}
+              style={{ minWidth: '100px' }}
+            />
     </div>
     <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
         <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">Highlight will automatically delete all of your conversation transcripts based on this setting</div>
