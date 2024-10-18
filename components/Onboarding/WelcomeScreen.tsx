@@ -31,7 +31,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
         className="w-full font-semibold text-md p-4 mt-4"
         style={{
           backgroundColor: 'rgb(74, 237, 158)',
-          color: 'text-background',
+          color: 'black', 
         }}
         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(250, 250, 250, 0.9)'}
         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(74, 237, 158)'}
