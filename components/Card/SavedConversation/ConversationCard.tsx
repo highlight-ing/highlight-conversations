@@ -8,8 +8,9 @@ import { ConversationCardContent } from './ConversationCardContent'
 import { useConversationActions } from './useConversationsActions'
 import { Toaster, toast } from 'sonner'
 import { ShareButton } from './ShareButton'
-import { useConversations } from "@/contexts/ConversationContext"
+import { useConversations } from '@/contexts/ConversationContext'
 import { ConversationData } from '@/data/conversations'
+import useOnExternalMessage from '@/hooks/useOnExternalMessage'
 
 interface ConversationCardProps {
   conversation: ConversationData
@@ -17,6 +18,7 @@ interface ConversationCardProps {
 
 const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initialConversation }) => {
   const { updateConversation, deleteConversation, searchQuery } = useConversations()
+  const conversationId = useOnExternalMessage()
 
   const {
     localConversation,
@@ -42,7 +44,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initi
     if (shareMessage) {
       if (shareMessage.type === 'success') {
         toast.success(shareMessage.message, {
-          description: shareMessage.description,
+          description: shareMessage.description
         })
       } else {
         toast.error(shareMessage.message)
@@ -51,9 +53,17 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initi
     }
   }, [shareMessage, setShareMessage])
 
+  useEffect(() => {
+    if (conversationId === localConversation.id) {
+      console.log(conversationId, localConversation.id)
+      handleOnViewTranscript()
+    } else {
+    }
+  }, [conversationId, localConversation])
+
   return (
     <motion.div initial={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
-      <Card className={`flex w-full flex-col rounded-lg bg-background-100 shadow h-[415px]`}>
+      <Card className={`flex h-[415px] w-full flex-col rounded-lg bg-background-100 shadow`}>
         <ConversationCardHeader
           conversation={localConversation}
           onDelete={() => deleteConversation(localConversation.id)}
@@ -85,10 +95,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation: initi
         onDelete={deleteConversation}
         onSummarize={handleSummarize}
       />
-      <Toaster
-        theme="dark"
-        className="bg-background text-foreground"
-      />
+      <Toaster theme="dark" className="bg-background text-foreground" />
     </motion.div>
   )
 }
@@ -103,25 +110,35 @@ const ConversationCardActions: React.FC<{
   onDownloadAsFile: () => void
   onCopyLink: () => void
   onDeleteLink: () => void
-}> = ({ onAttach, onShare, isSharing, isDeleting, hasExistingShareLink, onGenerateShareLink, onDownloadAsFile, onCopyLink, onDeleteLink }) => (
-  <div className="flex w-full gap-2">
-    <Button
-      onClick={onAttach}
-      className="flex-1 items-center justify-center rounded-lg bg-background p-2 text-[15px] font-semibold text-foreground transition-colors duration-200 hover:bg-background hover:text-brand"
-    >
-      <span className="flex items-center gap-2">Attach to Chat</span>
-    </Button>
-    <ShareButton
-      onShare={onShare}
-      isSharing={isSharing}
-      isDeleting={isDeleting}
-      hasExistingShareLink={hasExistingShareLink}
-      onGenerateShareLink={onGenerateShareLink}
-      onDownloadAsFile={onDownloadAsFile}
-      onCopyLink={onCopyLink}
-      onDeleteLink={onDeleteLink}
-    />
-  </div>
-)
+}> = ({
+  onAttach,
+  onShare,
+  isSharing,
+  isDeleting,
+  hasExistingShareLink,
+  onGenerateShareLink,
+  onDownloadAsFile,
+  onCopyLink,
+  onDeleteLink
+}) => (
+    <div className="flex w-full gap-2">
+      <Button
+        onClick={onAttach}
+        className="flex-1 items-center justify-center rounded-lg bg-background p-2 text-[15px] font-semibold text-foreground transition-colors duration-200 hover:bg-background hover:text-brand"
+      >
+        <span className="flex items-center gap-2">Attach to Chat</span>
+      </Button>
+      <ShareButton
+        onShare={onShare}
+        isSharing={isSharing}
+        isDeleting={isDeleting}
+        hasExistingShareLink={hasExistingShareLink}
+        onGenerateShareLink={onGenerateShareLink}
+        onDownloadAsFile={onDownloadAsFile}
+        onCopyLink={onCopyLink}
+        onDeleteLink={onDeleteLink}
+      />
+    </div>
+  )
 
 export default ConversationCard
