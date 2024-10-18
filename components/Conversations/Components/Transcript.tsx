@@ -1,6 +1,6 @@
-import React from 'react'
-import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons'
-import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow'
+import React from 'react';
+import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons';
+import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow';
 
 interface Message {
   time: string;
@@ -8,7 +8,7 @@ interface Message {
   text: string;
 }
 
-// Function to parse the transcript string into msg 
+// Function to parse the transcript string into messages
 const parseTranscript = (transcript: string): Message[] => {
   return transcript
     .split('\n')
@@ -17,7 +17,7 @@ const parseTranscript = (transcript: string): Message[] => {
       const regex = /^(.+?)\s+(.+?):\s*(.*)$/;
       const match = line.match(regex);
       if (match) {
-        const [_, time, sender, text] = match;
+        const [, time, sender, text] = match;
         return { time, sender, text };
       }
       return null;
@@ -25,14 +25,14 @@ const parseTranscript = (transcript: string): Message[] => {
     .filter((message): message is Message => message !== null);
 };
 
-
-// TranscriptProps interface 
+// TranscriptProps interface
 interface TranscriptProps {
-  transcript: string; 
+  transcript: string;
 }
 
 const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
-  const messages: Message[] = parseTranscript(transcript); 
+  const messages: Message[] = parseTranscript(transcript);
+
   const buttons = useTranscriptButtons({
     message: transcript,
     buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback'],
@@ -68,14 +68,14 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
           <div key={index} className="mb-4">
             <div
               className={
-                message.sender === 'Me'
-                  ? 'text-[#4ceda0] text-[13px] font-medium'
-                  : 'text-white text-[13px] font-medium opacity-80'
+                message.sender === 'Me' || message.sender.toLowerCase() === 'self'
+                  ? "text-[#4ceda0]/40 text-[13px] font-medium font-inter leading-tight"
+                  : "opacity-20 text-white text-[13px] font-medium font-inter leading-tight"
               }
             >
               {message.time} - {message.sender}:
             </div>
-            <div className="text-[#eeeeee] text-[15px] font-normal">
+            <div className="text-[#eeeeee] text-[15px] font-normal font-inter leading-normal">
               {message.text}
             </div>
           </div>
@@ -86,4 +86,4 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
   );
 };
 
-export default Transcript
+export default Transcript;
