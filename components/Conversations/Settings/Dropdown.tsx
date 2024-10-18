@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 
 interface Option {
   label: string;
@@ -26,11 +27,14 @@ const Dropdown: React.FC<DropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyles, setMenuStyles] = useState<React.CSSProperties>({});
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     },
@@ -40,11 +44,36 @@ const Dropdown: React.FC<DropdownProps> = ({
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      calculateMenuPosition();
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, handleClickOutside]);
+
+  const calculateMenuPosition = () => {
+    if (dropdownRef.current) {
+      const rect = dropdownRef.current.getBoundingClientRect();
+
+      const styles: React.CSSProperties = {
+        position: 'absolute',
+        minWidth: rect.width,
+        zIndex: 1000,
+      };
+
+      if (position === 'bottom') {
+        styles.top = rect.bottom + window.scrollY;
+        styles.left = rect.left + window.scrollX;
+      } else if (position === 'top') {
+        styles.top = rect.top + window.scrollY - rect.height;
+        styles.left = rect.left + window.scrollX;
+      }
+
+      setMenuStyles(styles);
+    }
+  };
 
   const selectedOption = options.find((option) => option.value === value);
 
@@ -148,18 +177,14 @@ const Dropdown: React.FC<DropdownProps> = ({
   // Styles for the dropdown menu
   const menuStyle: React.CSSProperties = {
     position: 'absolute',
-    top: position === 'bottom' ? '100%' : undefined,
-    bottom: position === 'top' ? '100%' : undefined,
-    left: 0,
     borderRadius: 8,
     border: '1px solid rgba(255, 255, 255, 0.1)',
     boxSizing: 'border-box',
     backgroundColor: '#1A1A1A',
     display: 'flex',
     flexDirection: 'column',
-    minWidth: '100%',
     boxShadow: '0 0 12px 0 rgba(0, 0, 0, 0.32)',
-    zIndex: 1,
+    zIndex: 1000,
     maxHeight: '30vh',
     overflowY: 'auto',
   };
@@ -200,64 +225,69 @@ const Dropdown: React.FC<DropdownProps> = ({
   };
 
   return (
-    <div
-      ref={dropdownRef}
-      style={{ ...dropdownInputStyle, ...style }}
-      onClick={() => !disabled && setIsOpen(!isOpen)}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {selectedOption ? selectedOption.label : 'Select'}
-      <svg
-        style={getArrowStyle()}
-        width={size === 'small' || size === 'xsmall' ? '14' : '17'}
-        height={size === 'small' || size === 'xsmall' ? '14' : '17'}
-        viewBox="0 0 17 18"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+    <>
+      <div
+        ref={dropdownRef}
+        style={{ ...dropdownInputStyle, ...style }}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
-        <path
-          d={
-            isOpen
-              ? 'M14.1099 11.1604L9.49156 6.54207C8.94614 5.99665 8.05364 5.99665 7.50823 6.54207L2.88989 11.1604'
-              : 'M14.1099 6.8396L9.49156 11.4579C8.94614 12.0034 8.05364 12.0034 7.50823 11.4579L2.88989 6.8396'
-          }
-          stroke="white"
-          strokeWidth="1.5"
-          strokeMiterlimit="10"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-      {isOpen && (
-        <div ref={menuRef} style={menuStyle}>
-          {options.map((option) => {
-            const isSelected = value === option.value;
-            return (
-              <div
-                key={option.value}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelect(option);
-                  setIsOpen(false);
-                }}
-                style={getMenuItemStyle(isSelected)}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = isSelected
-                    ? 'rgba(255, 255, 255, 0.08)'
-                    : 'transparent';
-                }}
-              >
-                {option.label}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+        {selectedOption ? selectedOption.label : 'Select'}
+        <svg
+          style={getArrowStyle()}
+          width={size === 'small' || size === 'xsmall' ? '14' : '17'}
+          height={size === 'small' || size === 'xsmall' ? '14' : '17'}
+          viewBox="0 0 17 18"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d={
+              isOpen
+                ? 'M14.1099 11.1604L9.49156 6.54207C8.94614 5.99665 8.05364 5.99665 7.50823 6.54207L2.88989 11.1604'
+                : 'M14.1099 6.8396L9.49156 11.4579C8.94614 12.0034 8.05364 12.0034 7.50823 11.4579L2.88989 6.8396'
+            }
+            stroke="white"
+            strokeWidth="1.5"
+            strokeMiterlimit="10"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      {isOpen &&
+        ReactDOM.createPortal(
+          <div style={{ ...menuStyle, ...menuStyles }}>
+            {options.map((option) => {
+              const isSelected = value === option.value;
+              return (
+                <div
+                  key={option.value}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(option);
+                    setIsOpen(false);
+                  }}
+                  style={getMenuItemStyle(isSelected)}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      'rgba(255, 255, 255, 0.08)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor = isSelected
+                      ? 'rgba(255, 255, 255, 0.08)'
+                      : 'transparent';
+                  }}
+                >
+                  {option.label}
+                </div>
+              );
+            })}
+          </div>,
+          document.body,
+        )}
+    </>
   );
 };
 
