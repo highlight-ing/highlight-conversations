@@ -1,5 +1,5 @@
 import React from 'react';
-import ShieldTickIcon from '../Icon/ShieldTickIcon';
+import GreyShieldTick from '../Icon/GreyShieldTick';
 import BigSoundIcon from '../Icon/BigSoundIcon';
 import TrashIcon from '../Icon/TrashIcon';
 
@@ -38,7 +38,7 @@ const NoAudioDetected: React.FC = () => (
     <div className="absolute flex flex-col items-center justify-center gap-2 inline-flex h-40 py-6 pl-0.5 left-[87px] top-[266px] rounded-2xl border border-black">
       <div className="inline-flex items-center justify-center w-6 h-6">
         <div className="relative w-6 h-6">
-            <ShieldTickIcon />
+            <GreyShieldTick />
         </div>
       </div>
       <div className="text-[15px] font-semibold leading-normal text-[#6e6e6e]">
