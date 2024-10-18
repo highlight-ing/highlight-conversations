@@ -38,7 +38,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         setIsOpen(false);
       }
     },
-    [dropdownRef],
+    [],
   );
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, handleClickOutside]);
-
+  
   const calculateMenuPosition = () => {
     if (dropdownRef.current) {
       const rect = dropdownRef.current.getBoundingClientRect();

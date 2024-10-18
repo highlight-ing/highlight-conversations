@@ -4,6 +4,7 @@ import Header from '../Components/Header'
 import Transcript from '../Components/Transcript'
 import Summary from '../Components/Summary'
 import TranscriptionDisabled from './ConversationDetail/TranscriptionDisabled'
+import NoAudioDetected from './ConversationDetail/NoAudioDetected'
 
 interface ConversationDetailProps {
   conversation: ConversationData | undefined
@@ -15,7 +16,7 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
     // Once the transcription is disabled & for Mac Users, if we have recording access but don't have microphone access : <TranscriptionDisabled />
     // 
     return (
-      <TranscriptionDisabled />
+      <NoAudioDetected />
     )
   }
 

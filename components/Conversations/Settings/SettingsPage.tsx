@@ -43,13 +43,18 @@ const SettingsPage: React.FC = () => {
     ];
   }, []);
 
-  // const [asrDuration, setAsrDuration] = useState(getDefaultAudioTranscriberDuration());
-
-
-  // handler for dropdown selection
-  const handleDurationChange = (option: { value: number }) => {
-    setAsrDuration(option.value);
+  const handleAutoSaveChange = (option: { value: number }) => {
+    setAutoSave(option.value); // option.value is already a number
   };
+  
+  const handleAutoClearChange = (option: { value: number }) => {
+    setAutoClear(option.value); // option.value is already a number
+  };
+  
+  const handleAsrDurationChange = (option: { value: number }) => {
+    setAsrDuration(option.value); // option.value is already a number
+  };
+  
 
   // Toggle Audio Transcription 
   const handleToggle = () => {
@@ -115,7 +120,7 @@ const SettingsPage: React.FC = () => {
           <div className="text-[#EEEEEE] text-[15px] font-medium font-inter leading-6">Auto Save</div>
             <Dropdown
               value={autoSave}
-              onSelect={handleDurationChange}
+              onSelect={handleAutoSaveChange}
               options={autoSaveOptions}
               style={{ minWidth: '100px' }}
             />
@@ -134,7 +139,7 @@ const SettingsPage: React.FC = () => {
         <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Auto Clear</div>
             <Dropdown
               value={autoClear}
-              onSelect={handleDurationChange}
+              onSelect={handleAutoClearChange}
               options={autoClearOptions}
               style={{ minWidth: '100px' }}
             />
@@ -152,7 +157,7 @@ const SettingsPage: React.FC = () => {
           <div>
           <Dropdown
             value={asrDuration}
-            onSelect={handleDurationChange}
+            onSelect={handleAsrDurationChange}
             options={asrDurationOptions}
             style={{ minWidth: '100px' }}
           />
