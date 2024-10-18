@@ -4,29 +4,45 @@ import { TranscriptButtonRow } from '@/components/Conversations/Detail/Transcrip
 
 interface Message {
   time: string;
-  sender: 'Me' | 'Others';
-  text: string; 
+  sender: string;
+  text: string;
 }
 
+// Function to parse the transcript string into msg 
+const parseTranscript = (transcript: string): Message[] => {
+  return transcript
+    .split('\n')
+    .map((line): Message | null => {
+      // Adjusted regex for new format
+      const regex = /^(.+?)\s+(.+?):\s*(.*)$/;
+      const match = line.match(regex);
+      if (match) {
+        const [_, time, sender, text] = match;
+        return { time, sender, text };
+      }
+      return null;
+    })
+    .filter((message): message is Message => message !== null);
+};
+
+
+// TranscriptProps interface 
 interface TranscriptProps {
-  messages?: Message[]; 
+  transcript: string; 
 }
 
-const Transcript: React.FC<TranscriptProps> = ({ messages = [] }) => {
+const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
+  const messages: Message[] = parseTranscript(transcript); 
   const buttons = useTranscriptButtons({
-    message: messages.map(msg => msg.text).join('\n'),
+    message: transcript,
     buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback'],
-  })
+  });
 
   return (
     <div
       className="flex flex-col items-start gap-3 p-4 rounded-lg"
       style={{
         maxWidth: '100%',
-        padding: '16px',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: '12px',
         borderRadius: '20px',
         background: 'var(--Background-Tertiary, #222)',
         position: 'relative',
@@ -42,18 +58,32 @@ const Transcript: React.FC<TranscriptProps> = ({ messages = [] }) => {
       >
         Transcript
       </h2>
-      {messages.map((message, index) => (
-        <div key={index} 
-            className={`whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter 
-            ${message.sender === 'Me' ? 'text-blue-500' : 'text-gray-500'}`
-        }>
-          <span className="text-xs text-gray-400">{message.time} - {message.sender}:</span>
-          <p>{message.text}</p>
-        </div>
-      ))}
+      <div
+        className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter"
+        style={{
+          alignSelf: 'stretch',
+        }}
+      >
+        {messages.map((message, index) => (
+          <div key={index} className="mb-4">
+            <div
+              className={
+                message.sender === 'Me'
+                  ? 'text-[#4ceda0] text-[13px] font-medium'
+                  : 'text-white text-[13px] font-medium opacity-80'
+              }
+            >
+              {message.time} - {message.sender}:
+            </div>
+            <div className="text-[#eeeeee] text-[15px] font-normal">
+              {message.text}
+            </div>
+          </div>
+        ))}
+      </div>
       <TranscriptButtonRow buttons={buttons} />
     </div>
-  )
-}
+  );
+};
 
 export default Transcript
