@@ -69,6 +69,7 @@
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/react-portal": "^4.0.7",
     "@types/uuid": "^10.0.0",
     "eslint-config-next": "14.2.5",
     "mini-css-extract-plugin": "^2.9.0",

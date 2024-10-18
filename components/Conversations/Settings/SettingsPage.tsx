@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react'
 import SoundIcon from '../Detail/Icon/SoundIcon'
-import { useConversations } from '@/contexts/ConversationContext';
-// import Dropdown [ find path ]
+import { useConversations } from '@/contexts/ConversationContext'
+import Dropdown from './Dropdown'
 
 type AudioState = 'active' | 'inactive' | 'off';
 
@@ -142,7 +142,7 @@ const SettingsPage: React.FC = () => {
       </div>
 
     {/* Cloud Transcript */}
- <div className="flex flex-col gap-px mb-8">
+      <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Cloud Transcript</div>
           <div className="h-[26px] justify-end items-center gap-1.5 flex">
