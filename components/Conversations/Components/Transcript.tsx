@@ -39,25 +39,10 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
   });
 
   return (
-    <div
-      className="flex flex-col items-start gap-3 p-4 rounded-lg"
-      style={{
-        maxWidth: '100%',
-        borderRadius: '20px',
-        background: 'var(--Background-Tertiary, #222)',
-        position: 'relative',
-        overflow: 'auto',
-      }}
-    >
-      <h2
-        className="font-inter text-[13px] font-medium leading-[20px] tracking-tight"
-        style={{
-          color: 'var(--Text-Secondary, #B4B4B4)',
-          letterSpacing: '-0.26px',
-        }}
-      >
+    <div className="w-[712px] h-[667px] pt-8 border-t border-[#222222]/50 flex-col justify-start items-start gap-6 inline-flex">
+      <div className="text-[#eeeeee] text-xl font-semibold font-inter">
         Transcript
-      </h2>
+      </div>
       <div
         className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter"
         style={{
@@ -68,8 +53,8 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
           <div key={index} className="mb-4">
             <div
               className={
-                message.sender === 'Me' || message.sender.toLowerCase() === 'self'
-                  ? "text-[#4ceda0]/40 text-[13px] font-medium font-inter leading-tight"
+                message.sender.toLowerCase() === 'me' || message.sender.toLowerCase() === 'self'
+                  ? "text-[#4ceda0] text-[13px] font-medium font-inter leading-tight"
                   : "opacity-20 text-white text-[13px] font-medium font-inter leading-tight"
               }
             >
