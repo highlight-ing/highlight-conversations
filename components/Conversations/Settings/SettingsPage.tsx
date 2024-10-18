@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
 import { useConversations } from '@/contexts/ConversationContext';
-// import Dropdown from './Dropdown';
+import Dropdown from './Dropdown';
 
 type AudioState = 'active' | 'inactive' | 'off';
 
@@ -10,6 +10,7 @@ const SettingsPage: React.FC = () => {
   const [audioState, setAudioState] = useState<AudioState>('inactive');
   // Conversation State 
   const { isAudioOn, setIsAudioOn } = useConversations();
+  const [asrDuration, setAsrDuration] = useState<number>(2);
 
   // Options for the dropdown
   const asrDurationOptions = useMemo(() => {
@@ -40,7 +41,6 @@ const SettingsPage: React.FC = () => {
     return audioState === 'active' ? '#4CEDA0' : '#484848';
   };
 
-  
 
   return (
     <>
@@ -123,14 +123,12 @@ const SettingsPage: React.FC = () => {
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcript Duration</div>
           <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
-            <Dropdown
-              size="large"
-              // value={asrDuration}
-              onSelect={handleDurationChange}
-              options={asrDurationOptions}
-              style={{ minWidth: '100px' }}
-              // disabled={!asrEnabled} 
-            />
+          <Dropdown
+            value={asrDuration}
+            onSelect={handleDurationChange}
+            options={asrDurationOptions}
+            style={{ minWidth: '100px' }}
+          />
           </div>
         </div>
 
