@@ -137,46 +137,46 @@ export default function ActiveConversationComponent() {
       )}
 
       {/* Box 2: Enable Microphone */}
-      {audioState !== 'active' && (
-        <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
-          <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
-            <div className="flex items-center gap-4 w-full">
-              <div className="flex items-center">
-                <MicrophoneIcon />
-              </div>
-              <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">
-                Enable Microphone
-              </div>
+      {!isAudioOn && (
+      <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
+        <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
+          <div className="flex items-center gap-4 w-full">
+            <div className="flex items-center">
+              <MicrophoneIcon />
             </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleToggle}
-                className="flex items-center gap-1.5 text-xs font-publicsans"
-              >
-                <div
-                  className={`text-right ${
-                    audioState !== 'off' ? 'text-[#00cc88]' : 'text-white/40'
-                  } text-xs font-normal font-['Public Sans'] leading-snug`}
-                >
-                  {audioState !== 'off' ? 'ON' : 'OFF'}
-                </div>
-                <div className="w-[49px] h-[26px] relative rounded-2xl">
-                  <div
-                    className={`w-[49px] h-[26px] left-0 top-0 absolute ${
-                      audioState !== 'off' ? 'bg-[#00cc88]' : 'bg-black'
-                    } rounded-full`}
-                  />
-                  <div
-                    className={`w-6 h-6 absolute ${
-                      audioState !== 'off' ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
-                    } top-[1px] rounded-full shadow`}
-                  />
-                </div>
-              </button>
+            <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">
+              Enable Microphone
             </div>
           </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleToggle}
+              className="flex items-center gap-1.5 text-xs font-publicsans"
+            >
+              <div
+                className={`text-right ${
+                  isAudioOn ? 'text-[#00cc88]' : 'text-white/40'
+                } text-xs font-normal font-['Public Sans'] leading-snug`}
+              >
+                {isAudioOn ? 'ON' : 'OFF'}
+              </div>
+              <div className="w-[49px] h-[26px] relative rounded-2xl">
+                <div
+                  className={`w-[49px] h-[26px] left-0 top-0 absolute ${
+                    isAudioOn ? 'bg-[#00cc88]' : 'bg-black'
+                  } rounded-full`}
+                />
+                <div
+                  className={`w-6 h-6 absolute ${
+                    isAudioOn ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
+                  } top-[1px] rounded-full shadow`}
+                />
+              </div>
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Box 3: Enable Audio Transcriptions */}
       {(audioState === 'off' || audioState === 'inactive') && (
