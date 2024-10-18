@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
 import { useConversations } from '@/contexts/ConversationContext';
+// import Dropdown [ find path ]
 
 type AudioState = 'active' | 'inactive' | 'off';
 
@@ -8,7 +9,25 @@ const SettingsPage: React.FC = () => {
   // Audio Transcription State 
   const [audioState, setAudioState] = useState<AudioState>('inactive');
   // Conversation State 
-  const { micActivity, elapsedTime, isSaving, isAudioOn, setIsAudioOn, saveCurrentConversation } = useConversations();
+  const { isAudioOn, setIsAudioOn } = useConversations();
+
+  // Options for the dropdown
+  const asrDurationOptions = useMemo(() => {
+    return [
+      { label: '2 hours', value: 2 },
+      { label: '4 hours', value: 4},
+      { label: '6 hours', value: 6 },
+      { label: '12 hours', value: 12 },
+      { label: '24 hours', value: 24 },
+    ];
+  }, []);
+
+  const [asrDuration, setAsrDuration] = useState(getDefaultAudioTranscriberDuration());
+
+  // handler for dropdown selection
+  const handleDurationChange = (option: { value: number }) => {
+    setAsrDuration(option.value);
+  };
 
   // Toggle Audio Transcription 
   const handleToggle = () => {
@@ -20,6 +39,8 @@ const SettingsPage: React.FC = () => {
   const getSoundIconColor = () => {
     return audioState === 'active' ? '#4CEDA0' : '#484848';
   };
+
+  
 
   return (
     <>
@@ -102,7 +123,14 @@ const SettingsPage: React.FC = () => {
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcript Duration</div>
           <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
-            <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">8 Hours</div>
+            <Dropdown
+              size="large"
+              value={asrDuration}
+              onSelect={handleDurationChange}
+              options={asrDurationOptions}
+              style={{ minWidth: '100px' }}
+              disabled={!asrEnabled} 
+            />
           </div>
         </div>
 
