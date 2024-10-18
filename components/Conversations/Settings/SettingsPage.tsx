@@ -122,7 +122,7 @@ const SettingsPage: React.FC = () => {
     <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcript Duration</div>
-          <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
+          <div>
           <Dropdown
             value={asrDuration}
             onSelect={handleDurationChange}
