@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
 import { useConversations } from '@/contexts/ConversationContext';
-import Dropdown from './Dropdown';
+// import Dropdown from './Dropdown';
 
 type AudioState = 'active' | 'inactive' | 'off';
 

@@ -134,16 +134,15 @@ export default function ActiveConversationComponent() {
         </div>
       )}
 
-      {/* Box 2: Enable Microphone */}
-      {!isAudioOn && (
+      {/* Box 2: Microphone Control */}
       <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
         <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
           <div className="flex items-center gap-4 w-full">
             <div className="flex items-center">
               <MicrophoneIcon />
             </div>
-            <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">
-              Enable Microphone
+            <div className={`text-[15px] font-medium font-inter leading-normal ${isAudioOn ? 'text-[#eeeeee]' : 'text-[#b4b4b4]'}`}>
+              {isAudioOn ? 'Microphone Enabled' : 'Enable Microphone'}
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -174,10 +173,10 @@ export default function ActiveConversationComponent() {
           </div>
         </div>
       </div>
-    )}
+
 
       {/* Box 3: Enable Audio Transcriptions */}
-      {(audioState === 'off' || audioState === 'inactive') && (
+      {!isAudioOn && (
         <button
           onClick={handleToggle}
           className="flex flex-col w-full rounded-xl mb-8 bg-[#00dbfb]/20 gap-2"
