@@ -1,6 +1,7 @@
 import React from 'react';
 import ShieldTickIcon from '../Icon/ShieldTickIcon';
 import BigSoundIcon from '../Icon/BigSoundIcon';
+import TrashIcon from '../Icon/TrashIcon';
 
 const NoAudioDetected: React.FC = () => (
   <div className="w-[840px] h-[1829px] relative font-inter">
@@ -20,7 +21,7 @@ const NoAudioDetected: React.FC = () => (
     <div className="absolute left-[549px] top-[48px] inline-flex items-center gap-4">
       <div className="flex items-center justify-center w-6 h-6 opacity-40">
         <div className="relative w-6 h-6">
-        
+          <TrashIcon />
         </div>
       </div>
       <div className="flex items-center justify-center gap-2 px-4 py-1.5 rounded-[10px] bg-white/10">
