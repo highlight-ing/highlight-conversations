@@ -1,84 +1,180 @@
-import React, { useState, useMemo } from 'react';
-import SoundIcon from '../Detail/Icon/SoundIcon'
+import React, { useState, useEffect, useCallback } from 'react';
 import { useConversations } from '@/contexts/ConversationContext';
-import Dropdown from './Dropdown';
+import { useDebouncedCallback } from 'use-debounce';
+import SoundIcon from '../Detail/Icon/SoundIcon';
+import MicrophoneIcon from '../Detail/Icon/MicrophoneIcon';
 
-type AudioState = 'active' | 'inactive' | 'off';
+type AudioState = 'active' | 'inactive' | 'off' | 'noPermissions' | 'saving';
 
-const SettingsPage: React.FC = () => {
-  // Audio Transcription State 
+export default function ActiveConversationComponent() {
   const [audioState, setAudioState] = useState<AudioState>('inactive');
-  // Conversation State 
-  const { isAudioOn, setIsAudioOn } = useConversations();
+  const [visualState, setVisualState] = useState<AudioState>('inactive');
+  const [isThirdButtonClicked, setIsThirdButtonClicked] = useState(false); // New state variable
+  const {
+    micActivity,
+    elapsedTime,
+    isSaving,
+    isAudioOn,
+    setIsAudioOn,
+    saveCurrentConversation,
+  } = useConversations();
 
-  // Options for the dropdown
-  const asrDurationOptions = useMemo(() => {
-    return [
-      { label: '2 hours', value: 2 },
-      { label: '4 hours', value: 4},
-      { label: '6 hours', value: 6 },
-      { label: '12 hours', value: 12 },
-      { label: '24 hours', value: 24 },
-    ];
-  }, []);
+  const slowDebounce = useDebouncedCallback(
+    (newState: AudioState) => {
+      setVisualState(newState);
+    },
+    2500
+  );
 
-  const [asrDuration, setAsrDuration] = useState(getDefaultAudioTranscriberDuration());
+  const fastDebounce = useDebouncedCallback(
+    (newState: AudioState) => {
+      setAudioState(newState);
+      setVisualState(newState);
+    },
+    100
+  );
 
-  // handler for dropdown selection
-  const handleDurationChange = (option: { value: number }) => {
-    setAsrDuration(option.value);
+  const updateAudioState = useCallback(() => {
+    if (!isAudioOn) {
+      setAudioState('off');
+      setVisualState('off');
+      return;
+    }
+
+    if (isSaving) {
+      setAudioState('saving');
+      setVisualState('saving');
+      return;
+    }
+
+    if (micActivity > 0) {
+      fastDebounce('active');
+    } else {
+      setAudioState('inactive');
+      slowDebounce('inactive');
+    }
+  }, [isAudioOn, micActivity, isSaving, fastDebounce, slowDebounce]);
+
+  useEffect(() => {
+    updateAudioState();
+  }, [updateAudioState]);
+
+  const handleToggle = () => {
+    const newIsOn = !isAudioOn;
+    setIsAudioOn(newIsOn);
+    setAudioState(newIsOn ? (micActivity > 0 ? 'active' : 'inactive') : 'off');
+    if (!newIsOn) {
+      setIsThirdButtonClicked(false); // Reset when microphone is turned off
+    }
   };
 
-  // Toggle Audio Transcription 
-  const handleToggle = () => {
-    const newIsOn = !isAudioOn; 
-    setIsAudioOn(newIsOn);
-    setAudioState(newIsOn ? 'active' : 'off');
-  }
+  const handleSave = async () => {
+    await saveCurrentConversation();
+  };
+
+  const formatElapsedTime = (seconds: number): string => {
+    if (seconds < 0) {
+      return '0s';
+    }
+    if (seconds < 60) {
+      return `${seconds}s`;
+    }
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}min ${remainingSeconds}s`;
+  };
 
   const getSoundIconColor = () => {
     return audioState === 'active' ? '#4CEDA0' : '#484848';
   };
 
-  
-
   return (
-    <>
-      { /* Audio Transcription */ }
-      <div className="w-full h-14 px-5 py-4 mb-8 rounded-2xl border border-[#4ceda0]/20 flex flex-col justify-start items-start gap-4">
-        <div className="w-full h-6 flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="flex items-center gap-4">
-              <div className="w-6 h-6 flex justify-center items-center">
-                <SoundIcon color={getSoundIconColor()} />
+    <div className="flex flex-col w-full h-full">
+      {/* Box 1 */}
+      {audioState === 'active' ? (
+        // Active state UI
+        <div className="w-full h-14 px-5 py-4 rounded-2xl border border-[#4ceda0]/20 flex flex-col justify-start items-start gap-4">
+          <div className="w-full h-6 flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="flex items-center gap-4">
+                <div className="w-6 h-6 flex justify-center items-center">
+                  <SoundIcon color={getSoundIconColor()} />
+                </div>
+                <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">
+                  Transcribing Audio...
+                </div>
               </div>
-              <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">
-                {audioState === 'active' ? 'Transcribing Audio...' : 'Audio Transcription Off'}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-[26px] flex justify-end items-center gap-1.5">
+                <div className="text-right text-white/40 text-xs font-normal font-['Public Sans'] leading-snug">
+                  ON
+                </div>
+                <div className="w-[49px] h-[26px] relative rounded-2xl">
+                  <div className="w-[49px] h-[26px] absolute bg-[#00cc88] rounded-full" />
+                  <div className="w-6 h-6 absolute left-[24px] top-[1px] bg-white rounded-full shadow" />
+                </div>
               </div>
             </div>
           </div>
-          {/* Toggle Audio Transcription */}
-          <div className="flex items-center gap-2">
+        </div>
+      ) : (
+        // Inactive/off state UI
+        <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
+          <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
+            <div className="flex items-center gap-4 w-full">
+              <div className="flex items-center">
+                <SoundIcon color={getSoundIconColor()} />
+              </div>
+              <div className="text-[#3a3a3a] text-[15px] font-medium font-inter leading-normal">
+                {audioState === 'saving' && 'Saving transcript...'}
+                {audioState === 'off' && (
+                  <span className="text-[#3a3a3a]">
+                    Enable Highlight Audio transcriptions
+                  </span>
+                )}
+                {audioState === 'inactive' && (
+                  <span className="text-[#3a3a3a]">No active transcription</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Box 2: Enable Microphone */}
+      {/* Removed the conditional rendering based on !isAudioOn to always display the second button */}
+      <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
+        <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
+          <div className="flex items-center gap-4 w-full">
+            <div className="flex items-center">
+              <MicrophoneIcon />
+            </div>
+            <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-normal">
+              Enable Microphone
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
             <button
               onClick={handleToggle}
               className="flex items-center gap-1.5 text-xs font-publicsans"
             >
               <div
                 className={`text-right ${
-                  audioState !== 'off' ? 'text-[#00cc88]' : 'text-white/40'
+                  isAudioOn ? 'text-[#00cc88]' : 'text-white/40'
                 } text-xs font-normal font-['Public Sans'] leading-snug`}
               >
-                {audioState !== 'off' ? 'ON' : 'OFF'}
+                {isAudioOn ? 'ON' : 'OFF'}
               </div>
               <div className="w-[49px] h-[26px] relative rounded-2xl">
                 <div
                   className={`w-[49px] h-[26px] left-0 top-0 absolute ${
-                    audioState !== 'off' ? 'bg-[#00cc88]' : 'bg-black'
+                    isAudioOn ? 'bg-[#00cc88]' : 'bg-black'
                   } rounded-full`}
                 />
                 <div
                   className={`w-6 h-6 absolute ${
-                    audioState !== 'off' ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
+                    isAudioOn ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
                   } top-[1px] rounded-full shadow`}
                 />
               </div>
@@ -87,88 +183,22 @@ const SettingsPage: React.FC = () => {
         </div>
       </div>
 
-
-      {/* Auto Save */}
-      <div className="flex flex-col gap-px mb-8">
-        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
-          <div className="text-[#EEEEEE] text-[15px] font-medium font-inter leading-6">Auto Save</div>
-          <div className="px-4 py-1.5 bg-white/[0.08] rounded-[10px] flex justify-center items-center">
-            <div className="text-[#B4B4B4] text-[15px] font-medium font-inter leading-5">After 2 Minutes</div>
-          </div>
-        </div>
-
-        <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
-          <div className="opacity-50 text-[#B4B4B4] text-[15px] font-normal font-inter leading-6">
-            Highlight will automatically save your conversation transcript after this duration of silence
-          </div>
-        </div>
-      </div>
-
-    {/* Auto Clear */}
-    <div className="flex flex-col gap-px mb-8">
-        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
-        <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Auto Clear</div>
-            <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
-            <div className="text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">Every 2 Weeks</div>
-        </div>
-    </div>
-    <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
-        <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">Highlight will automatically delete all of your conversation transcripts based on this setting</div>
-        </div>
-    </div>
-
-
-    {/* Audio Transcript Duration */}
-    <div className="flex flex-col gap-px mb-8">
-        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
-          <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcript Duration</div>
-          <div className="px-4 py-1.5 bg-white/10 rounded-[10px] justify-center items-center gap-2 flex">
-            <Dropdown
-              size="large"
-              value={asrDuration}
-              onSelect={handleDurationChange}
-              options={asrDurationOptions}
-              style={{ minWidth: '100px' }}
-              disabled={!asrEnabled} 
-            />
-          </div>
-        </div>
-
-        <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
-          <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">
-            Length of audio transcript duration that will be stored in memory. In the interest of your privacy, there is no data saved anywhere.
-          </div>
-        </div>
-      </div>
-
-    {/* Cloud Transcript */}
-      <div className="flex flex-col gap-px mb-8">
-        <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
-          <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Cloud Transcript</div>
-          <div className="h-[26px] justify-end items-center gap-1.5 flex">
-            <div className="text-right text-white/40 text-xs font-normal font-['Public Sans'] leading-snug">ON</div>
-            <div className="w-[49px] h-[26px] relative rounded-2xl">
-              <div className="w-[49px] h-[26px] left-0 top-0 absolute bg-[#00cc88] rounded-[100px]" />
-              <div className="w-6 h-6 left-[24px] top-[1px] absolute bg-white rounded-2xl shadow" />
+      {/* Box 3: Enable Audio Transcriptions */}
+      {(audioState === 'off' || audioState === 'inactive') && !isThirdButtonClicked && (
+        <button
+          onClick={() => {
+            handleToggle();
+            setIsThirdButtonClicked(true); // Set the third button as clicked
+          }}
+          className="flex flex-col w-full rounded-xl mb-8 bg-[#00dbfb]/20 gap-2"
+        >
+          <div className="flex justify-center items-center w-full h-12 rounded-xl">
+            <div className="text-[#00e6f5] text-[17px] font-medium font-inter leading-tight">
+              Enable Audio Transcriptions
             </div>
           </div>
-        </div>
-   
-        <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
-          <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">
-            Allow transcription to work in the cloud whenever your device is unable to transcribe your conversations locally. No audio or text transcription is stored anywhere to protect your privacy.
-          </div>
-        </div>
-      </div>
-
-        {/* Delete Button */}
-        <div className="flex flex-col gap-px mb-8">
-            <div className="flex items-center justify-center bg-[#222222] py-3 px-6 pr-3 bg-white/[0.02] rounded-xl overflow-hidden inline-flex">
-                <div className="text-[#ff3333] text-[17px] font-medium font-inter leading-tight">Delete All Transcripts</div>
-            </div>
-        </div>
-      </>
+        </button>
+      )}
+    </div>
   );
-};
-
-export default SettingsPage
+}

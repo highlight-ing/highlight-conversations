@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import AnimatedVoiceSquare from '@/components/ui/icons/AnimatedVoiceSquare';
 import { useConversations } from '@/contexts/ConversationContext';
 import { useDebouncedCallback } from 'use-debounce';
-import { Button } from '@/components/ui/button';
 import SoundIcon from '../Detail/Icon/SoundIcon';
 import MicrophoneIcon from '../Detail/Icon/MicrophoneIcon';
 
