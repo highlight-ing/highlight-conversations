@@ -22,9 +22,9 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
   // If a specific conversation is passed (e.g. a past convo), show it directly
   if (conversation) {
     return (
-      <div className="p-6" style={{ background: '#0F0F0F', minHeight: '100vh' }}>
+      <div className="p-6" style={{ background: 'black', minHeight: '100vh' }}>
         <Header conversation={conversation} />
-        <Summary summary={conversation.summary} />
+        <Summary />
         <Transcript transcript={conversation.transcript} />
       </div>
     );
@@ -46,8 +46,8 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
 
   // Active/live conversation
   return (
-    <div className="p-6" style={{ background: '#0F0F0F', minHeight: '100vh' }}>
-      <Header conversation={currentConversation} />
+    <div className="p-6" style={{ background: '#black', minHeight: '100vh' }}>
+      <Header conversation={conversation} icon={<MicrophoneIcon />} />
       <Summary summary={currentConversation.summary} />
       <Transcript transcript={currentConversation.transcript} />
     </div>
