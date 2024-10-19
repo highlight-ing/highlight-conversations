@@ -4,6 +4,7 @@ import { useConversations } from '@/contexts/ConversationContext'
 import TrashIcon from '../Detail/Icon/TrashIcon'
 import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { Pencil1Icon } from '@radix-ui/react-icons'
+import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 
 interface HeaderProps {
     conversation: ConversationData
@@ -14,6 +15,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
     const { updateConversation, deleteConversation } = useConversations()
     const [title, setTitle] = useState('')
     const [isEditing, setIsEditing] = useState(false)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
     const updateTitle = useCallback(() => {
@@ -60,8 +62,13 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
         }
     }
 
+    const handleDeleteClick = () => {
+        setIsDeleteDialogOpen(true)
+    }
+
     const handleDelete = () => {
         deleteConversation(conversation.id)
+        setIsDeleteDialogOpen(false)
     }
 
     return (
@@ -99,7 +106,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
             <div className="flex items-center gap-4">
               <div 
                 className="w-6 h-6 opacity-40 justify-center items-center inline-flex cursor-pointer hover:opacity-100"
-                onClick={handleDelete}
+                onClick={handleDeleteClick}
               >
                 <TrashIcon className="w-6 h-6" />
               </div>
@@ -111,6 +118,12 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
               </button>
             </div>
           </div>
+          {isDeleteDialogOpen && (
+            <DeleteConversationDialog
+              onDelete={handleDelete}
+              onCancel={() => setIsDeleteDialogOpen(false)}
+            />
+          )}
         </div>
     );
 };
