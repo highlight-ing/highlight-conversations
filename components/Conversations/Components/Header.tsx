@@ -5,7 +5,7 @@ import FlashIcon from '../Detail/Icon/FlashIcon'
 import GreyTrashIcon from '../Detail/Icon/GreyTrashIcon'
 import { panelFormatDate } from '@/data/conversations'
 import TrashIcon from '../Detail/Icon/TrashIcon'
-import { formatTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
+import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { Pencil1Icon } from '@radix-ui/react-icons'
 
 interface HeaderProps {
@@ -91,7 +91,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
                   </h1>
                 )}
                 <span className="text-[#484848] text-[15px] font-normal font-inter leading-normal">
-                  {formatTimestamp(conversation.startedAt)} - {formatTimestamp(conversation.endedAt)}
+                  {formatHeaderTimestamp(conversation.startedAt , conversation.endedAt)}
                 </span>
               </div>
             </div>

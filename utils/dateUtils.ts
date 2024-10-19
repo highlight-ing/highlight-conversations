@@ -1,7 +1,11 @@
 // utils/dateUtils.ts
 import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'; 
 
-export const formatTimestamp = (date: Date | string | number, locale?: string): string => {
+export const formatTimestamp = (
+  date: Date | string | number, 
+  locale?: string
+): string => {
   // Default to 'en-US' if no locale is provided
   const userLocale = locale || 'en-US';
 
@@ -27,6 +31,35 @@ export const formatTimestamp = (date: Date | string | number, locale?: string): 
 
   return formatter.format(dateObject);
 };
+
+// New formatting for Header: e.g. September 9 8:24am - 10:45am PDT 
+export const formatHeaderTimestamp = (
+  startDate: Date | string | number,
+  endDate?: Date | string | number
+): string => {
+  const startDateObj = startDate instanceof Date ? startDate : new Date(startDate);
+  const endDateObj = endDate instanceof Date ? endDate: new Date(endDate);
+
+  // check if dates are valid 
+  if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())){
+    console.error('Invalid date input:', { startDate, endDate });
+    return 'Invalid date range'; 
+  }
+  
+  // get the user's time zone
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // format the date part 
+  const datePart = format(startDateObj, 'MMMM d');
+
+  const startTimePart = formatInTimeZone(startDateObj, userTimeZone, 'h:mma');
+  const endTimePart = formatInTimeZone(endDateObj, userTimeZone, 'h:mma');
+
+  const timeZoneAbbr = formatInTimeZone(startDateObj, userTimeZone, 'zzz');
+
+  return `${datePart} ${startTimePart} - ${endTimePart} ${timeZoneAbbr}`;
+};
+
   
 export const getTimeDifference = (date: Date, now: Date = new Date()): number => {
   return now.getTime() - date.getTime();
