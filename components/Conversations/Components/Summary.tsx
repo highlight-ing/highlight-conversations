@@ -13,7 +13,9 @@ const Summary: React.FC<SummaryProps> = ({ summary, transcript }) => {
   const handleSummarizeClick = async () => {
     setIsSummarizing(true);
     try { 
+      console.log('Starting summarization...');
       const result = await summarizeConversation(transcript);
+      console.log('Summarization result:', result);
       setGeneratedSummary(result.summary);
     } catch (error) {
       console.error('Error summarizing transcript:', error);

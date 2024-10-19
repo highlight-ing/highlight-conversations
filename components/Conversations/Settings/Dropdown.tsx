@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import ReactDOM from 'react-dom';
+import { Portal } from 'react-portal';
+import styled from 'styled-components';
 
 interface Option {
   label: string;
@@ -16,6 +17,8 @@ interface DropdownProps {
   size?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
 }
 
+const PIXEL_SPACING = 4;
+
 const Dropdown: React.FC<DropdownProps> = ({
   value,
   options,
@@ -27,18 +30,22 @@ const Dropdown: React.FC<DropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [menuStyles, setMenuStyles] = useState<React.CSSProperties>({});
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
     },
-    [dropdownRef],
+    [dropdownRef, menuRef],
   );
 
   useEffect(() => {
@@ -54,21 +61,21 @@ const Dropdown: React.FC<DropdownProps> = ({
   }, [isOpen, handleClickOutside]);
 
   const calculateMenuPosition = () => {
-    if (dropdownRef.current) {
+    if (dropdownRef.current && menuRef.current) {
       const rect = dropdownRef.current.getBoundingClientRect();
 
       const styles: React.CSSProperties = {
-        position: 'absolute',
+        position: 'fixed',
         minWidth: rect.width,
         zIndex: 1000,
       };
 
       if (position === 'bottom') {
-        styles.top = rect.bottom + window.scrollY;
-        styles.left = rect.left + window.scrollX;
+        styles.top = rect.bottom + PIXEL_SPACING;
+        styles.left = rect.left;
       } else if (position === 'top') {
-        styles.top = rect.top + window.scrollY - rect.height;
-        styles.left = rect.left + window.scrollX;
+        styles.bottom = window.innerHeight - rect.top + PIXEL_SPACING;
+        styles.left = rect.left;
       }
 
       setMenuStyles(styles);
@@ -76,136 +83,6 @@ const Dropdown: React.FC<DropdownProps> = ({
   };
 
   const selectedOption = options.find((option) => option.value === value);
-
-  // Styles for the dropdown input
-  const getDropdownInputStyle = (): React.CSSProperties => {
-    const baseStyle: React.CSSProperties = {
-      display: 'flex',
-      alignItems: 'center',
-      borderRadius: 8,
-      boxSizing: 'border-box',
-      backgroundColor: isOpen ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)',
-      border: isOpen ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-      color: '#eeeeee',
-      fontWeight: 500,
-      cursor: disabled ? 'default' : 'pointer',
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      flexShrink: 0,
-      opacity: disabled ? 0.35 : 1,
-      pointerEvents: disabled ? 'none' : 'auto',
-    };
-
-    const sizeStyles: React.CSSProperties = {};
-    switch (size) {
-      case 'xsmall':
-        sizeStyles.height = 24;
-        sizeStyles.paddingLeft = 8;
-        sizeStyles.paddingRight = 30;
-        sizeStyles.fontSize = 12;
-        break;
-      case 'small':
-        sizeStyles.height = 32;
-        sizeStyles.paddingLeft = 12;
-        sizeStyles.paddingRight = 34;
-        sizeStyles.fontSize = 12;
-        break;
-      case 'medium':
-        sizeStyles.height = 36;
-        sizeStyles.paddingLeft = 12;
-        sizeStyles.paddingRight = 37;
-        sizeStyles.fontSize = 14;
-        break;
-      case 'large':
-        sizeStyles.height = 42;
-        sizeStyles.paddingLeft = 14;
-        sizeStyles.paddingRight = 39;
-        sizeStyles.fontSize = 14;
-        break;
-      case 'xlarge':
-        sizeStyles.height = 72;
-        sizeStyles.paddingLeft = 14;
-        sizeStyles.paddingRight = 39;
-        sizeStyles.fontSize = 14;
-        break;
-      default:
-        sizeStyles.height = 36;
-        sizeStyles.paddingLeft = 12;
-        sizeStyles.paddingRight = 37;
-        sizeStyles.fontSize = 14;
-        break;
-    }
-
-    return { ...baseStyle, ...sizeStyles };
-  };
-
-  // Styles for the arrow icon
-  const getArrowStyle = (): React.CSSProperties => {
-    const style: React.CSSProperties = {
-      position: 'absolute',
-      cursor: 'pointer',
-    };
-    switch (size) {
-      case 'xsmall':
-        style.top = 5;
-        style.right = 8;
-        break;
-      case 'small':
-        style.top = 7;
-        style.right = 12;
-        break;
-      case 'medium':
-        style.top = 7.5;
-        style.right = 12;
-        break;
-      case 'large':
-        style.top = 9.5;
-        style.right = 14;
-        break;
-      case 'xlarge':
-        style.top = 27;
-        style.right = 14;
-        break;
-      default:
-        style.top = 7.5;
-        style.right = 12;
-        break;
-    }
-    return style;
-  };
-
-  // Styles for the dropdown menu
-  const menuStyle: React.CSSProperties = {
-    position: 'absolute',
-    borderRadius: 8,
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    boxSizing: 'border-box',
-    backgroundColor: '#1A1A1A',
-    display: 'flex',
-    flexDirection: 'column',
-    boxShadow: '0 0 12px 0 rgba(0, 0, 0, 0.32)',
-    zIndex: 1000,
-    maxHeight: '30vh',
-    overflowY: 'auto',
-  };
-
-  // Styles for each menu item
-  const getMenuItemStyle = (isSelected: boolean): React.CSSProperties => {
-    return {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '8px 12px',
-      cursor: 'pointer',
-      color: '#eeeeee',
-      fontSize: 14,
-      fontWeight: 400,
-      whiteSpace: 'nowrap',
-      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-    };
-  };
-
-  // Handle hover effects for the dropdown input
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
     if (!disabled) setIsHovered(true);
@@ -215,80 +92,236 @@ const Dropdown: React.FC<DropdownProps> = ({
     if (!disabled) setIsHovered(false);
   };
 
-  // Update background and border colors on hover
-  const dropdownInputStyle = {
-    ...getDropdownInputStyle(),
-    backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.08)' : getDropdownInputStyle().backgroundColor,
-    border: isHovered
-      ? '1px solid rgba(255, 255, 255, 0.2)'
-      : getDropdownInputStyle().border,
-  };
-
   return (
     <>
-      <div
+      <DropdownInput
         ref={dropdownRef}
-        style={{ ...dropdownInputStyle, ...style }}
         onClick={() => !disabled && setIsOpen(!isOpen)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        $isOpen={isOpen}
+        $isHovered={isHovered}
+        $disabled={disabled}
+        $size={size}
+        style={style}
       >
         {selectedOption ? selectedOption.label : 'Select'}
-        <svg
-          style={getArrowStyle()}
-          width={size === 'small' || size === 'xsmall' ? '14' : '17'}
-          height={size === 'small' || size === 'xsmall' ? '14' : '17'}
-          viewBox="0 0 17 18"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d={
-              isOpen
-                ? 'M14.1099 11.1604L9.49156 6.54207C8.94614 5.99665 8.05364 5.99665 7.50823 6.54207L2.88989 11.1604'
-                : 'M14.1099 6.8396L9.49156 11.4579C8.94614 12.0034 8.05364 12.0034 7.50823 11.4579L2.88989 6.8396'
-            }
-            stroke="white"
-            strokeWidth="1.5"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-      {isOpen &&
-        ReactDOM.createPortal(
-          <div style={{ ...menuStyle, ...menuStyles }}>
+        <Arrow
+          size={size === 'small' || size === 'xsmall' ? '14' : '17'}
+          direction={isOpen ? 'up' : 'down'}
+          dropdownSize={size}
+        />
+      </DropdownInput>
+      {isOpen && (
+        <Portal>
+          <Menu ref={menuRef} style={menuStyles}>
             {options.map((option) => {
               const isSelected = value === option.value;
               return (
-                <div
+                <MenuItem
                   key={option.value}
                   onClick={(e) => {
                     e.stopPropagation();
                     onSelect(option);
                     setIsOpen(false);
                   }}
-                  style={getMenuItemStyle(isSelected)}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor =
-                      'rgba(255, 255, 255, 0.08)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = isSelected
-                      ? 'rgba(255, 255, 255, 0.08)'
-                      : 'transparent';
-                  }}
+                  selected={isSelected}
                 >
                   {option.label}
-                </div>
+                </MenuItem>
               );
             })}
-          </div>,
-          document.body,
-        )}
+          </Menu>
+        </Portal>
+      )}
     </>
   );
 };
 
 export default Dropdown;
+
+// Styled-components for Dropdown
+
+interface DropdownInputProps {
+  $isOpen: boolean;
+  $isHovered: boolean;
+  $disabled: boolean;
+  $size: string;
+}
+
+const DropdownInput = styled.div<DropdownInputProps>`
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background-color: ${(props) =>
+    props.$isOpen || props.$isHovered ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)'};
+  border: ${(props) =>
+    props.$isOpen || props.$isHovered
+      ? '1px solid rgba(255, 255, 255, 0.2)'
+      : '1px solid rgba(255, 255, 255, 0.1)'};
+  color: #eeeeee;
+  font-weight: 500;
+  cursor: ${(props) => (props.$disabled ? 'default' : 'pointer')};
+  position: relative;
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: ${(props) => (props.$disabled ? 0.35 : 1)};
+  pointer-events: ${(props) => (props.$disabled ? 'none' : 'auto')};
+
+  ${(props) => {
+    switch (props.$size) {
+      case 'xsmall':
+        return `
+          height: 24px;
+          padding-left: 8px;
+          padding-right: 30px;
+          font-size: 12px;
+        `;
+      case 'small':
+        return `
+          height: 32px;
+          padding-left: 12px;
+          padding-right: 34px;
+          font-size: 12px;
+        `;
+      case 'medium':
+        return `
+          height: 36px;
+          padding-left: 12px;
+          padding-right: 37px;
+          font-size: 14px;
+        `;
+      case 'large':
+        return `
+          height: 42px;
+          padding-left: 14px;
+          padding-right: 39px;
+          font-size: 14px;
+        `;
+      case 'xlarge':
+        return `
+          height: 72px;
+          padding-left: 14px;
+          padding-right: 39px;
+          font-size: 14px;
+        `;
+      default:
+        return `
+          height: 36px;
+          padding-left: 12px;
+          padding-right: 37px;
+          font-size: 14px;
+        `;
+    }
+  }}
+`;
+
+interface ArrowProps {
+  size: string;
+  color?: string;
+  direction: 'up' | 'down';
+  dropdownSize: string;
+}
+
+const Arrow: React.FC<ArrowProps> = ({
+  size = '17',
+  color = 'white',
+  direction,
+  dropdownSize,
+}) => {
+  return (
+    <DirectionalArrow
+      $dropdownSize={dropdownSize}
+      width={size}
+      height={size}
+      viewBox="0 0 17 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d={
+          direction === 'up'
+            ? 'M14.1099 11.1604L9.49156 6.54207C8.94614 5.99665 8.05364 5.99665 7.50823 6.54207L2.88989 11.1604'
+            : 'M14.1099 6.8396L9.49156 11.4579C8.94614 12.0034 8.05364 12.0034 7.50823 11.4579L2.88989 6.8396'
+        }
+        stroke={color}
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </DirectionalArrow>
+  );
+};
+
+const DirectionalArrow = styled.svg<{ $dropdownSize: string }>`
+  position: absolute;
+  cursor: pointer;
+
+  ${(props) => {
+    switch (props.$dropdownSize) {
+      case 'xsmall':
+        return `
+          top: 5px;
+          right: 8px;
+        `;
+      case 'small':
+        return `
+          top: 7px;
+          right: 12px;
+        `;
+      case 'medium':
+        return `
+          top: 7.5px;
+          right: 12px;
+        `;
+      case 'large':
+        return `
+          top: 9.5px;
+          right: 14px;
+        `;
+      case 'xlarge':
+        return `
+          top: 27px;
+          right: 14px;
+        `;
+      default:
+        return `
+          top: 7.5px;
+          right: 12px;
+        `;
+    }
+  }}
+`;
+
+const Menu = styled.div`
+  position: fixed;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  background-color: #1A1A1A;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.32);
+  z-index: 1000;
+  max-height: 30vh;
+  overflow-y: auto;
+`;
+
+const MenuItem = styled.div<{ selected: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #eeeeee;
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+  background-color: ${(props) =>
+    props.selected ? 'rgba(255, 255, 255, 0.08)' : 'transparent'};
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+`;

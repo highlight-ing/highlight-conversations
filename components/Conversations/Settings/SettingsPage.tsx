@@ -130,13 +130,13 @@ const SettingsPage: React.FC = () => {
       <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#EEEEEE] text-[15px] font-medium font-inter leading-6">Auto Save</div>
-            <Dropdown
-              value={autoSave}
-              onSelect={handleAutoSaveChange}
-              options={autoSaveOptions}
-              style={{ minWidth: '100px' }}
-              editable={true}
-            />
+          <Dropdown
+            value={autoSave}
+            options={autoSaveOptions}
+            onSelect={handleAutoSaveChange}
+            style={{ minWidth: '100px' }}
+            size="medium"
+          />
         </div>
 
         <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
@@ -151,6 +151,7 @@ const SettingsPage: React.FC = () => {
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
         <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Auto Clear</div>
             <Dropdown
+              key={autoClear}
               value={autoClear}
               onSelect={handleAutoClearChange}
               options={autoClearOptions}
@@ -169,6 +170,7 @@ const SettingsPage: React.FC = () => {
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Audio Transcript Duration</div>
           <div>
           <Dropdown
+            key={asrDuration}
             value={asrDuration}
             onSelect={handleAsrDurationChange}
             options={asrDurationOptions}
