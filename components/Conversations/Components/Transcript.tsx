@@ -10,6 +10,11 @@ interface Message {
 
 // Function to parse the transcript string into messages
 const parseTranscript = (transcript: string): Message[] => {
+  if (typeof transcript !== 'string'){
+    console.error('Invalid transcript provided to parseTranscript:', transcript);
+    return []; 
+  }
+
   return transcript
     .split('\n')
     .map((line): Message | null => {

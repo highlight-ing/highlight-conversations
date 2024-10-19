@@ -29,7 +29,11 @@ export const formatDate = (date: Date): string => {
 }
 
 // change it into September 9, 2024 9:24AM PDT format for conversation panel
-export const panelFormatDate = (date: Date): string => {
+export const panelFormatDate = (date: Date | undefined): string => {
+  if (!date || !(date instanceof Date)) {
+    console.error('Invalid date provided to panelFormatDate:', date);
+    return 'Invalid Date';
+  }
   return date.toLocaleString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -38,7 +42,7 @@ export const panelFormatDate = (date: Date): string => {
     minute: '2-digit',
     hour12: true, 
     timeZoneName: 'short'
-  })
+  });
 }
 
 

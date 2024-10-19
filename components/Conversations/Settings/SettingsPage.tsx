@@ -44,15 +44,15 @@ const SettingsPage: React.FC = () => {
   }, []);
 
   const handleAutoSaveChange = (option: { value: number }) => {
-    setAutoSave(option.value); // option.value is already a number
+    setAutoSave(option.value); 
   };
   
   const handleAutoClearChange = (option: { value: number }) => {
-    setAutoClear(option.value); // option.value is already a number
+    setAutoClear(option.value);
   };
   
   const handleAsrDurationChange = (option: { value: number }) => {
-    setAsrDuration(option.value); // option.value is already a number
+    setAsrDuration(option.value);
   };
   
 
@@ -123,6 +123,7 @@ const SettingsPage: React.FC = () => {
               onSelect={handleAutoSaveChange}
               options={autoSaveOptions}
               style={{ minWidth: '100px' }}
+              editable={true}
             />
         </div>
 
