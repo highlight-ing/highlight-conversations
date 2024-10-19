@@ -35,9 +35,6 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
         
         <div className="mt-8 sm:mt-12 md:mt-16 border-t border-[#222222]/50 pt-8">
           <div className="flex justify-between items-center mb-6">
-            <div className="flex space-x-4">
-              {/* Add your transcript buttons here */}
-            </div>
           </div>
           <Transcript transcript={conversation.transcript} />
         </div>
@@ -64,21 +61,11 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
   return (
     <div className="bg-[#0e0e0e] min-h-screen p-4 sm:p-6 md:p-8 lg:p-16">
       <div className="max-w-4xl mx-auto">
-        <Header conversation={conversation} />
-        
-        <div className="mt-8 sm:mt-12 md:mt-16">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-white text-2xl font-semibold font-['Inter']">Summary</h2>
-          </div>
-          <Summary />
-        </div>
+        <Header conversation={currentConversation} />
+      
         
         <div className="mt-8 sm:mt-12 md:mt-16 border-t border-[#222222]/50 pt-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-[#eeeeee] text-xl font-semibold font-['Inter']">Transcript</h2>
-            <div className="flex space-x-4">
-              {/* Add your transcript buttons here */}
-            </div>
           </div>
           <Transcript transcript={currentConversation.transcript} />
         </div>

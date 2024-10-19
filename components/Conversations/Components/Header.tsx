@@ -78,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
         : '';
 
     return (
-        <div className="w-full bg-black py-4 px-6">
+        <div className="w-full bg-[#0e0e0e] py-4 px-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-[13px]">
               <div className="w-8 h-8 justify-center items-center inline-flex">
