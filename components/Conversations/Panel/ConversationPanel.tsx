@@ -72,13 +72,11 @@ const ConversationPanel: React.FC = () => {
               <>
                 <ActiveConversationComponent />
                 {isAudioOn && (
-                  <>
-                    <ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />
-                    {/* Uncomment these if you want to show them as well */}
-                    {/* <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} /> */}
-                    {/* <ConversationList title={olderTitle} conversations={olderConversations} /> */}
-                  </>
+                  <ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />
                 )}
+                {/* Uncomment these if you want to show them as well */}
+                {/* <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} /> */}
+                {/* <ConversationList title={olderTitle} conversations={olderConversations} /> */}
               </>
             )}
           </motion.div>

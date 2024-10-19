@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useConversations } from '@/contexts/ConversationContext';
 import { useDebouncedCallback } from 'use-debounce';
 import SoundIcon from '../Detail/Icon/SoundIcon';
@@ -182,18 +183,24 @@ export default function ActiveConversationComponent() {
       )}
   
       {/* Box 3: Enable Audio Transcriptions */}
-      {!isAudioOn && (
-        <button
-          onClick={handleToggle}
-          className="flex flex-col w-full rounded-xl mb-8 bg-[#00dbfb]/20 gap-2"
-        >
-          <div className="flex justify-center items-center w-full h-12 rounded-xl">
-            <div className="text-[#00e6f5] text-[17px] font-medium font-inter leading-tight">
-              Enable Audio Transcriptions
+      <AnimatePresence>
+        {!isAudioOn && (
+          <motion.button
+            onClick={handleToggle}
+            className="flex flex-col w-full rounded-xl mb-8 bg-[#00dbfb]/20 gap-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex justify-center items-center w-full h-12 rounded-xl">
+              <div className="text-[#00e6f5] text-[17px] font-medium font-inter leading-tight">
+                Enable Audio Transcriptions
+              </div>
             </div>
-          </div>
-        </button>
-      )}
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

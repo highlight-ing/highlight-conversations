@@ -19,7 +19,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
   if (conversations.length === 0) return null
 
   return (
-    <div className="mb-6">
+    <div className="mb-1"> {/* Adjusted margin */}
       <SectionHeader title={title} />
       <AnimatePresence initial={false}>
         {conversations.map((conversation, index) => (
