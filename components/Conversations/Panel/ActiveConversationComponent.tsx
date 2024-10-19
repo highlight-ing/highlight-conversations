@@ -144,36 +144,68 @@ export default function ActiveConversationComponent() {
               <div className="flex items-center">
                 <MicrophoneIcon />
               </div>
-              <div
-                className={`text-[15px] font-medium font-inter leading-normal ${
-                  isAudioOn ? 'text-[#eeeeee]' : 'text-[#b4b4b4]'
-                }`}
-              >
-                {isAudioOn ? 'Microphone Enabled' : 'Enable Microphone'}
-              </div>
+              <AnimatePresence mode="wait">
+                {isAudioOn ? (
+                  <motion.div
+                    key="enabled"
+                    initial={{ opacity: 0, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, filter: 'blur(10px)' }}
+                    transition={{ duration: 0.2 }}
+                    className="text-[15px] font-medium font-inter leading-normal text-[#eeeeee]"
+                  >
+                    Microphone Enabled
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="enable"
+                    initial={{ opacity: 0, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, filter: 'blur(10px)' }}
+                    transition={{ duration: 0.2 }}
+                    className="text-[15px] font-medium font-inter leading-normal text-[#b4b4b4]"
+                  >
+                    Enable Microphone
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={handleToggle}
                 className="flex items-center gap-1.5 text-xs font-publicsans"
               >
-                <div
+                <motion.div
                   className={`text-right ${
                     isAudioOn ? 'text-[#00cc88]' : 'text-white/40'
                   } text-xs font-normal font-['Public Sans'] leading-snug`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   {isAudioOn ? 'ON' : 'OFF'}
-                </div>
+                </motion.div>
                 <div className="w-[49px] h-[26px] relative rounded-2xl">
-                  <div
+                  <motion.div
                     className={`w-[49px] h-[26px] left-0 top-0 absolute ${
                       isAudioOn ? 'bg-[#00cc88]' : 'bg-black'
                     } rounded-full`}
+                    layout
+                    transition={{ 
+                      type: 'spring', 
+                      stiffness: 700, 
+                      damping: 30 
+                    }}
                   />
-                  <div
+                  <motion.div
                     className={`w-6 h-6 absolute ${
                       isAudioOn ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
                     } top-[1px] rounded-full shadow`}
+                    layout
+                    transition={{ 
+                      type: 'tween', 
+                      duration: 0.3, 
+                      ease: 'easeInOut',
+                    }}
                   />
                 </div>
               </button>
