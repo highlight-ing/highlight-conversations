@@ -7,7 +7,7 @@ import { Pencil1Icon } from '@radix-ui/react-icons'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 
 interface HeaderProps {
-    conversation: ConversationData
+    conversation?: ConversationData
     icon?: React.ReactNode;  
 }
 
@@ -19,6 +19,10 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
     const inputRef = useRef<HTMLInputElement>(null)
 
     const updateTitle = useCallback(() => {
+        if (!conversation) {
+            setTitle('')
+            return
+        }
         if (!conversation.title || 
             conversation.title.trim() === '' || 
             conversation.title.startsWith('Conversation ended at')) {
@@ -26,11 +30,11 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
         } else {
             setTitle(conversation.title)
         }
-    }, [conversation.title, conversation.startedAt])
+    }, [conversation])
 
     useEffect(() => {
         updateTitle()
-    }, [updateTitle, conversation])
+    }, [updateTitle])
 
     useEffect(() => {
         const timer = setInterval(updateTitle, 60000) // Update every minute
@@ -49,6 +53,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
 
     const handleTitleBlur = () => {
         setIsEditing(false)
+        if (!conversation) return
         if (title.trim() === '') {
             setTitle(getRelativeTimeString(conversation.startedAt))
         } else {
@@ -62,61 +67,66 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
         }
     }
 
-    const handleDeleteClick = () => {
-        setIsDeleteDialogOpen(true)
+    const handleDelete = () => {
+        if (conversation) {
+            deleteConversation(conversation.id)
+        }
     }
 
-    const handleDelete = () => {
-        deleteConversation(conversation.id)
-        setIsDeleteDialogOpen(false)
-    }
+    const formattedTimestamp = conversation && conversation.startedAt && conversation.endedAt 
+        ? formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)
+        : '';
 
     return (
         <div className="w-full bg-black py-4 px-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-[13px]">
               <div className="w-8 h-8 justify-center items-center inline-flex">
-                <img className="w-8 h-8" src="https://via.placeholder.com/32x32" alt="Conversation icon" />
+                {icon || <img className="w-8 h-8" src="https://via.placeholder.com/32x32" alt="Conversation icon" />}
               </div>
-              <div className="flex flex-col">
-                {isEditing ? (
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={title}
-                    onChange={handleTitleChange}
-                    onBlur={handleTitleBlur}
-                    onKeyDown={handleKeyDown}
-                    className="text-white text-2xl font-semibold font-inter leading-[31px] bg-transparent outline-none"
-                  />
-                ) : (
-                  <h1
-                    className="text-white text-2xl font-semibold font-inter leading-[31px] cursor-pointer flex items-center"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    {title}
-                    <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white" />
-                  </h1>
-                )}
-                <span className="text-[#484848] text-[15px] font-normal font-inter leading-normal">
-                  {formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)}
-                </span>
-              </div>
+              {conversation && (
+                <div className="flex flex-col">
+                  {isEditing ? (
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={title}
+                      onChange={handleTitleChange}
+                      onBlur={handleTitleBlur}
+                      onKeyDown={handleKeyDown}
+                      className="text-white text-2xl font-semibold font-inter leading-[31px] bg-transparent outline-none"
+                    />
+                  ) : (
+                    <h1
+                      className="text-white text-2xl font-semibold font-inter leading-[31px] cursor-pointer flex items-center"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      {title}
+                      <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white" />
+                    </h1>
+                  )}
+                  <span className="text-[#484848] text-[15px] font-normal font-inter leading-normal">
+                    {formattedTimestamp}
+                  </span>
+                </div>
+              )}
             </div>
-            <div className="flex items-center gap-4">
-              <div 
-                className="w-6 h-6 opacity-40 justify-center items-center inline-flex cursor-pointer hover:opacity-100"
-                onClick={handleDeleteClick}
-              >
-                <TrashIcon className="w-6 h-6" />
+            {conversation && (
+              <div className="flex items-center gap-4">
+                <div 
+                  className="w-6 h-6 opacity-40 justify-center items-center inline-flex cursor-pointer hover:opacity-100"
+                  onClick={handleDelete}
+                >
+                  <TrashIcon className="w-6 h-6" />
+                </div>
+                <button className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
+                  Open
+                </button>
+                <button className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
+                  Copy Link
+                </button>
               </div>
-              <button className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
-                Open
-              </button>
-              <button className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
-                Copy Link
-              </button>
-            </div>
+            )}
           </div>
           {isDeleteDialogOpen && (
             <DeleteConversationDialog

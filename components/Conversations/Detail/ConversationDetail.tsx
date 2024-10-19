@@ -6,6 +6,7 @@ import Transcript from '../Components/Transcript';
 import Summary from '../Components/Summary';
 import TranscriptionDisabled from './ConversationDetail/TranscriptionDisabled';
 import NoAudioDetected from './ConversationDetail/NoAudioDetected';
+import VoiceSquareIcon from './Icon/VoiceSquareIcon';
 import ActiveConversation from './ConversationDetail/ActiveConversation';
 
 interface ConversationDetailProps {
@@ -47,7 +48,7 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
   // Active/live conversation
   return (
     <div className="p-6" style={{ background: '#black', minHeight: '100vh' }}>
-      <Header conversation={conversation} icon={<MicrophoneIcon />} />
+      <Header conversation={conversation} icon={<VoiceSquareIcon />} />
       <Summary summary={currentConversation.summary} />
       <Transcript transcript={currentConversation.transcript} />
     </div>

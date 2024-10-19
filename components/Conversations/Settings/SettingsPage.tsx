@@ -2,6 +2,17 @@ import React, { useState, useMemo } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
 import { useConversations } from '@/contexts/ConversationContext';
 import Dropdown from './Dropdown';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type AudioState = 'active' | 'inactive' | 'off';
 
@@ -13,6 +24,7 @@ const SettingsPage: React.FC = () => {
   const [asrDuration, setAsrDuration] = useState<number>(2);
   const [autoClear, setAutoClear] = useState<number>(2); 
   const [autoSave, setAutoSave] = useState<number>(1); 
+  const { deleteAllConversations } = useConversations(); 
 
   // Options for the dropdown (box 1)
   const autoSaveOptions = useMemo(() => {
@@ -194,10 +206,26 @@ const SettingsPage: React.FC = () => {
 
         {/* Delete Button */}
         <div className="flex flex-col gap-px mb-8">
-            <div className="flex items-center justify-center bg-[#222222] py-3 px-6 pr-3 bg-white/[0.02] rounded-xl overflow-hidden inline-flex">
-                <div className="text-[#ff3333] text-[17px] font-medium font-inter leading-tight">Delete All Transcripts</div>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <div className="flex items-center justify-center bg-[#222222] py-3 px-6 pr-3 bg-white/[0.02] rounded-xl overflow-hidden inline-flex cursor-pointer">
+              <div className="text-[#ff3333] text-[17px] font-medium font-inter leading-tight">Delete All Transcripts</div>
             </div>
-        </div>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete all your transcripts.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={deleteAllConversations}>Delete All</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
       </>
   );
 };
