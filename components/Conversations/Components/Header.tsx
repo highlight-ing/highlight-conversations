@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
-import FlashIcon from '../Detail/Icon/FlashIcon'
-import GreyTrashIcon from '../Detail/Icon/GreyTrashIcon'
-import { panelFormatDate } from '@/data/conversations'
 import TrashIcon from '../Detail/Icon/TrashIcon'
 import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { Pencil1Icon } from '@radix-ui/react-icons'
@@ -14,7 +11,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
-    const { updateConversation } = useConversations()
+    const { updateConversation, deleteConversation } = useConversations()
     const [title, setTitle] = useState('')
     const [isEditing, setIsEditing] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -63,6 +60,10 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
         }
     }
 
+    const handleDelete = () => {
+        deleteConversation(conversation.id)
+    }
+
     return (
         <div className="w-full bg-black py-4 px-6">
           <div className="flex justify-between items-center">
@@ -91,12 +92,15 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
                   </h1>
                 )}
                 <span className="text-[#484848] text-[15px] font-normal font-inter leading-normal">
-                  {formatHeaderTimestamp(conversation.startedAt , conversation.endedAt)}
+                  {formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-6 h-6 opacity-40 justify-center items-center inline-flex">
+              <div 
+                className="w-6 h-6 opacity-40 justify-center items-center inline-flex cursor-pointer hover:opacity-100"
+                onClick={handleDelete}
+              >
                 <TrashIcon className="w-6 h-6" />
               </div>
               <button className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
@@ -108,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
             </div>
           </div>
         </div>
-      );
-    };
-    
-    export default Header;
+    );
+};
+
+export default Header;
