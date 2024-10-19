@@ -24,6 +24,7 @@ const SettingsPage: React.FC = () => {
   const [asrDuration, setAsrDuration] = useState<number>(2);
   const [autoClear, setAutoClear] = useState<number>(2); 
   const [autoSave, setAutoSave] = useState<number>(1); 
+  const [isCloudTranscriptOn, setIsCloudTranscriptOn] = useState<boolean>(true);
   const { deleteAllConversations } = useConversations(); 
 
   // Options for the dropdown (box 1)
@@ -79,6 +80,9 @@ const SettingsPage: React.FC = () => {
     return audioState === 'active' ? '#4CEDA0' : '#484848';
   };
 
+  const handleCloudToggle = () => {
+    setIsCloudTranscriptOn(!isCloudTranscriptOn);
+  };
 
   return (
     <>
@@ -187,18 +191,39 @@ const SettingsPage: React.FC = () => {
       </div>
 
     {/* Cloud Transcript */}
+
+      {/* Cloud Transcript */}
       <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Cloud Transcript</div>
-          <div className="h-[26px] justify-end items-center gap-1.5 flex">
-            <div className="text-right text-white/40 text-xs font-normal font-['Public Sans'] leading-snug">ON</div>
-            <div className="w-[49px] h-[26px] relative rounded-2xl">
-              <div className="w-[49px] h-[26px] left-0 top-0 absolute bg-[#00cc88] rounded-[100px]" />
-              <div className="w-6 h-6 left-[24px] top-[1px] absolute bg-white rounded-2xl shadow" />
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCloudToggle}
+              className="flex items-center gap-1.5 text-xs font-publicsans"
+            >
+              <div
+                className={`text-right ${
+                  isCloudTranscriptOn ? 'text-[#00cc88]' : 'text-white/40'
+                } text-xs font-normal font-['Public Sans'] leading-snug`}
+              >
+                {isCloudTranscriptOn ? 'ON' : 'OFF'}
+              </div>
+              <div className="w-[49px] h-[26px] relative rounded-2xl">
+                <div
+                  className={`w-[49px] h-[26px] left-0 top-0 absolute ${
+                    isCloudTranscriptOn ? 'bg-[#00cc88]' : 'bg-black'
+                  } rounded-full`}
+                />
+                <div
+                  className={`w-6 h-6 absolute ${
+                    isCloudTranscriptOn ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
+                  } top-[1px] rounded-full shadow`}
+                />
+              </div>
+            </button>
           </div>
         </div>
-   
+
         <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
           <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">
             Allow transcription to work in the cloud whenever your device is unable to transcribe your conversations locally. No audio or text transcription is stored anywhere to protect your privacy.
