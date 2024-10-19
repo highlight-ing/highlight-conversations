@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons';
 import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow';
+import ClipboardTextIcon from '../Detail/Icon/ClipboardIcon';
 
 interface Message {
   time: string;
@@ -8,17 +9,15 @@ interface Message {
   text: string;
 }
 
-// Function to parse the transcript string into messages
 const parseTranscript = (transcript: string): Message[] => {
-  if (typeof transcript !== 'string'){
+  if (typeof transcript !== 'string') {
     console.error('Invalid transcript provided to parseTranscript:', transcript);
-    return []; 
+    return [];
   }
 
   return transcript
     .split('\n')
     .map((line): Message | null => {
-      // Adjusted regex for new format
       const regex = /^(.+?)\s+(.+?):\s*(.*)$/;
       const match = line.match(regex);
       if (match) {
@@ -30,7 +29,6 @@ const parseTranscript = (transcript: string): Message[] => {
     .filter((message): message is Message => message !== null);
 };
 
-// TranscriptProps interface
 interface TranscriptProps {
   transcript: string;
 }
@@ -44,25 +42,19 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
   });
 
   return (
-    <div className="w-[712px] h-[667px] pt-8 border-t border-[#222222]/50 flex-col justify-start items-start gap-6 inline-flex">
-      <div className="text-[#eeeeee] text-xl font-semibold font-inter">
-        Transcript
+    <div className="w-full mt-8 border-t border-[#222222]/50">
+      <div className="flex justify-between items-center mt-8 mb-6">
+        <h2 className="text-[#eeeeee] text-xl font-semibold font-inter">Transcript</h2>
+        <TranscriptButtonRow buttons={buttons} />
       </div>
-      <div
-        className="whitespace-pre-wrap text-primary font-normal text-base leading-7 font-inter"
-        style={{
-          alignSelf: 'stretch',
-        }}
-      >
+      <div className="max-h-[calc(100vh-20rem)] overflow-y-auto space-y-6">
         {messages.map((message, index) => (
-          <div key={index} className="mb-4">
-            <div
-              className={
-                message.sender.toLowerCase() === 'me' || message.sender.toLowerCase() === 'self'
-                  ? "text-[#4ceda0] text-[13px] font-medium font-inter leading-tight"
-                  : "opacity-20 text-white text-[13px] font-medium font-inter leading-tight"
-              }
-            >
+          <div key={index} className="flex flex-col gap-1">
+            <div className={`text-[13px] font-medium font-inter leading-tight ${
+              message.sender.toLowerCase() === 'me' || message.sender.toLowerCase() === 'self'
+                ? "text-[#4ceda0]/40"
+                : "opacity-20 text-white"
+            }`}>
               {message.time} - {message.sender}:
             </div>
             <div className="text-[#eeeeee] text-[15px] font-normal font-inter leading-normal">
@@ -71,7 +63,6 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
           </div>
         ))}
       </div>
-      <TranscriptButtonRow buttons={buttons} />
     </div>
   );
 };
