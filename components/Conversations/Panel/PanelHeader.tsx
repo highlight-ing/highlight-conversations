@@ -37,25 +37,3 @@ const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActiv
 export default PanelHeader
 
 
-/**
- *      <IconButton
-          icon={<ForwardItem variant={isMergeActive ? "Bold" : "Linear"} size={24} />}
-          onClick={onMergeActivate}
-          tooltip={isMergeActive ? 'Cancel Merge' : 'Merge Conversations'}
-          className={isMergeActive ? 'text-[#4CEDA0]' : 'text-[#EEEEEE] hover:text-[#4CEDA0]'}
-        />
-
-        <IconButton
-          icon={<Trash variant="Bold" size={24} />}
-          onClick={handleDeleteAll}
-          tooltip="Delete all Conversations"
-          className="text-[#EEEEEE] hover:text-[#FF395D]"
-        />
-
-        <IconButton
-          icon={<Setting2 variant="Bold" size={24} />}
-          onClick={handleSettings}
-          tooltip="Settings"
-          className="text-[#EEEEEE] hover:text-[#4CEDA0]"
-        />
- */

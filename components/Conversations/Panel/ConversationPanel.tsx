@@ -9,7 +9,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import SettingsPage from '../Settings/SettingsPage';
 import FloatingMergeControl from '../Panel/FloatingMergeControl';
 
-
 // Define the possible states for audioState
 type AudioState = 'on' | 'off';
 

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
 import { useConversations } from '@/contexts/ConversationContext';
 import Dropdown from './Dropdown';
@@ -17,15 +17,20 @@ import {
 type AudioState = 'active' | 'inactive' | 'off';
 
 const SettingsPage: React.FC = () => {
-  // Audio Transcription State 
-  const [audioState, setAudioState] = useState<AudioState>('inactive');
   // Conversation State 
   const { isAudioOn, setIsAudioOn } = useConversations();
+  // Audio Transcription State 
+  const [audioState, setAudioState] = useState<AudioState>('inactive');
   const [asrDuration, setAsrDuration] = useState<number>(2);
   const [autoClear, setAutoClear] = useState<number>(2); 
   const [autoSave, setAutoSave] = useState<number>(1); 
   const [isCloudTranscriptOn, setIsCloudTranscriptOn] = useState<boolean>(true);
   const { deleteAllConversations } = useConversations(); 
+
+  // Initialize audioState based on isAudioOn
+  useEffect(() => {
+    setAudioState(isAudioOn ? 'active' : 'off');
+  }, [isAudioOn]);
 
   // Options for the dropdown (box 1)
   const autoSaveOptions = useMemo(() => {
@@ -87,7 +92,11 @@ const SettingsPage: React.FC = () => {
   return (
     <>
       { /* Audio Transcription */ }
-      <div className="w-full h-14 px-5 py-4 mb-8 rounded-2xl border border-[#4ceda0]/20 flex flex-col justify-start items-start gap-4">
+      <div
+        className={`w-full h-14 px-5 py-4 mb-8 rounded-2xl border ${
+          audioState !== 'off' ? 'border-[#4ceda0]/20' : 'border-[#222222]'
+        } flex flex-col justify-start items-start gap-4`}
+      >
         <div className="w-full h-6 flex justify-between items-center">
           <div className="flex items-center">
             <div className="flex items-center gap-4">

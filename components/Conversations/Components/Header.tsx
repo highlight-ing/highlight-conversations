@@ -67,10 +67,26 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
         }
     }
 
+    // handling the trash icon 
     const handleDelete = () => {
         if (conversation) {
             deleteConversation(conversation.id)
         }
+    }
+
+    // handling copy link
+    const handleCopyLink = () => {
+      if (conversation) {
+          const baseUrl = window.location.origin; 
+          const conversationUrl = `${baseUrl}/conversations/${conversation.id}`;
+          navigator.clipboard.writeText(conversationUrl)
+            .then(() => {
+              console.log('Link copied to clipboard:', conversationUrl);
+            })
+            .catch((error) => {
+              console.error('Failed to copy link:', error);
+            });
+      }
     }
 
     const formattedTimestamp = conversation && conversation.startedAt && conversation.endedAt 
@@ -122,7 +138,10 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
                 <button className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
                   Open
                 </button>
-                <button className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
+                <button 
+                  onClick={handleCopyLink}
+                  className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight"
+                >
                   Copy Link
                 </button>
               </div>
