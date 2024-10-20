@@ -135,6 +135,7 @@ export const summarizeConversation = async (
 ): Promise<SummarizedConversationData> => {
   try {
     const processedData = await getTextPredictionFromHighlight(transcript, customPrompt, signal)
+    console.log('Processed data:', processedData)
     return {
       topics: processedData.topics,
       summary: processedData.summary,
@@ -158,6 +159,10 @@ const getTextPredictionFromHighlight = async (
   const summaryInstruction = customPrompt || DEFAULT_SUMMARY_INSTRUCTION
   const systemPrompt = `${BASE_SYSTEM_PROMPT} ${summaryInstruction}`
 
+  console.log('Transcript:', transcript)
+  console.log('Summary instruction:', summaryInstruction)
+  console.log('System prompt:', systemPrompt)
+
   const messages: LLMMessage[] = [
     {
       role: 'system',
@@ -179,6 +184,7 @@ const getTextPredictionFromHighlight = async (
         throw new DOMException('Aborted', 'AbortError')
       }
       accumulatedText += chunk
+      console.log('Accumulated text:', accumulatedText)
     }
 
     // Parse the accumulated text as JSON

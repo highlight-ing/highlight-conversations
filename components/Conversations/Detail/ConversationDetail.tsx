@@ -30,7 +30,7 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
         <div className="mt-8 sm:mt-12 md:mt-16">
           <div className="flex justify-between items-center mb-4">
           </div>
-          <Summary />
+          <Summary summary={conversation.summary} transcript={conversation.transcript} />
         </div>
         
         <div className="mt-8 sm:mt-12 md:mt-16 border-t border-[#222222]/50 pt-8">
