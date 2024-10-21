@@ -13,44 +13,49 @@ const INACTIVE_LINE_COLOR = 'rgba(72, 72, 72, 1)';
 
 export default function ActiveConversationComponent() {
   const [audioState, setAudioState] = useState<AudioState>('inactive');
-  const [visualState, setVisualState] = useState<AudioState>('inactive');
-  const { micActivity, elapsedTime, isSaving, isAudioOn, setIsAudioOn, saveCurrentConversation } = useConversations();
+  const { micActivity, isSaving, isAudioOn, setIsAudioOn, saveCurrentConversation } = useConversations();
 
   const slowDebounce = useDebouncedCallback(
-    (newState: AudioState) => {
-      setVisualState(newState);
+    () => {
+      setAudioState('inactive');
     },
-    2500 // 2.5 seconds debounce for visual changes
+    30000 // 30 seconds debounce for transitioning to inactive
   );
 
   const fastDebounce = useDebouncedCallback(
-    (newState: AudioState) => {
-      setAudioState(newState);
-      setVisualState(newState);
+    () => {
+      setAudioState('active');
     },
-    100 // 100ms debounce for going to active
+    100 // 100ms debounce for transitioning to active
+  );
+
+  const saveDebounce = useDebouncedCallback(
+    () => {
+      saveCurrentConversation();
+    },
+    60000 // 60 seconds debounce for saving transcript
   );
 
   const updateAudioState = useCallback(() => {
     if (!isAudioOn) {
       setAudioState('off');
-      setVisualState('off');
+      saveDebounce.cancel();
       return;
     }
 
     if (isSaving) {
       setAudioState('saving');
-      setVisualState('saving');
       return;
     }
 
     if (micActivity > 0) {
-      fastDebounce('active');
+      fastDebounce();
+      saveDebounce.cancel();
     } else {
-      setAudioState('inactive');
-      slowDebounce('inactive');
+      slowDebounce();
+      saveDebounce();
     }
-  }, [isAudioOn, micActivity, isSaving, fastDebounce, slowDebounce]);
+  }, [isAudioOn, micActivity, isSaving, fastDebounce, slowDebounce, saveDebounce]);
 
   useEffect(() => {
     updateAudioState();
@@ -60,22 +65,9 @@ export default function ActiveConversationComponent() {
     const newIsOn = !isAudioOn;
     setIsAudioOn(newIsOn);
     setAudioState(newIsOn ? (micActivity > 0 ? 'active' : 'inactive') : 'off');
-  };
-
-  const handleSave = async () => {
-    await saveCurrentConversation();
-  };
-
-  const formatElapsedTime = (seconds: number): string => {
-    if (seconds < 0) {
-      return '0s';
+    if (!newIsOn) {
+      saveDebounce.cancel();
     }
-    if (seconds < 60) {
-      return `${seconds}s`;
-    }
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}min ${remainingSeconds}s`;
   };
 
   const getSoundIconColor = () => {
@@ -86,7 +78,6 @@ export default function ActiveConversationComponent() {
     <div className="flex flex-col w-full h-full">
       {/* Box 1 */}
       {audioState === 'active' ? (
-        // New layout when microphone is enabled and audio is active
         <div className="w-full h-14 px-5 py-4 rounded-2xl border border-[#4ceda0]/20 flex flex-col justify-start items-start gap-4">
           <div className="w-full h-6 flex justify-between items-center">
             <div className="flex items-center">
@@ -113,7 +104,6 @@ export default function ActiveConversationComponent() {
           </div>
         </div>
       ) : (
-        // Existing layout for other audio states
         <div className="flex flex-col rounded-2xl border border-[#222222] w-full mb-8 gap-2 py-2">
           <div className="flex justify-between items-center px-6 pr-3 py-2 rounded-t-2xl overflow-hidden w-full">
             <div className="flex items-center gap-4 w-full">

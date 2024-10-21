@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ConversationData } from '@/data/conversations';
 import { useConversations } from '@/contexts/ConversationContext';  
 import Header from '../Components/Header';
@@ -16,58 +16,68 @@ interface ConversationDetailProps {
 
 const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
   const {
-    currentConversation,      // Get current conversation from context (used for live convos)
-    micActivity,              // Get mic activity (used for live convos)
-    isAudioOn,                // Get audio state (on/off) (used for live convos)
-  } = useConversations();      // Access all needed state and functions from ConversationContext
+    micActivity,
+    isAudioOn,
+    saveCurrentConversation,
+  } = useConversations();
 
-  // If a specific conversation is passed (e.g. a past convo), show it directly
+  const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
+  const [saveTimer, setSaveTimer] = useState<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    let transcribeTimer: NodeJS.Timeout | null = null;
+
+    if (isAudioOn && micActivity > 0) {
+      // Start transcribing when sound is detected
+      setIsTranscribing(true);
+      // Clear any existing timers
+      if (transcribeTimer) clearTimeout(transcribeTimer);
+      if (saveTimer) {
+        clearTimeout(saveTimer);
+        setSaveTimer(null);
+      }
+    } else if (isAudioOn && micActivity === 0) {
+      // Set a timer to stop transcribing after 30 seconds of silence
+      transcribeTimer = setTimeout(() => {
+        setIsTranscribing(false);
+      }, 30000); // 30 seconds
+
+      // Set a timer to save the transcript after 60 seconds of silence
+      if (!saveTimer) {
+        const newSaveTimer = setTimeout(() => {
+          saveCurrentConversation();
+          setSaveTimer(null);
+        }, 60000); // 60 seconds
+        setSaveTimer(newSaveTimer);
+      }
+    } else {
+      // If audio is off, stop transcribing immediately
+      setIsTranscribing(false);
+      if (saveTimer) {
+        clearTimeout(saveTimer);
+        setSaveTimer(null);
+      }
+    }
+
+    // Cleanup the timers on component unmount or when dependencies change
+    return () => {
+      if (transcribeTimer) clearTimeout(transcribeTimer);
+      if (saveTimer) clearTimeout(saveTimer);
+    };
+  }, [isAudioOn, micActivity, saveTimer, saveCurrentConversation]);
+
   if (conversation) {
-    return (
-      <CompletedConversation conversation={conversation}/>
-
-      /**
-       * 
-        <div className="bg-[#0e0e0e] min-h-screen p-4 sm:p-6 md:p-8 lg:p-16">
-        <div className="max-w-4xl mx-auto">
-          <Header conversation={conversation} />
-          
-          <div className="mt-8 sm:mt-12 md:mt-16">
-            <div className="flex justify-between items-center mb-4">
-            </div>
-            <Summary summary={conversation.summary} transcript={conversation.transcript} />
-          </div>
-          
-          <div className="mt-8 sm:mt-12 md:mt-16 border-t border-[#222222]/50 pt-8">
-            <div className="flex justify-between items-center mb-6">
-            </div>
-            <Transcript transcript={conversation.transcript} />
-          </div>
-        </div>
-      </div>
-       * 
-       */
-    );
+    return <CompletedConversation conversation={conversation} />;
   }
 
-  // If there's no conversation passed, handle live conversation logic
-  
-
-  // Handle live conversation based on mic/audio state
   if (!isAudioOn) {
-    // If the microphone is disabled, show TranscriptionDisabled
     return <TranscriptionDisabled />;
   }
 
-  if (isAudioOn && micActivity === 0) {
-    // If the microphone is enabled but there's no audio activity, show NoAudioDetected
+  if (isAudioOn && !isTranscribing) {
     return <NoAudioDetected />;
   }
 
-  // Active/live conversation
-  return (
-    <ActiveConversation />
-  );
+  return <ActiveConversation />;
 };
-
 export default ConversationDetail;

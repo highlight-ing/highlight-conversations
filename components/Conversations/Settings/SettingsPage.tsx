@@ -14,6 +14,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import AutoClearSelection from '@/components/Header/AutoClearSelection';
+import AutoSaveSelection from '@/components/Header/AutoSaveSelection';
 
 type AudioState = 'active' | 'inactive' | 'off';
 
@@ -33,24 +35,6 @@ const SettingsPage: React.FC = () => {
     setAudioState(isAudioOn ? 'active' : 'off');
   }, [isAudioOn]);
 
-  // Options for the dropdown (box 1)
-  const autoSaveOptions = useMemo(() => {
-    return [
-      { label: 'After 30 Seconds', value: 0.5 },
-      { label: 'After 1 Minute', value: 1 },
-      { label: 'After 2 Minutes', value: 2 },
-    ]
-  }, []);
-
-  // Options for the dropdown (box 2)
-  const autoClearOptions = useMemo(() => {
-    return [
-      { label: 'Every week', value: 1 },
-      { label: 'Every 2 weeks', value: 2 },
-      { label: 'Every month', value: 4 },
-    ]
-  }, []);
-
   // Options for the dropdown (box 3)
   const asrDurationOptions = useMemo(() => {
     return [
@@ -61,15 +45,6 @@ const SettingsPage: React.FC = () => {
       { label: '24 hours', value: 24 },
     ];
   }, []);
-
-  const handleAutoSaveChange = (option: { value: number }) => {
-    setAutoSave(option.value); 
-  };
-  
-  const handleAutoClearChange = (option: { value: number }) => {
-    setAutoClear(option.value);
-  };
-  
   const handleAsrDurationChange = (option: { value: number }) => {
     setAsrDuration(option.value);
   };
@@ -149,12 +124,9 @@ const SettingsPage: React.FC = () => {
       <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
           <div className="text-[#EEEEEE] text-[15px] font-medium font-inter leading-6">Auto Save</div>
-          <Dropdown
+          <AutoSaveSelection
             value={autoSave}
-            options={autoSaveOptions}
-            onSelect={handleAutoSaveChange}
-            style={{ minWidth: '100px' }}
-            size="medium"
+            onIdleTimerChange={setAutoSave}
           />
         </div>
 
@@ -169,13 +141,10 @@ const SettingsPage: React.FC = () => {
     <div className="flex flex-col gap-px mb-8">
         <div className="flex justify-between items-center py-3 px-6 pr-3 bg-white/[0.02] rounded-t-2xl overflow-hidden">
         <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">Auto Clear</div>
-            <Dropdown
-              key={autoClear}
-              value={autoClear}
-              onSelect={handleAutoClearChange}
-              options={autoClearOptions}
-              style={{ minWidth: '100px' }}
-            />
+          <AutoClearSelection
+            value={autoClear}
+            onChange={setAutoClear}
+          />
     </div>
     <div className="px-6 py-4 bg-white/[0.02] rounded-b-2xl">
         <div className="grow shrink basis-0 opacity-50 text-[#b4b4b4] text-[15px] font-normal font-inter leading-normal">Highlight will automatically delete all of your conversation transcripts based on this setting</div>
