@@ -11,6 +11,8 @@ import { Pencil1Icon } from '@radix-ui/react-icons';
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
 import VoiceSquareIcon from '../Icon/VoiceSquareIcon';
 
+import handleCopyTranscript from '@/components/Card/CurrentConversationCard';
+
 interface HeaderProps {
   conversation?: ConversationData;
   icon?: React.ReactNode;
@@ -131,7 +133,12 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
             <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
           </div>
           <div className="flex items-center justify-center gap-2 px-4 py-1.5 rounded-[10px] bg-white/10">
-            <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Copy Link</div>
+            <div 
+              className="text-[15px] font-medium leading-tight text-[#b4b4b4]"
+              onClick={handleCopyTranscript}
+            >
+              Copy Link
+            </div>
           </div>
         </div>
 
@@ -173,7 +180,7 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
         </div>
 
         {/* Transcript Component */}
-        <div className="w-[624px] left-[64px] absolute" style={{ top: 176 +summaryHeight + 20 }}>
+        <div className="w-[624px] left-[64px] absolute" style={{ top: 176 + summaryHeight + 20 }}>
           {conversation && (
             <Transcript transcript={conversation.transcript} />
           )}
