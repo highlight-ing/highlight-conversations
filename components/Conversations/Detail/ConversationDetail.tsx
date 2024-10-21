@@ -66,18 +66,7 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
 
   // Active/live conversation
   return (
-    <div className="bg-[#0e0e0e] min-h-screen p-4 sm:p-6 md:p-8 lg:p-16">
-      <div className="max-w-4xl mx-auto">
-        <Header conversation={currentConversation} />
-      
-        
-        <div className="mt-8 sm:mt-12 md:mt-16 border-t border-[#222222]/50 pt-8">
-          <div className="flex justify-between items-center mb-6">
-          </div>
-          <Transcript transcript={currentConversation.transcript} />
-        </div>
-      </div>
-    </div>
+    <ActiveConversation />
   );
 };
 
