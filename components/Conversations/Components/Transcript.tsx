@@ -59,7 +59,11 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
         <div className="w-[132px] h-6 justify-between items-center flex">
           <h2 className="text-[#eeeeee] text-xl font-semibold font-inter">Transcript</h2>
           <button onClick={copyToClipboard} className="w-5 h-5 justify-center items-center flex">
-            <GreyClipboardIcon />
+            <GreyClipboardIcon 
+              className={`text-gray-600 transition-transform transition-colors duration-200 ${
+                copyStatus === 'success' ? 'animate-gentle-scale scale-110' : ''
+              } hover:text-gray-400 active:text-white`} 
+            />
           </button>
         </div>
       </div>
