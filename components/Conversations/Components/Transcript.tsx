@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons';
 import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow';
 import GreyClipboardIcon from '../Detail/Icon/ConversationDetailIcon/GreyClipboardIcon';
@@ -34,6 +34,7 @@ interface TranscriptProps {
 }
 
 const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
+  const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default');
   const messages: Message[] = parseTranscript(transcript);
 
   const buttons = useTranscriptButtons({
@@ -41,18 +42,28 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
     buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback'],
   });
 
+  // Function to copy transcript to clipboard
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(transcript).then(() => {
+      setCopyStatus('success');
+      setTimeout(() => setCopyStatus('default'), 2000); // Reset status after 2 seconds
+    }).catch(err => {
+      console.error('Failed to copy transcript: ', err);
+    });
+  };
+
   return (
     <div className="w-[712px] h-[667px] pt-8 border-t border-[#222222]/50 flex-col justify-start items-start gap-6 inline-flex">
       {/* Header Section */}
       <div className="w-[677px] justify-start items-start gap-4 inline-flex">
         <div className="w-[132px] h-6 justify-between items-center flex">
           <h2 className="text-[#eeeeee] text-xl font-semibold font-inter">Transcript</h2>
-          <div className="w-5 h-5 justify-center items-center flex">
+          <button onClick={copyToClipboard} className="w-5 h-5 justify-center items-center flex">
             <GreyClipboardIcon />
-          </div>
+          </button>
         </div>
       </div>
-
+      
       {/* Transcript Body */}
       <div className="self-stretch h-[552px] flex-col justify-start items-start gap-6 flex overflow-y-auto">
         {messages.map((message, index) => (
