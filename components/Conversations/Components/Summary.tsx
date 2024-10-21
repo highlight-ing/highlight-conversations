@@ -5,11 +5,17 @@ interface SummaryProps {
   transcript: string;
   onSummaryGenerated: (summary: string) => void;
   conversationId: string; 
+  existingSummary?: string | null;
 }
 
-const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conversationId }) => {
+const Summary: React.FC<SummaryProps> = ({
+  transcript,
+  onSummaryGenerated, 
+  conversationId,
+  existingSummary,
+}) => {
   const [isSummarizing, setIsSummarizing] = useState(false);
-  const [generatedSummary, setGeneratedSummary] = useState<string | null>(null);
+  const [generatedSummary, setGeneratedSummary] = useState<string | null>(existingSummary || null);
 
   const handleSummarizeClick = async () => {
     setIsSummarizing(true);
@@ -28,7 +34,7 @@ const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conve
 
   // Reset summary when conversationId changes
   useEffect(() => {
-    setGeneratedSummary(null);
+    setGeneratedSummary(existingSummary || null);
   }, [conversationId]);
 
   return (
