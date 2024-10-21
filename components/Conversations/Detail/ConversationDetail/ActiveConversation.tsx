@@ -1,161 +1,40 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import Summary from '../../Components/Summary';
+import React from 'react'
 
-import BigGreenSoundIcon from '../Icon/ActiveConversationIcon/BigGreenSoundIcon';
-import { ConversationData } from '@/data/conversations';
-import { useConversations } from '@/contexts/ConversationContext';
-import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
-import TrashIcon from '../Icon/TrashIcon';
-import { Pencil1Icon } from '@radix-ui/react-icons';
-import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
-import VoiceSquareIcon from '../Icon/VoiceSquareIcon';
+import BigGreenSoundIcon from '../Icon/ActiveConversationIcon/BigGreenSoundIcon'
+import { useConversations } from '@/contexts/ConversationContext'
+import Transcript from '../../Components/Transcript'
 
-interface HeaderProps {
-  conversation?: ConversationData;
-  icon?: React.ReactNode;
-  onTitleUpdate: (newTitle: string) => void;
-}
-
-const ActiveConversation: React.FC<HeaderProps> = ({ conversation }) => {
-  const { updateConversation, deleteConversation } = useConversations();
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // title update
-  const updateTitle = useCallback(() => {
-    if (!conversation) {
-      setTitle('');
-      return;
-    }
-    if (!conversation.title || conversation.title.trim() === '' || conversation.title.startsWith('Conversation ended at')) {
-      setTitle(getRelativeTimeString(conversation.startedAt));
-    } else {
-      setTitle(conversation.title);
-    }
-  }, [conversation]);
-
-  // update the title
-  useEffect(() => {
-    updateTitle();
-  }, [updateTitle]);
-
-  // Update every minute
-  useEffect(() => {
-    const timer = setInterval(updateTitle, 60000);
-    return () => clearInterval(timer);
-  }, [updateTitle]);
-
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isEditing]);
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
-
-  const formattedTimestamp =
-    conversation && conversation.startedAt && conversation.endedAt
-      ? formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)
-      : '';
-
-  // delete function for the trash icon
-  const handleDelete = () => {
-    if (conversation) {
-      deleteConversation(conversation.id);
-    }
-  };
-
-  // Open the delete confirmation dialog
-  const openDeleteDialog = () => {
-    setIsDeleteDialogOpen(true);
-  };
-
-  // Close the delete confirmation dialog
-  const closeDeleteDialog = () => {
-    setIsDeleteDialogOpen(false);
-  };
-
-  // Handle the title blur
-  const handleTitleBlur = () => {
-    setIsEditing(false);
-    if (!conversation) return;
-    if (title.trim() === '') {
-      setTitle(getRelativeTimeString(conversation.startedAt));
-    } else {
-      updateConversation({ ...conversation, title });
-    }
-  };
-
-  // Handle the title key down
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleTitleBlur();
-    }
-  };
+const ActiveConversation: React.FC = () => {
+  const { currentConversation } = useConversations()
 
   return (
-    <div className="h-[900px] relative">
-      {/* Wrapped in a single parent element */}
-      <>
-        <div className="w-[624px] left-[64px] top-[104px] absolute text-[#484848] text-[15px] font-normal font-inter leading-normal">
-          {formattedTimestamp}
+    <div className="relative h-[900px]">
+      <div className="font-inter absolute left-[64px] top-[104px] w-[624px] text-[15px] font-normal leading-normal text-[#484848]">
+        Transcript will update every ~30s
+      </div>
+
+      <div className="absolute left-[549px] top-[48px] inline-flex items-center gap-4">
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5">
+          <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
+        </div>
+      </div>
+
+      <div className="absolute left-[63px] top-[48px] flex items-center gap-[13px]">
+        <div className="flex h-8 w-8 items-center justify-center">
+          <BigGreenSoundIcon />
         </div>
 
-        {/* Delete, Open, Copy Link buttons */}
-        <div className="absolute left-[549px] top-[48px] inline-flex items-center gap-4">
-          <div className="flex items-center justify-center w-6 h-6 opacity-40">
-            <div className="relative w-6 h-6" onClick={openDeleteDialog}>
-              <TrashIcon />
-            </div>
-          </div>
-          <div className="flex items-center justify-center gap-2 px-4 py-1.5 rounded-[10px] bg-white/10">
-            <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
-          </div>
-          <div className="flex items-center justify-center gap-2 px-4 py-1.5 rounded-[10px] bg-white/10">
-            <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Copy Link</div>
-          </div>
+        <div className="font-inter text-2xl font-semibold leading-[31px] text-white">
+          <h1 className="font-inter flex items-center text-2xl font-semibold leading-[31px] text-white">
+            Transcribing...
+          </h1>
         </div>
-
-        {/* Title and Editable Logic */}
-        <div className="left-[63px] top-[48px] absolute flex items-center gap-[13px]">
-          <div className="w-8 h-8 flex justify-center items-center">
-            <BigGreenSoundIcon />
-          </div>
-
-          {/* Title (Static with "Transcribing...") */}
-          <div className="text-white text-2xl font-semibold font-inter leading-[31px]">
-            <h1 className="text-white text-2xl font-semibold font-inter leading-[31px] flex items-center">
-              {isEditing ? (
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={title}
-                  onChange={handleTitleChange}
-                  onBlur={handleTitleBlur}
-                  onKeyDown={handleKeyDown}
-                  className="text-white text-2xl font-semibold font-inter leading-[31px] bg-transparent outline-none"
-                />
-              ) : (
-                "Transcribing..."
-              )}
-            </h1>
-          </div>
-        </div>
-
-        {/* Delete Confirmation Dialog */}
-        {isDeleteDialogOpen && (
-          <DeleteConversationDialog
-            onDelete={handleDelete}
-            onCancel={closeDeleteDialog}
-          />
-        )}
-      </>
+      </div>
+      <div className="absolute left-[64px] w-[624px] transition-all duration-300 ease-in-out" style={{ top: `186px` }}>
+        <Transcript transcript={currentConversation} />
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default ActiveConversation;
+export default ActiveConversation

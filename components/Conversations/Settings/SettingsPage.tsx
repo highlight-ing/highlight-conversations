@@ -24,10 +24,8 @@ const SettingsPage: React.FC = () => {
   // Audio Transcription State
   const [audioState, setAudioState] = useState<AudioState>('inactive')
   const [asrDuration, setAsrDuration] = useState<number>(2)
-  const [autoClear, setAutoClear] = useState<number>(2)
-  const [autoSave, setAutoSave] = useState<number>(1)
   const [isCloudTranscriptOn, setIsCloudTranscriptOn] = useState<boolean>(true)
-  const { autoSaveTime, setAutoSaveTime, autoClearDays, setAutoClearDays, deleteAllConversations } = useConversations()
+  const { deleteAllConversations } = useConversations()
 
   // Initialize audioState based on isAudioOn
   useEffect(() => {

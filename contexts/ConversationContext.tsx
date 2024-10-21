@@ -48,6 +48,7 @@ interface ConversationContextType {
   mergeSelectedConversations: () => Promise<void>
   selectedConversationId: string | null
   setSelectedConversationId: (id: string | null) => void
+  handleCurrentConversationSelect: () => void
 }
 
 const ConversationContext = createContext<ConversationContextType | undefined>(undefined)
@@ -319,6 +320,10 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     [conversations, isMergeActive]
   )
 
+  const handleCurrentConversationSelect = useCallback(() => {
+    setSelectedConversationId(null)
+  }, [])
+
   const addConversation = useCallback(
     async (conversation: ConversationData) => {
       await Highlight.conversations.addConversation(conversation)
@@ -445,7 +450,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     handleConversationSelect,
     mergeSelectedConversations,
     selectedConversationId,
-    setSelectedConversationId
+    setSelectedConversationId,
+    handleCurrentConversationSelect
   }
 
   const autoClearConversations = useCallback(async () => {

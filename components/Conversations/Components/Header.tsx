@@ -7,140 +7,139 @@ import { Pencil1Icon } from '@radix-ui/react-icons'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 
 interface HeaderProps {
-    conversation?: ConversationData
-    icon?: React.ReactNode;  
-    onTitleUpdate: (newTitle: string) => void; 
+  conversation?: ConversationData
+  icon?: React.ReactNode
 }
 
 const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
-    const { updateConversation, deleteConversation } = useConversations()
-    const [title, setTitle] = useState('')
-    const [isEditing, setIsEditing] = useState(false)
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-    const inputRef = useRef<HTMLInputElement>(null)
+  const { updateConversation, deleteConversation } = useConversations()
+  const [title, setTitle] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-    const updateTitle = useCallback(() => {
-        if (!conversation) {
-            setTitle('')
-            return
-        }
-        if (!conversation.title || 
-            conversation.title.trim() === '' || 
-            conversation.title.startsWith('Conversation ended at')) {
-            setTitle(getRelativeTimeString(conversation.startedAt))
-        } else {
-            setTitle(conversation.title)
-        }
-    }, [conversation])
-
-    useEffect(() => {
-        updateTitle()
-    }, [updateTitle])
-
-    useEffect(() => {
-        const timer = setInterval(updateTitle, 60000) // Update every minute
-        return () => clearInterval(timer)
-    }, [updateTitle])
-
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus()
-        }
-    }, [isEditing])
-
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(e.target.value)
+  const updateTitle = useCallback(() => {
+    if (!conversation) {
+      setTitle('')
+      return
     }
-
-    const handleTitleBlur = () => {
-        setIsEditing(false)
-        if (!conversation) return
-        if (title.trim() === '') {
-            setTitle(getRelativeTimeString(conversation.startedAt))
-        } else {
-            updateConversation({ ...conversation, title })
-        }
+    if (
+      !conversation.title ||
+      conversation.title.trim() === '' ||
+      conversation.title.startsWith('Conversation ended at')
+    ) {
+      setTitle(getRelativeTimeString(conversation.startedAt))
+    } else {
+      setTitle(conversation.title)
     }
+  }, [conversation])
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleTitleBlur()
-        }
+  useEffect(() => {
+    updateTitle()
+  }, [updateTitle])
+
+  useEffect(() => {
+    const timer = setInterval(updateTitle, 60000) // Update every minute
+    return () => clearInterval(timer)
+  }, [updateTitle])
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus()
     }
+  }, [isEditing])
 
-    // handling the trash icon 
-    const handleDelete = () => {
-        if (conversation) {
-            deleteConversation(conversation.id)
-        }
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value)
+  }
+
+  const handleTitleBlur = () => {
+    setIsEditing(false)
+    if (!conversation) return
+    if (title.trim() === '') {
+      setTitle(getRelativeTimeString(conversation.startedAt))
+    } else {
+      updateConversation({ ...conversation, title })
     }
-    
-    const formattedTimestamp = conversation && conversation.startedAt && conversation.endedAt 
-        ? formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)
-        : '';
+  }
 
-    return (
-        <div className="w-full bg-[#0e0e0e] py-4 px-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-[13px]">
-              <div className="w-8 h-8 justify-center items-center inline-flex">
-                {icon || <img className="w-8 h-8" src="https://via.placeholder.com/32x32" alt="Conversation icon" />}
-              </div>
-              {conversation && (
-                <div className="flex flex-col">
-                  {isEditing ? (
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={title}
-                      onChange={handleTitleChange}
-                      onBlur={handleTitleBlur}
-                      onKeyDown={handleKeyDown}
-                      className="text-white text-2xl font-semibold font-inter leading-[31px] bg-transparent outline-none"
-                    />
-                  ) : (
-                    <h1
-                      className="text-white text-2xl font-semibold font-inter leading-[31px] cursor-pointer flex items-center"
-                      onClick={() => setIsEditing(true)}
-                    >
-                      {title}
-                      <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white" />
-                    </h1>
-                  )}
-                  <span className="text-[#484848] text-[15px] font-normal font-inter leading-normal">
-                    {formattedTimestamp}
-                  </span>
-                </div>
-              )}
-            </div>
-            {conversation && (
-              <div className="flex items-center gap-4">
-                <div 
-                  className="w-6 h-6 opacity-40 justify-center items-center inline-flex cursor-pointer hover:opacity-100"
-                  onClick={handleDelete}
-                >
-                  <TrashIcon className="w-6 h-6" />
-                </div>
-                <button className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight">
-                  Open
-                </button>
-                <button 
-                  onClick={handleCopyLink}
-                  className="px-4 py-1.5 bg-white/10 rounded-[10px] text-[#b4b4b4] text-[15px] font-medium font-inter leading-tight"
-                >
-                  Copy Link
-                </button>
-              </div>
-            )}
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleTitleBlur()
+    }
+  }
+
+  // handling the trash icon
+  const handleDelete = () => {
+    if (conversation) {
+      deleteConversation(conversation.id)
+    }
+  }
+
+  const formattedTimestamp =
+    conversation && conversation.startedAt && conversation.endedAt
+      ? formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)
+      : ''
+
+  return (
+    <div className="w-full bg-[#0e0e0e] px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-[13px]">
+          <div className="inline-flex h-8 w-8 items-center justify-center">
+            {icon || <img className="h-8 w-8" src="https://via.placeholder.com/32x32" alt="Conversation icon" />}
           </div>
-          {isDeleteDialogOpen && (
-            <DeleteConversationDialog
-              onDelete={handleDelete}
-              onCancel={() => setIsDeleteDialogOpen(false)}
-            />
+          {conversation && (
+            <div className="flex flex-col">
+              {isEditing ? (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={title}
+                  onChange={handleTitleChange}
+                  onBlur={handleTitleBlur}
+                  onKeyDown={handleKeyDown}
+                  className="font-inter bg-transparent text-2xl font-semibold leading-[31px] text-white outline-none"
+                />
+              ) : (
+                <h1
+                  className="font-inter flex cursor-pointer items-center text-2xl font-semibold leading-[31px] text-white"
+                  onClick={() => setIsEditing(true)}
+                >
+                  {title}
+                  <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white" />
+                </h1>
+              )}
+              <span className="font-inter text-[15px] font-normal leading-normal text-[#484848]">
+                {formattedTimestamp}
+              </span>
+            </div>
           )}
         </div>
-    );
-};
+        {conversation && (
+          <div className="flex items-center gap-4">
+            <div
+              className="inline-flex h-6 w-6 cursor-pointer items-center justify-center opacity-40 hover:opacity-100"
+              onClick={handleDelete}
+            >
+              <TrashIcon className="h-6 w-6" />
+            </div>
+            <button className="font-inter rounded-[10px] bg-white/10 px-4 py-1.5 text-[15px] font-medium leading-tight text-[#b4b4b4]">
+              Open
+            </button>
+            <button
+              onClick={handleCopyLink}
+              className="font-inter rounded-[10px] bg-white/10 px-4 py-1.5 text-[15px] font-medium leading-tight text-[#b4b4b4]"
+            >
+              Copy Link
+            </button>
+          </div>
+        )}
+      </div>
+      {isDeleteDialogOpen && (
+        <DeleteConversationDialog onDelete={handleDelete} onCancel={() => setIsDeleteDialogOpen(false)} />
+      )}
+    </div>
+  )
+}
 
-export default Header;
+export default Header
