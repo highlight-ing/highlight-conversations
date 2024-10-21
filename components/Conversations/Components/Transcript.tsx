@@ -39,7 +39,8 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
 
   const buttons = useTranscriptButtons({
     message: transcript,
-    buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback']
+    // buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback']
+    buttonTypes: ['Copy', 'Share']
   })
 
   // Function to copy transcript to clipboard
@@ -56,27 +57,25 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
   }
 
   return (
-    <div className="inline-flex h-[667px] w-[712px] flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pt-8">
+    <div className="flex flex-1 flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
       {/* Header Section */}
-      <div className="inline-flex w-[677px] items-start justify-start gap-4">
-        <div className="flex h-6 w-[132px] items-center justify-between">
-          <h2 className="font-inter text-xl font-semibold text-primary">Transcript</h2>
-          <button onClick={copyToClipboard} className="flex h-5 w-5 items-center justify-center">
-            <ClipboardText
-              variant="Bold"
-              size={24}
-              className={`text-subtle transition-colors transition-transform duration-200 ${
-                copyStatus === 'success' ? 'animate-gentle-scale scale-110' : ''
-              } hover:text-primary`}
-            />
-          </button>
-        </div>
+      <div className="bg-blue flex items-center justify-between gap-4">
+        <h2 className="font-inter text-xl font-semibold text-primary">Transcript</h2>
+        <button onClick={copyToClipboard} className="flex h-5 w-5">
+          <ClipboardText
+            variant="Bold"
+            size={20}
+            className={`text-subtle transition-colors transition-transform duration-200 ${
+              copyStatus === 'success' ? 'animate-gentle-scale scale-110' : ''
+            } hover:text-primary`}
+          />
+        </button>
       </div>
 
       {/* Transcript Body */}
-      <div className="flex h-[552px] flex-col items-start justify-start gap-6 self-stretch overflow-y-auto">
+      <div className="flex flex-col items-start justify-start gap-6 self-stretch overflow-y-scroll">
         {messages.map((message, index) => (
-          <div key={index} className="flex h-[120px] flex-col items-start justify-start gap-1 self-stretch">
+          <div key={index} className="flex flex-col items-start justify-start gap-1 self-stretch">
             <div
               className={`font-inter self-stretch text-[13px] font-medium leading-tight ${
                 message.sender.toLowerCase() === 'me' || message.sender.toLowerCase() === 'self'

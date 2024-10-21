@@ -2,66 +2,51 @@ import React, { useState, useEffect } from 'react'
 import { summarizeConversation } from '@/services/highlightService'
 
 interface SummaryProps {
-  transcript: string;
-  onSummaryGenerated: (summary: string) => void;
-  conversationId: string; 
-  existingSummary?: string | null;
+  transcript: string
+  onSummaryGenerated: (summary: string) => void
+  conversationId: string
+  existingSummary?: string | null
 }
 
-const Summary: React.FC<SummaryProps> = ({
-  transcript,
-  onSummaryGenerated, 
-  conversationId,
-  existingSummary,
-}) => {
-  const [isSummarizing, setIsSummarizing] = useState(false);
-  const [generatedSummary, setGeneratedSummary] = useState<string | null>(existingSummary || null);
+const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conversationId, existingSummary }) => {
+  const [isSummarizing, setIsSummarizing] = useState(false)
+  const [generatedSummary, setGeneratedSummary] = useState<string | null>(existingSummary || null)
 
   const handleSummarizeClick = async () => {
-    setIsSummarizing(true);
+    setIsSummarizing(true)
     try {
-      console.log('Starting summarization...');
-      const result = await summarizeConversation(transcript);
-      console.log('Summarization result:', result);
-      setGeneratedSummary(result.summary);
-      onSummaryGenerated(result.summary);
+      const result = await summarizeConversation(transcript)
+      setGeneratedSummary(result.summary)
+      onSummaryGenerated(result.summary)
     } catch (error) {
-      console.error('Error summarizing transcript:', error);
+      console.error('Error summarizing transcript:', error)
     } finally {
-      setIsSummarizing(false);
+      setIsSummarizing(false)
     }
-  };
+  }
 
   // Reset summary when conversationId changes
   useEffect(() => {
-    setGeneratedSummary(existingSummary || null);
-  }, [conversationId]);
+    setGeneratedSummary(existingSummary || null)
+  }, [conversationId])
 
   return (
-    <>
-      <div className="text-[#eeeeee] text-xl font-semibold leading-tight">
-        Summary
-      </div>
-      {!generatedSummary && (
-        <div className="w-[712px] px-8 py-3.5 bg-[#00dbfb]/20 rounded-xl justify-center items-center gap-2 inline-flex">
-          <button
-            onClick={handleSummarizeClick}
-            disabled={isSummarizing}
-            className="text-[#00e6f5] text-[17px] font-medium leading-tight"
-          >
-            {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
-          </button>
-        </div>
-      )}
-
+    <div className="flex w-full flex-col gap-6">
+      <div className="text-xl font-semibold leading-tight text-[#eeeeee]">Summary</div>
       {/* Generated Summary */}
-      {generatedSummary && (
-        <div className="w-[624px] text-[#eeeeee] text-sm sm:text-base">
-          {generatedSummary}
-        </div>
+      {generatedSummary ? (
+        <div className="text-sm text-[#eeeeee] sm:text-base">{generatedSummary}</div>
+      ) : (
+        <button
+          onClick={handleSummarizeClick}
+          disabled={isSummarizing}
+          className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#00dbfb]/20 px-8 py-3.5 text-[17px] font-medium leading-tight text-[#00e6f5] hover:bg-[#00dbfb]/30"
+        >
+          {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
+        </button>
       )}
-    </>
-  );
-};
+    </div>
+  )
+}
 
-export default Summary;
+export default Summary

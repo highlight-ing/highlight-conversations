@@ -43,7 +43,7 @@ const MainPageContent: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex max-h-screen min-h-screen flex-col overflow-hidden">
       {/* <AudioPermissionDialog 
         isAudioPermissionGranted={isAudioPermissionEnabled} 
         onTogglePermission={toggleAudioPermission}

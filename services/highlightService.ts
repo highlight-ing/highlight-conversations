@@ -184,7 +184,6 @@ const getTextPredictionFromHighlight = async (
         throw new DOMException('Aborted', 'AbortError')
       }
       accumulatedText += chunk
-      console.log('Accumulated text:', accumulatedText)
     }
 
     // Parse the accumulated text as JSON

@@ -147,49 +147,11 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }, [summaryRef.current])
 
-  // Debugging log to ensure Transcript top is set dynamically
-  useEffect(() => {
-    console.log('Transcript top:', 176 + summaryHeight + 20)
-  }, [summaryHeight])
-
   return (
-    <div className="relative flex h-[900px] flex-col gap-4">
-      <>
-        <div className="font-inter absolute left-[64px] top-[104px] w-[624px] text-[15px] font-normal leading-normal text-[#484848]">
-          {formattedTimestamp}
-        </div>
-
-        {/* Delete, Open, Copy Link buttons */}
-        <div className="absolute left-[549px] top-[48px] inline-flex items-center gap-4">
-          <div className="relative flex h-6 w-6 items-center justify-center opacity-40">
-            {/* Delete Confirmation Dialog */}
-            <DeleteConversationDialog onDelete={handleDelete} />
-          </div>
-          <div
-            className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 hover:bg-white/20"
-            onClick={handleAttachment}
-          >
-            <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
-          </div>
-          {/* <div className="flex items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5"> */}
-          {/* <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]" onClick={handleShare}>
-              Copy Link
-            </div> */}
-          <ShareButton
-            onShare={handleShare}
-            isSharing={shareStatus === 'processing'}
-            isDeleting={isDeleting}
-            hasExistingShareLink={!!localConversation.shareLink}
-            onGenerateShareLink={handleGenerateShareLink}
-            onCopyLink={handleCopyLink}
-            onDeleteLink={handleDeleteLink}
-            onDownloadAsFile={handleDownloadAsFile}
-          />
-          {/* </div> */}
-        </div>
-
+    <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
+      <div className="mb-6 flex w-full flex-row justify-between">
         {/* Title and Editable Logic */}
-        <div className="absolute left-[63px] top-[48px] flex items-center gap-[13px]">
+        <div className="flex items-center gap-[13px]">
           <div className="flex h-8 w-8 items-center justify-center">
             <VoiceSquareIcon />
           </div>
@@ -217,28 +179,49 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
             )}
           </div>
         </div>
-
-        {/* Summary Component */}
-        <div ref={summaryRef} className="absolute left-[64px] top-[176px] flex w-[624px] flex-col gap-4">
-          <Summary
-            transcript={conversation.transcript}
-            onSummaryGenerated={(summary) => {
-              // Update the conversation with the new summary
-              updateConversation({ ...conversation, summary })
-            }}
-            conversationId={conversation.id}
-            existingSummary={conversation.summary}
+        {/* Delete, Open, Copy Link buttons */}
+        <div className="inline-flex items-center gap-4">
+          <div className="relative flex h-6 w-6 items-center justify-center opacity-40">
+            {/* Delete Confirmation Dialog */}
+            <DeleteConversationDialog onDelete={handleDelete} />
+          </div>
+          <div
+            className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 hover:bg-white/20"
+            onClick={handleAttachment}
+          >
+            <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
+          </div>
+          <ShareButton
+            onShare={handleShare}
+            isSharing={shareStatus === 'processing'}
+            isDeleting={isDeleting}
+            hasExistingShareLink={!!localConversation.shareLink}
+            onGenerateShareLink={handleGenerateShareLink}
+            onCopyLink={handleCopyLink}
+            onDeleteLink={handleDeleteLink}
+            onDownloadAsFile={handleDownloadAsFile}
           />
         </div>
+      </div>
+      <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">{formattedTimestamp}</div>
+      {/* Summary Component */}
+      <div ref={summaryRef} className="mb-8 flex w-full flex-col gap-4">
+        <Summary
+          transcript={conversation.transcript}
+          onSummaryGenerated={(summary) => {
+            // Update the conversation with the new summary
+            updateConversation({ ...conversation, summary })
+          }}
+          conversationId={conversation.id}
+          existingSummary={conversation.summary}
+        />
+      </div>
 
-        {/* Transcript Component */}
-        <div
-          className="absolute left-[64px] w-[624px] transition-all duration-300 ease-in-out"
-          style={{ top: `${176 + summaryHeight + 20}px` }}
-        >
-          <Transcript transcript={conversation.transcript} />
-        </div>
-      </>
+      {/* Transcript Component */}
+      <div className="transition-all duration-300 ease-in-out">
+        <Transcript transcript={conversation.transcript} />
+      </div>
+
       <Toaster theme="dark" className="bg-background text-foreground" />
     </div>
   )
