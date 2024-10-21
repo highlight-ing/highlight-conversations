@@ -1,9 +1,8 @@
 'use client'
 import React, { useState, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import Header from '@/components/Header/Header'
 import AudioPermissionDialog from '@/components/Dialogue/AudioPermissionDialog'
-import OnboardingFlow from "@/components/Onboarding/OnboardingFlow"
+import OnboardingFlow from '@/components/Onboarding/OnboardingFlow'
 import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips'
 import { useAppInitialization } from '@/hooks/useAppInitialization'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
@@ -27,7 +26,7 @@ const MainPageContent: React.FC = () => {
   const { trackEvent } = useAmplitude()
   const { showOnboardingTooltips, tooltipsReady, handleTooltipsComplete } = useOnboarding()
 
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState('')
 
   const handleOnboardingComplete = useCallback(async () => {
     await saveHasSeenOnboarding(true)
@@ -49,7 +48,6 @@ const MainPageContent: React.FC = () => {
         isAudioPermissionGranted={isAudioPermissionEnabled} 
         onTogglePermission={toggleAudioPermission}
       /> */}
-      {/* <Header /> */}
       <main className="flex-grow p-4">
         {/* <SearchBar />
         {searchQuery && (
@@ -60,12 +58,12 @@ const MainPageContent: React.FC = () => {
         </AnimatePresence>
       </main>
       {showOnboardingTooltips && tooltipsReady && (
-        <OnboardingTooltips 
-          autoSaveSeconds={autoSaveTime} 
+        <OnboardingTooltips
+          autoSaveSeconds={autoSaveTime}
           onComplete={() => {
             handleTooltipsComplete()
             trackEvent('Onboarding Tooltips Complete', {})
-          }} 
+          }}
         />
       )}
     </div>
@@ -74,9 +72,9 @@ const MainPageContent: React.FC = () => {
 
 const MainPage: React.FC = () => {
   return (
-      <ConversationProvider>
-        <MainPageContent />
-      </ConversationProvider>
+    <ConversationProvider>
+      <MainPageContent />
+    </ConversationProvider>
   )
 }
 
