@@ -148,6 +148,13 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
           </div>
         </div>
 
+         {/* Summary Component */}
+         <div className="w-[624px] left-[64px] top-[176px] absolute">
+         {conversation && (
+          <Summary summary={conversation.summary} transcript={conversation.transcript} />
+        )}
+        </div>
+
         {/* Delete Confirmation Dialog */}
         {isDeleteDialogOpen && (
           <DeleteConversationDialog

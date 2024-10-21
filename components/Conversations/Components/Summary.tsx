@@ -25,15 +25,10 @@ const Summary: React.FC<SummaryProps> = ({ summary, transcript }) => {
   };
 
   return (
-    <div className="w-[712px] h-[667px] pt-8 left-[64px] top-[300px] absolute border-t border-[#222222]/50 flex-col justify-start items-start gap-6 inline-flex">
-      {/* Summary Section */}
-      <div className="w-[624px] justify-start items-start gap-4 inline-flex">
+    <>
         <div className="text-[#eeeeee] text-xl font-semibold leading-tight">
           Summary
         </div>
-      </div>
-
-      {/* Summarize Button */}
       <div className="w-[712px] px-8 py-3.5 bg-[#00dbfb]/20 rounded-xl justify-center items-center gap-2 inline-flex">
         <button
           onClick={handleSummarizeClick}
@@ -50,7 +45,7 @@ const Summary: React.FC<SummaryProps> = ({ summary, transcript }) => {
           {generatedSummary}
         </div>
       )}
-    </div>
+    </>
   );
 };
 
