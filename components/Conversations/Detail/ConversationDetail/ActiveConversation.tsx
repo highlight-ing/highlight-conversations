@@ -5,7 +5,9 @@ import { useConversations } from '@/contexts/ConversationContext'
 import Transcript from '../../Components/Transcript'
 
 const ActiveConversation: React.FC = () => {
-  const { currentConversation } = useConversations()
+  const { currentConversation, saveCurrentConversation } = useConversations()
+
+  const isSaveDisabled = currentConversation.trim().length === 0
 
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
@@ -21,11 +23,13 @@ const ActiveConversation: React.FC = () => {
             </h1>
           </div>
         </div>
-        <div className="inline-flex items-center gap-4">
-          <div className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 hover:bg-white/20">
-            <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
-          </div>
-        </div>
+        <button
+          onClick={saveCurrentConversation}
+          className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 text-[15px] font-medium leading-tight text-[#b4b4b4] hover:bg-white/20 disabled:bg-white/5"
+          disabled={isSaveDisabled}
+        >
+          Save Transcript Now
+        </button>
       </div>
       <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">
         Transcript will update every ~30s
