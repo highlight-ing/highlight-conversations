@@ -9,6 +9,7 @@ import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog
 interface HeaderProps {
     conversation?: ConversationData
     icon?: React.ReactNode;  
+    onTitleUpdate: (newTitle: string) => void; 
 }
 
 const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
@@ -74,7 +75,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
         }
     }
 
-    // handling copy link
+    // handling copy link -- this doesn't work 
     const handleCopyLink = () => {
       if (conversation) {
           const baseUrl = window.location.origin; 
