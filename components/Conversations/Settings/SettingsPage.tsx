@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import SoundIcon from '../Detail/Icon/SoundIcon'
+import GreenSoundIcon from '../Detail/Icon/GreenSoundIcon';
 import { useConversations } from '@/contexts/ConversationContext';
 import Dropdown from './Dropdown';
 import {
@@ -101,13 +102,18 @@ const SettingsPage: React.FC = () => {
           <div className="flex items-center">
             <div className="flex items-center gap-4">
               <div className="w-6 h-6 flex justify-center items-center">
-                <SoundIcon color={getSoundIconColor()} />
+                {audioState === 'active' ? (
+                  <GreenSoundIcon />
+                ) : (
+                  <SoundIcon color={getSoundIconColor()} />
+                )}
               </div>
               <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">
                 {audioState === 'active' ? 'Transcribing Audio...' : 'Audio Transcription Off'}
               </div>
             </div>
           </div>
+          
           {/* Toggle Audio Transcription */}
           <div className="flex items-center gap-2">
             <button

@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Summary from '../../Components/Summary';
+
+import BigGreenSoundIcon from '../Icon/ActiveConversationIcon/BigGreenSoundIcon';
 import { ConversationData } from '@/data/conversations';
 import { useConversations } from '@/contexts/ConversationContext';
 import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
@@ -121,30 +123,26 @@ const ActiveConversation: React.FC<HeaderProps> = ({ conversation }) => {
         {/* Title and Editable Logic */}
         <div className="left-[63px] top-[48px] absolute flex items-center gap-[13px]">
           <div className="w-8 h-8 flex justify-center items-center">
-            <VoiceSquareIcon />
+            <BigGreenSoundIcon />
           </div>
 
-          {/* Title (Editable or Static) */}
+          {/* Title (Static with "Transcribing...") */}
           <div className="text-white text-2xl font-semibold font-inter leading-[31px]">
-            {isEditing ? (
-              <input
-                ref={inputRef}
-                type="text"
-                value={title}
-                onChange={handleTitleChange}
-                onBlur={handleTitleBlur}
-                onKeyDown={handleKeyDown}
-                className="text-white text-2xl font-semibold font-inter leading-[31px] bg-transparent outline-none"
-              />
-            ) : (
-              <h1
-                className="text-white text-2xl font-semibold font-inter leading-[31px] cursor-pointer flex items-center"
-                onClick={() => setIsEditing(true)}
-              >
-                {title}
-                <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white" />
-              </h1>
-            )}
+            <h1 className="text-white text-2xl font-semibold font-inter leading-[31px] flex items-center">
+              {isEditing ? (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={title}
+                  onChange={handleTitleChange}
+                  onBlur={handleTitleBlur}
+                  onKeyDown={handleKeyDown}
+                  className="text-white text-2xl font-semibold font-inter leading-[31px] bg-transparent outline-none"
+                />
+              ) : (
+                "Transcribing..."
+              )}
+            </h1>
           </div>
         </div>
 
