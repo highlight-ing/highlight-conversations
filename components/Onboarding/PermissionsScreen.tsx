@@ -69,7 +69,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
     <OnboardingTemplate
       gradientTexts={gradientTexts}
       cardClassName={`
-        ${areBothPermissionsEnabled ? 'border-brand bg-background/50' : 'border-border bg-background'}
+        ${areBothPermissionsEnabled ? 'border-[#4AED9E] bg-background/50' : 'border-border bg-background'}
       `}
     >
       <motion.div
@@ -113,6 +113,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
             <Switch
               checked={isAudioPermissionEnabled}
               onCheckedChange={handleAudioPermissionToggle}
+              className="bg-[#404040] data-[state=checked]:bg-[#4AED9E]"
             />
           </div>
           <div className="flex justify-between items-center">
@@ -132,6 +133,7 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
             <Switch
               checked={isBackgroundPermissionEnabled}
               onCheckedChange={handleBackgroundPermissionToggle}
+              className="bg-[#404040] data-[state=checked]:bg-[#4AED9E]"
             />
           </div>
         </div>
@@ -147,8 +149,8 @@ const PermissionsScreen: React.FC<PermissionsScreenProps> = ({ onPermissionGrant
               onClick={onPermissionGranted}
               className={`w-full font-semibold text-md p-4 ${
                 areBothPermissionsEnabled 
-                  ? 'bg-brand text-background' 
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-[#4AED9E] hover:bg-[rgba(250,250,250,0.9)] text-[#0A0A0A]' 
+                  : 'bg-[#D1D5DB] text-[#0A0A0A] cursor-not-allowed'
               }`}
               disabled={!areBothPermissionsEnabled}
             >
