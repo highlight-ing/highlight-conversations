@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Summary from '../../Components/Summary';
+import Transcript from '../../Components/Transcript';
+
 import { ConversationData } from '@/data/conversations';
 import { useConversations } from '@/contexts/ConversationContext';
 import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils';
+
 import TrashIcon from '../Icon/TrashIcon';
 import { Pencil1Icon } from '@radix-ui/react-icons';
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
 import VoiceSquareIcon from '../Icon/VoiceSquareIcon';
+
 
 interface HeaderProps {
   conversation?: ConversationData;
@@ -162,6 +166,13 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
             onCancel={closeDeleteDialog}
           />
         )}
+
+        {/* Transcript Component */}
+        <div className="w-[624px] left-[64px] top-[300px] absolute flex flex-col gap-4">
+          {conversation && (
+            <Transcript transcript={conversation.transcript} />
+          )}
+        </div>
       </>
     </div>
   );

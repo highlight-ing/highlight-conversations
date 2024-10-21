@@ -42,27 +42,39 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
   });
 
   return (
-    <div className="w-full mt-8 border-t border-[#222222]/50">
-      <div className="flex justify-between items-center mt-8 mb-6">
-        <h2 className="text-[#eeeeee] text-xl font-semibold font-inter">Transcript</h2>
-        <TranscriptButtonRow buttons={buttons} />
+    <div className="w-[712px] h-[667px] pt-8 border-t border-[#222222]/50 flex-col justify-start items-start gap-6 inline-flex">
+      {/* Header Section */}
+      <div className="w-[677px] justify-start items-start gap-4 inline-flex">
+        <div className="h-6 justify-between items-center flex">
+          <h2 className="text-[#eeeeee] text-xl font-semibold font-inter">Transcript</h2>
+          <div className="w-5 h-5 justify-center items-center flex">
+            <ClipboardTextIcon />
+          </div>
+        </div>
       </div>
-      <div className="max-h-[calc(100vh-20rem)] overflow-y-auto space-y-6">
+
+      {/* Transcript Body */}
+      <div className="self-stretch h-[552px] flex-col justify-start items-start gap-6 flex overflow-y-auto">
         {messages.map((message, index) => (
-          <div key={index} className="flex flex-col gap-1">
-            <div className={`text-[13px] font-medium font-inter leading-tight ${
-              message.sender.toLowerCase() === 'me' || message.sender.toLowerCase() === 'self'
-                ? "text-[#4ceda0]/40"
-                : "opacity-20 text-white"
-            }`}>
+          <div key={index} className="self-stretch h-[120px] flex-col justify-start items-start gap-1 flex">
+            <div
+              className={`self-stretch text-[13px] font-medium font-inter leading-tight ${
+                message.sender.toLowerCase() === 'me' || message.sender.toLowerCase() === 'self'
+                  ? 'text-[#4ceda0]/40'
+                  : 'opacity-20 text-white'
+              }`}
+            >
               {message.time} - {message.sender}:
             </div>
-            <div className="text-[#eeeeee] text-[15px] font-normal font-inter leading-normal">
+            <div className="self-stretch text-[#eeeeee] text-[15px] font-normal font-inter leading-normal">
               {message.text}
             </div>
           </div>
         ))}
       </div>
+
+      {/* Transcript Button Row */}
+      <TranscriptButtonRow buttons={buttons} />
     </div>
   );
 };
