@@ -58,6 +58,16 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
     }
   }, [isEditing]);
 
+  // Update Summary Height when content changes 
+  useEffect(() => {
+    const updateSummaryHeight = () => {
+      if (summaryRef.current) {
+        setSummaryHeight(summaryRef.current.offsetHeight);
+      }
+    }
+    updateSummaryHeight();
+  }, [conversation]);
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
@@ -188,7 +198,10 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
         </div>
 
         {/* Transcript Component */}
-        <div className="w-[624px] left-[64px] absolute" style={{ top: 176 + summaryHeight + 20 }}>
+        <div 
+          className="w-[624px] left-[64px] absolute transition-all duration-300 ease-in-out" 
+          style={{ top: `${176 + summaryHeight + 20}px` }}
+        >
           {conversation && (
             <Transcript transcript={conversation.transcript} />
           )}
