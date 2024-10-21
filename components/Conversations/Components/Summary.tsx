@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { summarizeConversation } from '@/services/highlightService'
 
 interface SummaryProps {
   transcript: string;
   onSummaryGenerated: (summary: string) => void;
+  conversationId: string; 
 }
 
-const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated }) => {
+const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conversationId }) => {
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [generatedSummary, setGeneratedSummary] = useState<string | null>(null);
 
@@ -25,13 +26,18 @@ const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated }) => 
     }
   };
 
+  // Reset summary when conversationId changes
+  useEffect(() => {
+    setGeneratedSummary(null);
+  }, [conversationId]);
+
   return (
     <>
-        <div className="text-[#eeeeee] text-xl font-semibold leading-tight">
-          Summary
-        </div>
-      <div className="w-[712px] px-8 py-3.5 bg-[#00dbfb]/20 rounded-xl justify-center items-center gap-2 inline-flex">
-        {!generatedSummary && (
+      <div className="text-[#eeeeee] text-xl font-semibold leading-tight">
+        Summary
+      </div>
+      {!generatedSummary && (
+        <div className="w-[712px] px-8 py-3.5 bg-[#00dbfb]/20 rounded-xl justify-center items-center gap-2 inline-flex">
           <button
             onClick={handleSummarizeClick}
             disabled={isSummarizing}
@@ -39,8 +45,8 @@ const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated }) => 
           >
             {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Generated Summary */}
       {generatedSummary && (

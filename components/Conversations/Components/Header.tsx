@@ -74,22 +74,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, icon }) => {
             deleteConversation(conversation.id)
         }
     }
-
-    // handling copy link -- this doesn't work 
-    const handleCopyLink = () => {
-      if (conversation) {
-          const baseUrl = window.location.origin; 
-          const conversationUrl = `${baseUrl}/conversations/${conversation.id}`;
-          navigator.clipboard.writeText(conversationUrl)
-            .then(() => {
-              console.log('Link copied to clipboard:', conversationUrl);
-            })
-            .catch((error) => {
-              console.error('Failed to copy link:', error);
-            });
-      }
-    }
-
+    
     const formattedTimestamp = conversation && conversation.startedAt && conversation.endedAt 
         ? formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)
         : '';
