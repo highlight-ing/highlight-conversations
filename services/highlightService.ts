@@ -122,7 +122,7 @@ const sendAttachment = async (targetAppId: string, attachment: string): Promise<
   }
 }
 
-export interface SummarizedConversationData {
+export interface ProcessedConversationData {
   topics: string[]
   summary: string
   title: string
@@ -132,7 +132,7 @@ export const summarizeConversation = async (
   transcript: string,
   customPrompt?: string,
   signal?: AbortSignal
-): Promise<SummarizedConversationData> => {
+): Promise<ProcessedConversationData> => {
   try {
     const processedData = await getTextPredictionFromHighlight(transcript, customPrompt, signal)
     console.log('Processed data:', processedData)
@@ -146,7 +146,7 @@ export const summarizeConversation = async (
       console.log('Conversation summarization was aborted')
       throw error
     }
-    console.error("Error in summarizeConversation:", error)
+    console.error('Error in summarizeConversation:', error)
     throw new Error('Failed to summarize conversation')
   }
 }
@@ -155,7 +155,7 @@ const getTextPredictionFromHighlight = async (
   transcript: string,
   customPrompt?: string,
   signal?: AbortSignal
-): Promise<SummarizedConversationData> => {
+): Promise<ProcessedConversationData> => {
   const summaryInstruction = customPrompt || DEFAULT_SUMMARY_INSTRUCTION
   const systemPrompt = `${BASE_SYSTEM_PROMPT} ${summaryInstruction}`
 
@@ -188,12 +188,10 @@ const getTextPredictionFromHighlight = async (
     }
 
     // Parse the accumulated text as JSON
-    const parsedData: SummarizedConversationData = JSON.parse(accumulatedText)
-    console.log('Parsed data:', parsedData)
+    const parsedData: ProcessedConversationData = JSON.parse(accumulatedText)
     return parsedData
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      console.log('Text prediction was aborted')
       throw error
     }
     console.error('Error in text prediction or parsing:', error)
@@ -251,7 +249,6 @@ export const requestAudioPermissionEvents = async (): Promise<void> => {
   if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
     try {
       await window.highlight.internal.requestAudioPermissionEvents()
-      console.log('Audio permission events requested successfully')
     } catch (error) {
       console.error('Error sending audio permission request:', error)
       throw error
@@ -262,9 +259,7 @@ export const requestAudioPermissionEvents = async (): Promise<void> => {
 }
 
 export const setupSimpleAudioPermissionListener = () => {
-  console.log('Setting up simple audio permission listener')
   Highlight.app.addListener('onAudioPermissionUpdate', (event: any) => {
-    console.log('Audio permission event received:', event)
     // If you know the exact structure of the event, you can log specific properties
     // For example, if there's a hasPermission property:
     // console.log('Audio permission changed:', event.hasPermission);
@@ -373,7 +368,6 @@ export const deleteAllConversationsInAppStorage = async (): Promise<void> => {
   if (appStorage) {
     await appStorage.whenHydrated()
     appStorage.delete(CONVERSATIONS_STORAGE_KEY)
-    console.log('Deleted conversations: ', appStorage.get(CONVERSATIONS_STORAGE_KEY))
   }
 }
 
