@@ -11,7 +11,6 @@ import { Pencil1Icon } from '@radix-ui/react-icons';
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog';
 import VoiceSquareIcon from '../Icon/VoiceSquareIcon';
 
-
 interface HeaderProps {
   conversation?: ConversationData;
   icon?: React.ReactNode;
@@ -23,6 +22,8 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState('');
+  const summaryRef = useRef<HTMLDivElement>(null); 
+  const [summaryHeight, setSummaryHeight] = useState(0); 
   const inputRef = useRef<HTMLInputElement>(null);
 
   // title update
@@ -99,9 +100,21 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
     }
   };
 
+  // update summary height when content changes
+  useEffect(() => {
+    if (summaryRef.current) {
+      setSummaryHeight(summaryRef.current.clientHeight);
+    }
+  }, [summaryRef.current]);
+  
+
+  // Debugging log to ensure Transcript top is set dynamically
+  useEffect(() => {
+    console.log("Transcript top:", 176 + summaryHeight + 20);
+  }, [summaryHeight]);
+
   return (
-    <div className="h-[900px] relative">
-      {/* Wrapped in a single parent element */}
+    <div className="h-[900px] relative flex flex-col gap-4">
       <>
         <div className="w-[624px] left-[64px] top-[104px] absolute text-[#484848] text-[15px] font-normal font-inter leading-normal">
           {formattedTimestamp}
@@ -153,10 +166,17 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
         </div>
 
          {/* Summary Component */}
-         <div className="w-[624px] left-[64px] top-[176px] absolute flex flex-col gap-4">
+         <div ref={summaryRef} className="w-[624px] left-[64px] top-[176px] absolute flex flex-col gap-4">
          {conversation && (
           <Summary summary={conversation.summary} transcript={conversation.transcript} />
         )}
+        </div>
+
+        {/* Transcript Component */}
+        <div className="w-[624px] left-[64px] absolute" style={{ top: 176 +summaryHeight + 20 }}>
+          {conversation && (
+            <Transcript transcript={conversation.transcript} />
+          )}
         </div>
 
         {/* Delete Confirmation Dialog */}
@@ -166,13 +186,6 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
             onCancel={closeDeleteDialog}
           />
         )}
-
-        {/* Transcript Component */}
-        <div className="w-[624px] left-[64px] top-[300px] absolute flex flex-col gap-4">
-          {conversation && (
-            <Transcript transcript={conversation.transcript} />
-          )}
-        </div>
       </>
     </div>
   );
