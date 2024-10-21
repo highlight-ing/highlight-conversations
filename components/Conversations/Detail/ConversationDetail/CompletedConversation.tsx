@@ -149,7 +149,7 @@ const CompletedConversation: React.FC<HeaderProps> = ({ conversation }) => {
         </div>
 
          {/* Summary Component */}
-         <div className="w-[624px] left-[64px] top-[176px] absolute">
+         <div className="w-[624px] left-[64px] top-[176px] absolute flex flex-col gap-4">
          {conversation && (
           <Summary summary={conversation.summary} transcript={conversation.transcript} />
         )}
