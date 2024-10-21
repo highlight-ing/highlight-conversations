@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons';
 import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow';
-import ClipboardTextIcon from '../Detail/Icon/ClipboardIcon';
+import GreyClipboardIcon from '../Detail/Icon/ConversationDetailIcon/GreyClipboardIcon';
 
 interface Message {
   time: string;
@@ -45,10 +45,10 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
     <div className="w-[712px] h-[667px] pt-8 border-t border-[#222222]/50 flex-col justify-start items-start gap-6 inline-flex">
       {/* Header Section */}
       <div className="w-[677px] justify-start items-start gap-4 inline-flex">
-        <div className="h-6 justify-between items-center flex">
+        <div className="w-[132px] h-6 justify-between items-center flex">
           <h2 className="text-[#eeeeee] text-xl font-semibold font-inter">Transcript</h2>
           <div className="w-5 h-5 justify-center items-center flex">
-            <ClipboardTextIcon />
+            <GreyClipboardIcon />
           </div>
         </div>
       </div>
