@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons'
 import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow'
 import { ClipboardText } from 'iconsax-react'
+import LoadingSpinner from '../Detail/Icon/Transcript/LoadingSpinnerIcon'
 
 interface Message {
   time: string
@@ -31,9 +32,10 @@ const parseTranscript = (transcript: string): Message[] => {
 
 interface TranscriptProps {
   transcript: string
+  isActive?: boolean
 }
 
-const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
+const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false }) => {
   const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
   const messages: Message[] = parseTranscript(transcript)
 
@@ -56,6 +58,8 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
       })
   }
 
+  const shouldShowLoadingSpinner = isActive && transcript.trim().length === 0
+
   return (
     <div className="flex flex-1 flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
       {/* Header Section */}
@@ -73,8 +77,18 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
       </div>
 
       {/* Transcript Body */}
-      <div className="flex flex-col items-start justify-start gap-6 self-stretch overflow-y-scroll">
-        {messages.map((message, index) => (
+      <div className="self-stretch h-[600px] flex-col justify-start items-start gap-6 flex">
+        {shouldShowLoadingSpinner && (
+          <div className="self-stretch justify-start items-center gap-1 inline-flex">
+            <div className="w-6 h-6 relative flex items-center justify-center">
+              <LoadingSpinner />
+            </div>
+            <div className="text-[#484848] text-[15px] font-normal font-inter leading-normal">
+              Taking notes...
+            </div>
+          </div>
+        )}
+        {!shouldShowLoadingSpinner && messages.map((message, index) => (
           <div key={index} className="flex flex-col items-start justify-start gap-1 self-stretch">
             <div
               className={`font-inter self-stretch text-[13px] font-medium leading-tight ${

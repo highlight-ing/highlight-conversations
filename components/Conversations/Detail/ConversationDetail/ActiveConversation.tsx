@@ -36,7 +36,7 @@ const ActiveConversation: React.FC = () => {
       </div>
 
       <div className="transition-all duration-300 ease-in-out">
-        <Transcript transcript={currentConversation} />
+        <Transcript transcript={currentConversation} isActive={true} />
       </div>
     </div>
   )
