@@ -3,6 +3,9 @@ import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
 import VoiceSquareIcon from '../Detail/Icon/VoiceSquareIcon'
 import { truncateText } from '@/utils/textUtils'
+import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
+import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
+import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
 
 interface ConversationEntryProps {
   conversation: ConversationData
@@ -19,12 +22,24 @@ export function ConversationEntry({
   isMergeActive,
   isSelected
 }: ConversationEntryProps) {
-  const { getWordCount, handleConversationSelect, selectedConversationId } = useConversations()
-  const roundedClasses = isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
+  const { getWordCount, handleConversationSelect, selectedConversationId, deleteConversation, updateConversation } =
+    useConversations()
 
-  const handleShare = async () => {
-    // Implement share functionality
-  }
+  const {
+    localConversation,
+    handleShare,
+    shareStatus,
+    handleGenerateShareLink,
+    handleCopyLink,
+    isDeleting,
+    handleDeleteLink,
+    handleDownloadAsFile,
+    shareMessage,
+    setShareMessage,
+    handleAttachment
+  } = useConversationActions(conversation, updateConversation, deleteConversation)
+
+  const roundedClasses = isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
 
   const handleClick = () => {
     handleConversationSelect(conversation.id)
@@ -42,32 +57,38 @@ export function ConversationEntry({
     ? truncateText(conversation.summary, 100)
     : truncateText(removeTimestamps(conversation.transcript), 100)
 
+  const handleDelete = () => {
+    if (conversation) {
+      deleteConversation(conversation.id)
+    }
+  }
+
   return (
     <div
-      className={`w-full cursor-pointer border-t border-[#010101] bg-tertiary py-[18px] pl-4 pr-[19px] 
-      transition-all duration-300 ease-in-out hover:bg-white/10 
-      ${roundedClasses} 
-      ${isMergeActive ? 'hover:bg-tertiary-hover cursor-pointer' : ''} 
-      ${selectedClass}`}
+      className={`flex w-full cursor-pointer items-center justify-between border-t border-[#010101] bg-tertiary py-[18px] pl-4 pr-[19px] transition-all duration-300 ease-in-out hover:bg-white/10 ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover cursor-pointer' : ''} ${selectedClass} group`}
       onClick={handleClick}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <VoiceSquareIcon />
-          <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
-        </div>
-        {/* {!isMergeActive && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              handleShare()
-            }}
-            className="h-[24px] rounded-[6px] bg-white/10 px-3 text-[13px] leading-tight text-primary hover:bg-white/20"
-          >
-            Share
-          </button>
-        )} */}
+      <div className="flex items-center gap-3">
+        <VoiceSquareIcon />
+        <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
       </div>
+      {!isMergeActive && (
+        <div className="align-center hidden justify-center gap-[22px] group-hover:flex">
+          {/* <ShareButton
+              onShare={handleShare}
+              isSharing={shareStatus === 'processing'}
+              isDeleting={isDeleting}
+              hasExistingShareLink={!!localConversation.shareLink}
+              onGenerateShareLink={handleGenerateShareLink}
+              onCopyLink={handleCopyLink}
+              onDeleteLink={handleDeleteLink}
+              onDownloadAsFile={handleDownloadAsFile}
+            /> */}
+          <div className="relative h-6 w-6 items-center justify-center opacity-40">
+            <DeleteConversationDialog onDelete={handleDelete} size={20} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
