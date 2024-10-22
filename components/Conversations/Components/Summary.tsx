@@ -40,7 +40,7 @@ const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conve
         <button
           onClick={handleSummarizeClick}
           disabled={isSummarizing}
-          className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#00dbfb]/20 px-8 py-3.5 text-[17px] font-medium leading-tight text-[#00e6f5] hover:bg-[#00dbfb]/30"
+          className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#4ceda0]/20 px-8 py-3.5 text-[17px] font-medium leading-tight text-[#4bec9f] hover:bg-[#4ceda0]/30"
         >
           {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
         </button>
