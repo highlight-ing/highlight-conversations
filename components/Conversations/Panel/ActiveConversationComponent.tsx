@@ -122,81 +122,6 @@ export default function ActiveConversationComponent() {
         </div>
       )}
 
-      {/* Box 2: Microphone Control */}
-      {audioState !== 'active' && (
-        <div className="mb-8 flex w-full flex-col gap-2 rounded-2xl border border-[#222222] py-2">
-          <div className="flex w-full items-center justify-between overflow-hidden rounded-t-2xl px-6 py-2 pr-3">
-            <div className="flex w-full items-center gap-4">
-              <div className="flex items-center">
-                <MicrophoneIcon />
-              </div>
-              <AnimatePresence mode="wait">
-                {isAudioOn ? (
-                  <motion.div
-                    key="enabled"
-                    initial={{ opacity: 0, filter: 'blur(10px)' }}
-                    animate={{ opacity: 1, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, filter: 'blur(10px)' }}
-                    transition={{ duration: 0.2 }}
-                    className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]"
-                  >
-                    Microphone Enabled
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="enable"
-                    initial={{ opacity: 0, filter: 'blur(10px)' }}
-                    animate={{ opacity: 1, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, filter: 'blur(10px)' }}
-                    transition={{ duration: 0.2 }}
-                    className="font-inter text-[15px] font-medium leading-normal text-[#b4b4b4]"
-                  >
-                    Enable Microphone
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            <div className="flex items-center gap-4">
-              <button onClick={handleToggle} className="font-publicsans flex items-center gap-1.5 text-xs">
-                <motion.div
-                  className={`text-right ${
-                    isAudioOn ? 'text-[#00cc88]' : 'text-white/40'
-                  } font-['Public Sans'] text-xs font-normal leading-snug`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {isAudioOn ? 'ON' : 'OFF'}
-                </motion.div>
-                <div className="relative h-[26px] w-[49px] rounded-2xl">
-                  <motion.div
-                    className={`absolute left-0 top-0 h-[26px] w-[49px] ${
-                      isAudioOn ? 'bg-[#00cc88]' : 'bg-black'
-                    } rounded-full`}
-                    layout
-                    transition={{
-                      type: 'spring',
-                      stiffness: 700,
-                      damping: 30
-                    }}
-                  />
-                  <motion.div
-                    className={`absolute h-6 w-6 ${
-                      isAudioOn ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
-                    } top-[1px] rounded-full shadow`}
-                    layout
-                    transition={{
-                      type: 'tween',
-                      duration: 0.3,
-                      ease: 'easeInOut'
-                    }}
-                  />
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Box 3: Enable Audio Transcriptions */}
       <AnimatePresence>
         {!isAudioOn && (
@@ -219,3 +144,4 @@ export default function ActiveConversationComponent() {
     </div>
   )
 }
+
