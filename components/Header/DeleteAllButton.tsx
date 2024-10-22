@@ -1,5 +1,5 @@
-import React from 'react';
-import { useConversations } from '@/contexts/ConversationContext';
+import React from 'react'
+import { useConversations } from '@/contexts/ConversationContext'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,12 +9,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 
 const DeleteAllButton: React.FC = () => {
-  const { deleteAllConversations } = useConversations();
+  const { deleteAllConversations } = useConversations()
 
   return (
     <AlertDialog>
@@ -34,7 +34,7 @@ const DeleteAllButton: React.FC = () => {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
-};
+  )
+}
 
-export default DeleteAllButton;
+export default DeleteAllButton

@@ -39,7 +39,8 @@ export function ConversationEntry({
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
-  const roundedClasses = isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
+  const roundedClasses =
+    isFirst && isLast ? 'rounded-[20px]' : isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
 
   const handleClick = () => {
     handleConversationSelect(conversation.id)

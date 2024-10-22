@@ -75,7 +75,7 @@ export default function ActiveConversationComponent() {
   }
 
   return (
-    <div className="mb-6 flex h-full w-full flex-col">
+    <div className="mb-6 flex w-full flex-col">
       <div
         className={`flex w-full cursor-pointer flex-col items-start justify-start gap-4 rounded-2xl border ${audioState !== 'active' ? 'border-primary/50' : 'border-green/20'} px-5 py-4 transition-all duration-500 ${audioState === 'active' && 'hover:bg-green/20'}`}
         onClick={audioState !== 'off' ? handleCurrentConversationSelect : undefined}
