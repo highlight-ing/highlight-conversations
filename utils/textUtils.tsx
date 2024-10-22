@@ -21,3 +21,9 @@ export const highlightText = (text: string, query: string) => {
     return text // Return the original text if there's an error
   }
 }
+
+// utils/textUtils.ts
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text
+  return text.slice(0, maxLength - 3) + '...'
+}

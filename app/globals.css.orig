@@ -1,0 +1,190 @@
+@tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  @layer base {
+    :root {
+      --background: 0 0% 3.9%;
+      --foreground: 0 0% 98%;
+  
+      --card: 0 0% 3.9%;
+      --card-foreground: 0 0% 98%;
+  
+      --popover: 0 0% 3.9%;
+      --popover-foreground: 0 0% 98%;
+  
+      --primary: 0 0% 98%;
+      --primary-foreground: 0 0% 9%;
+  
+      --secondary: 0 0% 14.9%;
+      --secondary-foreground: 0 0% 98%;
+  
+      --muted: 0 0% 14.9%;
+      --muted-foreground: 0 0% 63.9%;
+  
+      --accent: 0 0% 14.9%;
+      --accent-foreground: 0 0% 98%;
+  
+      --destructive: 0 100% 60%;
+      --destructive-foreground: 0 85.7% 97.3%;
+  
+      --border: 0 0% 14.9%;
+      --input: 0 0% 14.9%;
+      --ring: 0 0% 14.9%;
+  
+<<<<<<< HEAD
+      --radius: 0.3rem;
+=======
+      --brand: 151 82% 61%;
+      --brand-foreground: 151 82% 41%;
+      --brand-light: 151 82% 81%;
+  
+      --discord: 235 86% 65%;
+      --discord-foreground: 235 43% 99.3%;
+
+      --scrollbar-hide-delay: 0.5s;
+      --searchbar-bg: 0 0% 9.9%;      /* 2% lighter than background */
+      --searchbar-bg-active: 0 0% 12.9%; /* 9% lighter than background */
+>>>>>>> ba51fecb1a536c20a7852083755323555f55acb9
+    }
+  }
+
+  @layer utilities {
+    .custom-scrollbar {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      transition: all 0.3s ease;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+  
+    .custom-scrollbar:hover {
+      scrollbar-width: thin;
+    }
+  
+    .custom-scrollbar:hover::-webkit-scrollbar {
+      width: 8px;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background-color: hsl(var(--background-100));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  
+    .custom-scrollbar:hover::-webkit-scrollbar-track {
+      opacity: 1;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: hsl(var(--background-300));
+      border-radius: 20px;
+      border: 2px solid hsl(var(--background-100));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  
+    .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+      opacity: 1;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background-color: hsl(var(--background-400));
+    }
+  
+    /* For Firefox */
+    .custom-scrollbar {
+      scrollbar-color: transparent transparent;
+      transition: scrollbar-color 0.3s ease;
+    }
+  
+    .custom-scrollbar:hover {
+      scrollbar-color: hsl(var(--background-300)) hsl(var(--background-100));
+    }
+  
+    /* Hide scrollbar after hover */
+    .custom-scrollbar:not(:hover) {
+      scrollbar-width: none;
+    }
+  
+    .custom-scrollbar:not(:hover)::-webkit-scrollbar {
+      width: 0;
+    }
+  
+    .custom-scrollbar:not(:hover)::-webkit-scrollbar-thumb,
+    .custom-scrollbar:not(:hover)::-webkit-scrollbar-track {
+      opacity: 0;
+      transition: opacity 0.3s ease var(--scrollbar-hide-delay);
+    }
+
+    .radix-dialog-content {
+      max-width: 90vw !important;
+      width: auto !important;
+    }
+  }
+
+  @keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    10%, 90% { opacity: 1; }
+  }
+
+  @keyframes gentleScale {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  .animate-gentle-scale {
+    animation: gentleScale 0.3s ease-in-out;
+  }
+  
+  @keyframes voiceWave {
+    0%, 100% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(1.5);
+    }
+  }
+  
+  .animated-voice-square.animate .voice-line {
+    transform-origin: center;
+    animation: voiceWave 1s infinite;
+  }
+  
+  .animated-voice-square.animate .voice-line-1 {
+    animation-delay: 0s;
+  }
+  
+  .animated-voice-square.animate .voice-line-2 {
+    animation-delay: 0.15s;
+  }
+  
+  .animated-voice-square.animate .voice-line-3 {
+    animation-delay: 0.3s;
+  }
+  
+  .animated-voice-square.animate .voice-line-4 {
+    animation-delay: 0.45s;
+  }
+  
+  .animated-voice-square.animate .voice-line-5 {
+    animation-delay: 0.6s;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .animated-voice-square.animate .voice-line {
+      animation: none;
+    }
+  }
+  @layer base {
+    * {
+      @apply border-[hsl(var(--border))];
+    }
+    body {
+      @apply bg-background text-foreground;
+    }
+  }

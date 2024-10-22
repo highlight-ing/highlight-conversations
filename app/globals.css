@@ -5,27 +5,13 @@
   @layer base {
     :root {
       --background: 0 0% 3.9%;
-      --background-100: 0 0% 15%;
-      --background-200: 0 0% 25%;
-      --background-300: 0 0% 35%;
-      --background-400: 0 0% 45%;
-      --background-500: 0 0% 55%;
-
       --foreground: 0 0% 98%;
-  
-      --muted: 0 0% 14.9%;
-      --muted-foreground: 0 0% 63.9%;
-  
-      --popover: 0 0% 3.9%;
-      --popover-foreground: 0 0% 98%;
   
       --card: 0 0% 3.9%;
       --card-foreground: 0 0% 98%;
   
-      --border: 0 0% 14.9%;
-      --border-gray: 0 0% 86.3%;
-      --input: 0 0% 14.9%;
-      --radius: 0.3rem;
+      --popover: 0 0% 3.9%;
+      --popover-foreground: 0 0% 98%;
   
       --primary: 0 0% 98%;
       --primary-foreground: 0 0% 9%;
@@ -33,14 +19,20 @@
       --secondary: 0 0% 14.9%;
       --secondary-foreground: 0 0% 98%;
   
+      --muted: 0 0% 14.9%;
+      --muted-foreground: 0 0% 63.9%;
+  
       --accent: 0 0% 14.9%;
       --accent-foreground: 0 0% 98%;
   
       --destructive: 0 100% 60%;
       --destructive-foreground: 0 85.7% 97.3%;
   
+      --border: 0 0% 14.9%;
+      --input: 0 0% 14.9%;
       --ring: 0 0% 14.9%;
   
+      --radius: 0.3rem;
       --brand: 151 82% 61%;
       --brand-foreground: 151 82% 41%;
       --brand-light: 151 82% 81%;
@@ -136,11 +128,61 @@
     0%, 100% { opacity: 0; }
     10%, 90% { opacity: 1; }
   }
+
+  @keyframes gentleScale {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  .animate-gentle-scale {
+    animation: gentleScale 0.3s ease-in-out;
+  }
+  
+  @keyframes voiceWave {
+    0%, 100% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(1.5);
+    }
+  }
+  
+  .animated-voice-square.animate .voice-line {
+    transform-origin: center;
+    animation: voiceWave 1s infinite;
+  }
+  
+  .animated-voice-square.animate .voice-line-1 {
+    animation-delay: 0s;
+  }
+  
+  .animated-voice-square.animate .voice-line-2 {
+    animation-delay: 0.15s;
+  }
+  
+  .animated-voice-square.animate .voice-line-3 {
+    animation-delay: 0.3s;
+  }
+  
+  .animated-voice-square.animate .voice-line-4 {
+    animation-delay: 0.45s;
+  }
+  
+  .animated-voice-square.animate .voice-line-5 {
+    animation-delay: 0.6s;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .animated-voice-square.animate .voice-line {
+      animation: none;
+    }
+  }
   @layer base {
     * {
-      @apply border-border;
+      @apply border-[hsl(var(--border))];
     }
     body {
       @apply bg-background text-foreground;
     }
   }
+  

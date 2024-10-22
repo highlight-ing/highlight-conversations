@@ -26,7 +26,16 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
       All your data is completely private and can never leave
       your computer without your explicit permission
       </p>
-      <Button onClick={onNext} className="w-full bg-brand text-background font-semibold text-md p-4 mt-4">
+      <Button 
+        onClick={onNext} 
+        className="w-full font-semibold text-md p-4 mt-4"
+        style={{
+          backgroundColor: 'rgb(74, 237, 158)',
+          color: 'black', 
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(250, 250, 250, 0.9)'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(74, 237, 158)'}
+      >
         Get Started
       </Button>
     </OnboardingTemplate>

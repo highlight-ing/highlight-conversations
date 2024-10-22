@@ -4,14 +4,14 @@ import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/h
 import { ShareOptionsMenu } from './ShareOptionsMenu'
 
 interface ShareButtonProps {
-  onShare: () => void;
-  isSharing: boolean;
-  isDeleting: boolean;
-  hasExistingShareLink: boolean;
-  onGenerateShareLink: () => void;
-  onDownloadAsFile: () => void;
-  onCopyLink: () => void;
-  onDeleteLink: () => void;
+  onShare: () => void
+  isSharing: boolean
+  isDeleting: boolean
+  hasExistingShareLink: boolean
+  onGenerateShareLink: () => void
+  onDownloadAsFile: () => void
+  onCopyLink: () => void
+  onDeleteLink: () => void
 }
 
 export const ShareButton: React.FC<ShareButtonProps> = ({
@@ -29,20 +29,20 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       <Button
         onClick={onShare}
         disabled={isSharing || isDeleting}
-        className="flex-1 items-center justify-center rounded-lg bg-background p-2 text-[15px] font-semibold text-foreground transition-colors duration-200 hover:bg-background hover:text-brand"
+        className="hover:text-brand flex h-auto w-auto items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 transition-colors duration-200 hover:bg-white/20"
       >
         {isSharing && !hasExistingShareLink ? (
           <>
-            <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-brand border-r-transparent align-[-0.125em]"></span>
+            <span className="border-brand mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-r-transparent align-[-0.125em]" />
             Generating...
           </>
         ) : isDeleting ? (
           <>
-            <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-brand border-r-transparent align-[-0.125em]"></span>
+            <span className="border-brand mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-r-transparent align-[-0.125em]" />
             Deleting...
           </>
         ) : (
-          <span className="flex items-center gap-2">Share</span>
+          <span className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Share</span>
         )}
       </Button>
     </HoverCardTrigger>
