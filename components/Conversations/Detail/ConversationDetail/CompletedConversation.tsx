@@ -7,12 +7,10 @@ import { useConversations } from '@/contexts/ConversationContext'
 import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { Toaster, toast } from 'sonner'
 
-import TrashIcon from '../Icon/TrashIcon'
 import { Pencil1Icon } from '@radix-ui/react-icons'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import VoiceSquareIcon from '../Icon/VoiceSquareIcon'
 
-import handleCopyTranscript from '@/components/Card/CurrentConversationCard'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
 
