@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { summarizeConversation } from '@/services/highlightService'
 
 interface SummaryProps {
@@ -37,13 +38,21 @@ const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conve
       {generatedSummary ? (
         <div className="text-sm text-[#eeeeee] sm:text-base">{generatedSummary}</div>
       ) : (
-        <button
-          onClick={handleSummarizeClick}
-          disabled={isSummarizing}
-          className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#4ceda0]/20 px-8 py-3.5 text-[17px] font-medium leading-tight text-[#4bec9f] hover:bg-[#4ceda0]/30"
-        >
-          {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
-        </button>
+        <AnimatePresence>
+          {!generatedSummary && (
+            <motion.button
+              onClick={handleSummarizeClick}
+              disabled={isSummarizing}
+              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#4ceda0]/20 px-8 py-3.5 text-[17px] font-medium leading-tight text-[#4bec9f] hover:bg-[#4ceda0]/30"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}  
+              transition={{ duration: 0.3 }}
+            >
+              {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
+            </motion.button>
+          )}
+        </AnimatePresence>
       )}
     </div>
   )
