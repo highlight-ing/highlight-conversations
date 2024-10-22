@@ -42,7 +42,7 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
   const buttons = useTranscriptButtons({
     message: transcript,
     // buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback']
-    buttonTypes: ['Copy', 'Share']
+    buttonTypes: ['Copy'] // TODO: Add other buttons
   })
 
   // Function to copy transcript to clipboard
@@ -58,11 +58,10 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
       })
   }
 
-  const shouldShowLoadingSpinner = isActive && transcript.trim().length === 0
+  const shouldShowLoadingSpinner = isActive
 
   return (
-    <div className="flex flex-1 flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
-      {/* Header Section */}
+    <div className="flex h-fit flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
       <div className="bg-blue flex items-center justify-between gap-4">
         <h2 className="font-inter text-xl font-semibold text-primary">Transcript</h2>
         <button onClick={copyToClipboard} className="flex h-5 w-5">
@@ -75,20 +74,16 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
           />
         </button>
       </div>
-
-      {/* Transcript Body */}
-      <div className="self-stretch h-[600px] flex-col justify-start items-start gap-6 flex">
+      <div className="flex flex-col items-start justify-start gap-6 self-stretch">
         {shouldShowLoadingSpinner && (
-          <div className="self-stretch justify-start items-center gap-1 inline-flex">
-            <div className="w-6 h-6 relative flex items-center justify-center">
+          <div className="inline-flex items-center justify-start gap-1 self-stretch">
+            <div className="relative flex h-6 w-6 items-center justify-center">
               <LoadingSpinner />
             </div>
-            <div className="text-[#484848] text-[15px] font-normal font-inter leading-normal">
-              Taking notes...
-            </div>
+            <div className="font-inter text-[15px] font-normal leading-normal text-[#484848]">Taking notes...</div>
           </div>
         )}
-        {!shouldShowLoadingSpinner && messages.map((message, index) => (
+        {messages.map((message, index) => (
           <div key={index} className="flex flex-col items-start justify-start gap-1 self-stretch">
             <div
               className={`font-inter self-stretch text-[13px] font-medium leading-tight ${
@@ -105,8 +100,6 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
           </div>
         ))}
       </div>
-
-      {/* Transcript Button Row */}
       <TranscriptButtonRow buttons={buttons} />
     </div>
   )

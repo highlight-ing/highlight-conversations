@@ -1,7 +1,6 @@
 'use client'
 import React, { useState, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import AudioPermissionDialog from '@/components/Dialogue/AudioPermissionDialog'
 import OnboardingFlow from '@/components/Onboarding/OnboardingFlow'
 import OnboardingTooltips from '@/components/Onboarding/OnboardingTooltips'
 import { useAppInitialization } from '@/hooks/useAppInitialization'
@@ -10,19 +9,15 @@ import { useConversations } from '@/contexts/ConversationContext'
 import { ConversationProvider } from '@/contexts/ConversationContext'
 import { useAmplitude } from '@/hooks/useAmplitude'
 import { useOnboarding } from '@/hooks/useOnboarding'
-import SearchBar from '@/components/Search/SearchBar'
-import SearchResultsSummary from '@/components/Search/SearchResultsSummary'
-import ConversationGrid from '@/components/Card/ConversationGrid'
 import { ConversationLayout } from '@/components/Conversations/ConversationLayout'
 import { saveHasSeenOnboarding, getHasSeenOnboarding } from '@/services/highlightService'
-import EnhancedSearchBar from '@/components/Search/EnhancedSearchBar'
 
 const DEBUG_ONBOARDING = process.env.NEXT_PUBLIC_DEBUG_ONBOARDING === 'true'
 
 const MainPageContent: React.FC = () => {
   const { isInitialized, showOnboarding, setShowOnboarding } = useAppInitialization(DEBUG_ONBOARDING)
   const { isAudioPermissionEnabled, toggleAudioPermission } = useAudioPermission()
-  const { filteredConversations, autoSaveTime } = useConversations()
+  const { autoSaveTime } = useConversations()
   const { trackEvent } = useAmplitude()
   const { showOnboardingTooltips, tooltipsReady, handleTooltipsComplete } = useOnboarding()
 
@@ -44,15 +39,7 @@ const MainPageContent: React.FC = () => {
 
   return (
     <div className="flex max-h-screen min-h-screen flex-col overflow-hidden">
-      {/* <AudioPermissionDialog 
-        isAudioPermissionGranted={isAudioPermissionEnabled} 
-        onTogglePermission={toggleAudioPermission}
-      /> */}
       <main className="flex-grow p-4">
-        {/* <SearchBar />
-        {searchQuery && (
-          <SearchResultsSummary count={filteredConversations.length} />
-        )} */}
         <AnimatePresence>
           <ConversationLayout />
         </AnimatePresence>

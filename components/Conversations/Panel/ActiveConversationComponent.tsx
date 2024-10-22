@@ -2,9 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConversations } from '@/contexts/ConversationContext'
 import { useDebouncedCallback } from 'use-debounce'
-import SoundIcon from '../Detail/Icon/SoundIcon'
-import GreenSoundIcon from '../Detail/Icon/GreenSoundIcon'
-import MicrophoneIcon from '../Detail/Icon/MicrophoneIcon'
+import { Sound } from 'iconsax-react'
 
 type AudioState = 'active' | 'inactive' | 'off' | 'noPermissions' | 'saving'
 
@@ -55,6 +53,7 @@ export default function ActiveConversationComponent() {
     } else {
       slowDebounce()
       saveDebounce()
+      setAudioState('inactive')
     }
   }, [isAudioOn, micActivity, isSaving, fastDebounce, slowDebounce, saveDebounce])
 
@@ -76,66 +75,43 @@ export default function ActiveConversationComponent() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col">
-      {/* Box 1 */}
-      {audioState === 'active' ? (
-        <div
-          className="flex h-14 w-full cursor-pointer flex-col items-start justify-start gap-4 rounded-2xl border border-[#4ceda0]/20 px-5 py-4"
-          onClick={handleCurrentConversationSelect}
-        >
-          <div className="flex h-6 w-full items-center justify-between">
-            <div className="flex items-center">
-              <div className="flex items-center gap-4">
-                <div className="flex h-6 w-6 items-center justify-center">
-                  <GreenSoundIcon />
-                </div>
-                <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">
-                  Transcribing Audio...
-                </div>
+    <div className="mb-6 flex w-full flex-col">
+      <div
+        className={`flex w-full cursor-pointer flex-col items-start justify-start gap-4 rounded-2xl border ${audioState !== 'active' ? 'border-primary/50' : 'border-green/20'} px-5 py-4 transition-all duration-500 ${audioState === 'active' && 'hover:bg-green/20'}`}
+        onClick={audioState !== 'off' ? handleCurrentConversationSelect : undefined}
+      >
+        <div className="flex h-6 w-full items-center justify-between">
+          <div className="flex items-center">
+            <div className="flex items-center gap-4">
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Sound color={getSoundIconColor()} />
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-[26px] items-center justify-end gap-1.5">
-                <div className="font-['Public Sans'] text-right text-xs font-normal leading-snug text-white/40">ON</div>
-                <div className="relative h-[26px] w-[49px] rounded-2xl">
-                  <div className="absolute h-[26px] w-[49px] rounded-full bg-[#00cc88]" />
-                  <div className="absolute left-[24px] top-[1px] h-6 w-6 rounded-full bg-white shadow" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="mb-8 flex w-full flex-col gap-2 rounded-2xl border border-[#222222] py-2">
-          <div className="flex w-full items-center justify-between overflow-hidden rounded-t-2xl px-6 py-2 pr-3">
-            <div className="flex w-full items-center gap-4">
-              <div className="flex items-center">
-                <SoundIcon color={getSoundIconColor()} />
-              </div>
-              <div className="font-inter text-[15px] font-medium leading-normal text-[#3a3a3a]">
+              <div
+                className={`font-inter duaration-500 text-[15px] font-medium leading-normal ${audioState === 'active' ? 'text-[#eeeeee]' : 'text-[#3a3a3a]'} transition-all`}
+              >
+                {audioState === 'active' && 'Transcribing audio...'}
                 {audioState === 'saving' && 'Saving transcript...'}
-                {audioState === 'off' && <span className="text-[#3a3a3a]">Enable Highlight Audio transcriptions</span>}
-                {audioState === 'inactive' && <span className="text-[#3a3a3a]">No active transcription</span>}
+                {audioState === 'off' && 'Enable Highlight Meetings'}
+                {audioState === 'inactive' && 'No audio detected'}
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Box 3: Enable Audio Transcriptions */}
       <AnimatePresence>
         {!isAudioOn && (
           <motion.button
             onClick={handleToggle}
-            className="mb-8 flex w-full flex-col gap-2 rounded-xl bg-[#00dbfb]/20"
+            className="mt-6 flex w-full flex-col gap-2 rounded-xl bg-[#00dbfb]/20 hover:bg-[#00dbfb]/30"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex h-12 w-full items-center justify-center rounded-xl">
+            <div className="flex w-full items-center justify-center rounded-xl px-8 py-[14px]">
               <div className="font-inter text-[17px] font-medium leading-tight text-[#00e6f5]">
-                Enable Audio Transcriptions
+                Enable Audio Transcription
               </div>
             </div>
           </motion.button>
@@ -144,4 +120,3 @@ export default function ActiveConversationComponent() {
     </div>
   )
 }
-

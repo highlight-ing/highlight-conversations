@@ -16,9 +16,10 @@ import { Trash } from 'iconsax-react'
 
 interface DeleteConversationDialogProps {
   onDelete: () => void
+  size?: number
 }
 
-const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({ onDelete }) => {
+const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({ onDelete, size = 24 }) => {
   const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle')
   const [isAlertOpen, setIsAlertOpen] = useState(false)
 
@@ -41,11 +42,13 @@ const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({ onD
           onClick={handleDeleteClick}
           onMouseEnter={() => setDeleteTooltipState('active')}
           onMouseLeave={() => setDeleteTooltipState('idle')}
-          className="text-muted-foreground hover:text-destructive relative flex items-center justify-center transition-colors duration-200"
+          className="text-muted-foreground hover:text-destructive relative flex h-fit w-fit items-center justify-center transition-colors duration-200"
         >
-          {/* <TrashIcon variant="Bold" width={24} height={24} className="group-hover:text-destructive" /> */}
-          <Trash variant="Bold" className="group-hover:text-destructive text-primary hover:text-secondary" />
-          <Tooltip type="delete" state={deleteTooltipState} />
+          <Trash
+            variant="Bold"
+            className="group-hover:text-destructive text-primary hover:text-secondary"
+            size={size}
+          />
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent>

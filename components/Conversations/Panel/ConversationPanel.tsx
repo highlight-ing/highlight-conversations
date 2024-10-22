@@ -55,15 +55,14 @@ const ConversationPanel: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-            className="flex h-full w-full flex-col overflow-y-auto px-6 py-6"
+            className="flex h-full w-full flex-col justify-start overflow-y-auto px-6 py-6 align-top"
           >
             {isSettingsActive ? (
               <SettingsPage />
             ) : (
               <>
                 <ActiveConversationComponent />
-                {isAudioOn && <ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />}
-                {/* Uncomment these if you want to show them as well */}
+                {<ConversationList title={last24HoursTitle} conversations={last24HoursConversations} />}
                 <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />
                 <ConversationList title={olderTitle} conversations={olderConversations} />
               </>

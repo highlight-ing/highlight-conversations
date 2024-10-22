@@ -7,12 +7,10 @@ import { useConversations } from '@/contexts/ConversationContext'
 import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { Toaster, toast } from 'sonner'
 
-import TrashIcon from '../Icon/TrashIcon'
 import { Pencil1Icon } from '@radix-ui/react-icons'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import VoiceSquareIcon from '../Icon/VoiceSquareIcon'
 
-import handleCopyTranscript from '@/components/Card/CurrentConversationCard'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
 
@@ -182,7 +180,6 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
         {/* Delete, Open, Copy Link buttons */}
         <div className="inline-flex items-center gap-4">
           <div className="relative flex h-6 w-6 items-center justify-center opacity-40">
-            {/* Delete Confirmation Dialog */}
             <DeleteConversationDialog onDelete={handleDelete} />
           </div>
           <div
@@ -204,7 +201,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
         </div>
       </div>
       <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">{formattedTimestamp}</div>
-      
+
       {/* Summary Component */}
       <div ref={summaryRef} className="mb-8 flex w-full flex-col gap-4">
         <Summary

@@ -4,7 +4,7 @@ import { ConversationData, createConversation, formatTranscript } from '@/data/c
 import {
   getConversationsFromAppStorage,
   summarizeConversation,
-  SummarizedConversationData
+  ProcessedConversationData
 } from '@/services/highlightService'
 import { useAudioPermission } from '@/hooks/useAudioPermission'
 import { useAmplitude } from '@/hooks/useAmplitude'
@@ -350,7 +350,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       const formattedTranscript = formatTranscript(mergedTranscript, 'DialogueTranscript')
 
-      let summarizedData: SummarizedConversationData | null = null
+      let summarizedData: ProcessedConversationData | null = null
       if (sortedConversations.some((conv) => conv.summarized)) {
         try {
           summarizedData = await summarizeConversation(formattedTranscript)

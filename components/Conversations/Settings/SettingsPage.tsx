@@ -20,7 +20,7 @@ type AudioState = 'active' | 'inactive' | 'off'
 
 const SettingsPage: React.FC = () => {
   // Conversation State
-  const { isAudioOn, setIsAudioOn } = useConversations()
+  const { isAudioOn, setIsAudioOn, conversations } = useConversations()
   // Audio Transcription State
   const [audioState, setAudioState] = useState<AudioState>('inactive')
   const [asrDuration, setAsrDuration] = useState<number>(2)
@@ -67,7 +67,7 @@ const SettingsPage: React.FC = () => {
       <div
         className={`mb-8 h-14 w-full rounded-2xl border px-5 py-4 ${
           audioState !== 'off' ? 'border-[#4ceda0]/20' : 'border-[#222222]'
-        } flex flex-col items-start justify-start gap-4`}
+        } flex flex-col items-start justify-start gap-4 transition-all duration-500`}
       >
         <div className="flex h-6 w-full items-center justify-between">
           <div className="flex items-center">
@@ -95,12 +95,12 @@ const SettingsPage: React.FC = () => {
                 <div
                   className={`absolute left-0 top-0 h-[26px] w-[49px] ${
                     audioState !== 'off' ? 'bg-[#00cc88]' : 'bg-black'
-                  } rounded-full`}
+                  } rounded-full transition-all duration-500`}
                 />
                 <div
                   className={`absolute h-6 w-6 ${
                     audioState !== 'off' ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
-                  } top-[1px] rounded-full shadow`}
+                  } top-[1px] rounded-full shadow transition-all duration-500`}
                 />
               </div>
             </button>
@@ -108,32 +108,34 @@ const SettingsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Auto Save */}
-      <div className="mb-8 flex flex-col gap-px">
-        <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
-          <div className="font-inter text-[15px] font-medium leading-6 text-[#EEEEEE]">Auto Save</div>
-          <AutoSaveSelection />
-        </div>
+      {audioState !== 'off' && (
+        <>
+          <div className="mb-8 flex flex-col gap-px">
+            <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
+              <div className="font-inter text-[15px] font-medium leading-6 text-[#EEEEEE]">Auto Save</div>
+              <AutoSaveSelection />
+            </div>
 
-        <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
-          <div className="font-inter text-[15px] font-normal leading-6 text-[#B4B4B4] opacity-50">
-            Highlight will automatically save your conversation transcript after this duration of silence
+            <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
+              <div className="font-inter text-[15px] font-normal leading-6 text-[#B4B4B4] opacity-50">
+                Highlight will automatically save your conversation transcript after this duration of silence
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Auto Clear */}
-      <div className="mb-8 flex flex-col gap-px">
-        <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
-          <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Auto Clear</div>
-          <AutoClearSelection />
-        </div>
-        <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
-          <div className="font-inter shrink grow basis-0 text-[15px] font-normal leading-normal text-[#b4b4b4] opacity-50">
-            Highlight will automatically delete all of your conversation transcripts based on this setting
+          <div className="mb-8 flex flex-col gap-px">
+            <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
+              <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Auto Clear</div>
+              <AutoClearSelection />
+            </div>
+            <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
+              <div className="font-inter shrink grow basis-0 text-[15px] font-normal leading-normal text-[#b4b4b4] opacity-50">
+                Highlight will automatically delete all of your conversation transcripts based on this setting
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       {/* Audio Transcript Duration */}
       {/* <div className="mb-8 flex flex-col gap-px">
@@ -201,29 +203,31 @@ const SettingsPage: React.FC = () => {
       </div> */}
 
       {/* Delete Button */}
-      <div className="mb-8 flex flex-col gap-px">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <div className="flex inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#222222] bg-white/[0.02] px-6 py-3 pr-3">
-              <div className="font-inter text-[17px] font-medium leading-tight text-[#ff3333]">
-                Delete All Transcripts
+      {conversations.length > 0 && (
+        <div className="mb-8 flex flex-col gap-px">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <div className="flex inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#222222] bg-white/[0.02] px-6 py-3 pr-3">
+                <div className="font-inter text-[17px] font-medium leading-tight text-[#ff3333]">
+                  Delete All Transcripts
+                </div>
               </div>
-            </div>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete all your transcripts.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={deleteAllConversations}>Delete All</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete all your transcripts.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={deleteAllConversations}>Delete All</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
     </>
   )
 }
