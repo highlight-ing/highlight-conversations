@@ -3,11 +3,14 @@ import React from 'react'
 import BigGreenSoundIcon from '../Icon/ActiveConversationIcon/BigGreenSoundIcon'
 import { useConversations } from '@/contexts/ConversationContext'
 import Transcript from '../../Components/Transcript'
+import { formatTimestampWithTimer } from '@/utils/dateUtils'
 
 const ActiveConversation: React.FC = () => {
   const { currentConversation, saveCurrentConversation, elapsedTime } = useConversations()
 
   const isSaveDisabled = currentConversation.trim().length === 0
+
+  const startTime = new Date(Date.now() - elapsedTime)
 
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
@@ -32,9 +35,8 @@ const ActiveConversation: React.FC = () => {
         </button>
       </div>
       <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">
-        Transcript will update every ~30s
+        {formatTimestampWithTimer(startTime, elapsedTime)}
       </div>
-
       <div className="transition-all duration-300 ease-in-out">
         <Transcript transcript={currentConversation} isActive={true} />
       </div>

@@ -54,6 +54,91 @@ export const formatHeaderTimestamp = (startDate: Date | string | number, endDate
   return `${datePart} ${startTimePart} - ${endTimePart} ${timeZoneAbbr}`
 }
 
+// Helper function to get standard timezone abbreviation
+const getStandardTimezoneAbbr = (timeZone: string): string => {
+  const timezoneMap: { [key: string]: string } = {
+    // North America
+    'America/Los_Angeles': 'PST',
+    'America/New_York': 'EST',
+    'America/Chicago': 'CST',
+    'America/Denver': 'MST',
+    'America/Phoenix': 'MST',
+    'America/Anchorage': 'AKST',
+    'Pacific/Honolulu': 'HST',
+    'America/Halifax': 'AST',
+    'America/St_Johns': 'NST',
+    
+    // South America
+    'America/Sao_Paulo': 'BRT',
+    'America/Argentina/Buenos_Aires': 'ART',
+    'America/Caracas': 'VET',
+    'America/Santiago': 'CLT',
+    
+    // Europe
+    'Europe/London': 'GMT',
+    'Europe/Paris': 'CET',
+    'Europe/Moscow': 'MSK',
+    'Europe/Istanbul': 'TRT',
+    'Europe/Berlin': 'CET',
+    'Europe/Rome': 'CET',
+    'Europe/Madrid': 'CET',
+    
+    // Asia
+    'Asia/Tokyo': 'JST',
+    'Asia/Seoul': 'KST',
+    'Asia/Shanghai': 'CST', // China Standard Time
+    'Asia/Singapore': 'SGT',
+    'Asia/Dubai': 'GST',
+    'Asia/Bangkok': 'ICT',
+    'Asia/Kolkata': 'IST',
+    'Asia/Tehran': 'IRST',
+    'Asia/Karachi': 'PKT',
+    'Asia/Hong_Kong': 'HKT',
+    
+    // Oceania
+    'Australia/Sydney': 'AEST',
+    'Australia/Perth': 'AWST',
+    'Australia/Adelaide': 'ACST',
+    'Pacific/Auckland': 'NZST',
+    'Pacific/Fiji': 'FJT',
+    
+    // Africa
+    'Africa/Cairo': 'EET',
+    'Africa/Johannesburg': 'SAST',
+    'Africa/Lagos': 'WAT',
+    'Africa/Nairobi': 'EAT',
+    
+    // Additional regions with 30/45-minute offsets
+    'Asia/Kathmandu': 'NPT',    // UTC+5:45
+    'Asia/Colombo': 'SLT',      // UTC+5:30
+    'Asia/Kabul': 'AFT',        // UTC+4:30
+    'Australia/Darwin': 'ACST',  // UTC+9:30
+    'Pacific/Chatham': 'CHAST', // UTC+12:45
+  }
+  
+  return timezoneMap[timeZone] || 'UTC'
+}
+
+export const formatTimestampWithTimer = (startTime: Date, elapsedMs: number): string => {
+  // Get the user's timezone
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  
+  // Format the start time (e.g., "8:45am")
+  const timeStr = formatInTimeZone(startTime, userTimeZone, 'h:mma').toLowerCase()
+  
+  // Get standard timezone abbreviation (e.g., KST, PST, EST) 
+  const tzAbbr = getStandardTimezoneAbbr(userTimeZone)
+  
+  // Format the timer (e.g., "04:20")
+  const minutes = Math.floor(elapsedMs / 60000)
+  const seconds = Math.floor((elapsedMs % 60000) / 1000)
+  const timerStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  
+  return `Started ${timeStr} ${tzAbbr} — ${timerStr}`
+}
+
+
+
 export const getTimeDifference = (date: Date, now: Date = new Date()): number => {
   return now.getTime() - date.getTime()
 }
