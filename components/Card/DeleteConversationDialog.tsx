@@ -44,7 +44,7 @@ const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({
       <AlertDialogTrigger asChild>
         <Trash
           variant="Bold"
-          className={`${colorVariant === 'default' ? 'text-primary/40' : 'text-tertiary'} cursor-pointer transition-colors duration-200 hover:text-secondary`}
+          className={`${colorVariant === 'default' ? 'text-primary/40' : 'text-tertiary'} hover:text-destructive cursor-pointer transition-colors duration-200 hover:text-secondary`}
           color={'currentColor'}
           size={size}
           onClick={handleDeleteClick}

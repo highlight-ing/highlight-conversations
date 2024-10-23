@@ -12,7 +12,7 @@ import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog
 import VoiceSquareIcon from '../Icon/VoiceSquareIcon'
 
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
-import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
+import { ShareMenu } from '@/components/Card/SavedConversation/ShareMenu'
 
 interface CompletedConversationProps {
   conversation: ConversationData
@@ -34,11 +34,8 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState('')
-  const summaryRef = useRef<HTMLDivElement>(null)
-  const [summaryHeight, setSummaryHeight] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -84,16 +81,6 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }, [isEditing])
 
-  // Update Summary Height when content changes
-  useEffect(() => {
-    const updateSummaryHeight = () => {
-      if (summaryRef.current) {
-        setSummaryHeight(summaryRef.current.offsetHeight)
-      }
-    }
-    updateSummaryHeight()
-  }, [conversation])
-
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value)
   }
@@ -108,16 +95,6 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     if (conversation) {
       deleteConversation(conversation.id)
     }
-  }
-
-  // Open the delete confirmation dialog
-  const openDeleteDialog = () => {
-    setIsDeleteDialogOpen(true)
-  }
-
-  // Close the delete confirmation dialog
-  const closeDeleteDialog = () => {
-    setIsDeleteDialogOpen(false)
   }
 
   // Handle the title blur
@@ -137,13 +114,6 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       handleTitleBlur()
     }
   }
-
-  // update summary height when content changes
-  useEffect(() => {
-    if (summaryRef.current) {
-      setSummaryHeight(summaryRef.current.clientHeight)
-    }
-  }, [summaryRef.current])
 
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
@@ -188,7 +158,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
           >
             <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
           </div>
-          <ShareButton
+          <ShareMenu
             onShare={handleShare}
             isSharing={shareStatus === 'processing'}
             isDeleting={isDeleting}
@@ -203,7 +173,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">{formattedTimestamp}</div>
 
       {/* Summary Component */}
-      <div ref={summaryRef} className="mb-8 flex w-full flex-col gap-4">
+      <div className="mb-8 flex w-full flex-col gap-4">
         <Summary
           transcript={conversation.transcript}
           onSummaryGenerated={(summary) => {

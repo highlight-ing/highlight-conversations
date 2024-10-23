@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
 import VoiceSquareIcon from '../Detail/Icon/VoiceSquareIcon'
 import { truncateText } from '@/utils/textUtils'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
-import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
 import { MessageText } from 'iconsax-react'
+import { ShareButton } from './ShareButton'
+import { toast } from 'sonner'
 
 interface ConversationEntryProps {
   conversation: ConversationData
@@ -39,6 +40,19 @@ export function ConversationEntry({
     setShareMessage,
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
+
+  useEffect(() => {
+    if (shareMessage) {
+      if (shareMessage.type === 'success') {
+        toast.success(shareMessage.message, {
+          description: shareMessage.description
+        })
+      } else {
+        toast.error(shareMessage.message)
+      }
+      setShareMessage(null)
+    }
+  }, [shareMessage, setShareMessage])
 
   const roundedClasses =
     isFirst && isLast ? 'rounded-[20px]' : isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
@@ -76,16 +90,13 @@ export function ConversationEntry({
       </div>
       {!isMergeActive && (
         <div className="align-center hidden justify-center gap-[22px] text-tertiary group-hover:flex">
-          {/* <ShareButton
-              onShare={handleShare}
-              isSharing={shareStatus === 'processing'}
-              isDeleting={isDeleting}
-              hasExistingShareLink={!!localConversation.shareLink}
-              onGenerateShareLink={handleGenerateShareLink}
-              onCopyLink={handleCopyLink}
-              onDeleteLink={handleDeleteLink}
-              onDownloadAsFile={handleDownloadAsFile}
-            /> */}
+          <ShareButton
+            onShare={handleShare}
+            isSharing={shareStatus === 'processing'}
+            hasExistingShareLink={!!localConversation.shareLink}
+            onGenerateShareLink={handleGenerateShareLink}
+            onCopyLink={handleCopyLink}
+          />
           <MessageText
             variant="Bold"
             size={20}
