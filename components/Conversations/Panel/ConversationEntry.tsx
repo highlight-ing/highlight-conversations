@@ -6,6 +6,7 @@ import { truncateText } from '@/utils/textUtils'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
+import { MessageText } from 'iconsax-react'
 
 interface ConversationEntryProps {
   conversation: ConversationData
@@ -74,7 +75,7 @@ export function ConversationEntry({
         <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
       </div>
       {!isMergeActive && (
-        <div className="align-center hidden justify-center gap-[22px] group-hover:flex">
+        <div className="align-center hidden justify-center gap-[22px] text-tertiary group-hover:flex">
           {/* <ShareButton
               onShare={handleShare}
               isSharing={shareStatus === 'processing'}
@@ -85,9 +86,13 @@ export function ConversationEntry({
               onDeleteLink={handleDeleteLink}
               onDownloadAsFile={handleDownloadAsFile}
             /> */}
-          <div className="relative h-6 w-6 items-center justify-center opacity-40">
-            <DeleteConversationDialog onDelete={handleDelete} size={20} />
-          </div>
+          <MessageText
+            variant="Bold"
+            size={20}
+            className="transition-colors duration-200 hover:text-secondary"
+            onClick={handleAttachment}
+          />
+          <DeleteConversationDialog onDelete={handleDelete} size={20} colorVariant="tertiary" />
         </div>
       )}
     </div>
