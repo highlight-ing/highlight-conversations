@@ -11,6 +11,9 @@ interface Message {
 }
 
 const parseTranscript = (transcript: string): Message[] => {
+  // Debug log
+  console.log('Incoming transcript:', transcript);
+
   if (typeof transcript !== 'string') {
     console.error('Invalid transcript provided to parseTranscript:', transcript)
     return []
@@ -19,19 +22,35 @@ const parseTranscript = (transcript: string): Message[] => {
   return transcript
     .split('\n')
     .map((line): Message | null => {
-      const regex = /^(.+?)\s+(.+?):\s*(.*)$/
+      // Debug log
+      console.log('Processing line:', line);
+      
+      // Simpler regex that matches time and rest of content
+      const regex = /^(\d{2}:\d{2}:\d{2}\s+(?:AM|PM))\s+-\s+(.+?)(?:\s*:\s*|\s+-\s+)(.*)$/
       const match = line.match(regex)
+      
+      // Debug log
+      console.log('Match result:', match);
+
       if (match) {
         const [, time, sender, text] = match
-        return { 
-          time, 
-          sender: sender.toLowerCase() === 'self' ? 'Me' : sender,  
-          text 
+        const message = { 
+          time,
+          sender: sender.trim(),
+          text: text.trim() || '.' // Use dot if text is empty
         }
+        // Debug log
+        console.log('Created message:', message);
+        return message
       }
       return null
     })
-    .filter((message): message is Message => message !== null)
+    .filter((message): message is Message => {
+      const isValid = message !== null;
+      // Debug log
+      console.log('Filtering message:', message, 'isValid:', isValid);
+      return isValid;
+    })
 }
 
 interface TranscriptProps {
@@ -90,13 +109,13 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
         {messages.map((message, index) => (
           <div key={index} className="flex flex-col items-start justify-start gap-1 self-stretch">
             <div
-             className={`font-inter self-stretch text-[13px] font-medium leading-tight ${
-              message.sender === 'Me' || message.sender.toLowerCase().includes('self')
-                ? 'text-[#4ceda0]/40'
-                : 'text-white opacity-20'
-            }`}
+              className={`font-inter self-stretch text-[13px] font-medium leading-tight ${
+                message.sender === 'Me' || message.sender.toLowerCase().includes('self')
+                  ? 'text-[#4ceda0]/40'
+                  : 'text-white opacity-20'
+              }`}
             >
-              {message.time} - {message.sender.toLowerCase().includes('self') ? 'Me' : message.sender}:
+              {message.time} - {message.sender}
             </div>
             <div className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee]">
               {message.text}
