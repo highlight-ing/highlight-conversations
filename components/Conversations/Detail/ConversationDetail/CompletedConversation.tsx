@@ -61,7 +61,8 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       conversation.title.trim() === '' ||
       conversation.title.startsWith('Conversation ended at')
     ) {
-      setTitle(getRelativeTimeString(conversation.startedAt))
+      const relativetime = getRelativeTimeString(conversation.startedAt)
+      setTitle(relativetime)
     } else {
       setTitle(conversation.title)
     }
@@ -125,7 +126,9 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     setIsEditing(false)
     if (!conversation) return
     if (title.trim() === '') {
-      setTitle(getRelativeTimeString(conversation.startedAt))
+      const relativeTime = getRelativeTimeString(conversation.startedAt)
+      setTitle(relativeTime)
+      updateConversation({ ...conversation, title: ''})
     } else {
       updateConversation({ ...conversation, title })
     }
@@ -145,17 +148,48 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }, [summaryRef.current])
 
+  // truncate the title
+  const truncateTitle = (title: string, isCompact: boolean) => {
+    console.log('=== START ===');
+    console.log(`Input: "${title}" (compact: ${isCompact})`);
+    
+    // Removed ^ and $ to make regex more flexible
+    const regex = /(\d+)\s*(minute|minutes)\s+ago/i;
+    const match = title.match(regex);
+    console.log('Regex match:', match);
+  
+    if (match) {
+      console.log('Match found!');
+      const [full, number, unit] = match;
+      console.log('Number:', number);
+      console.log('Unit:', unit);
+  
+      // For compact: "40 min..." (with space)
+      // For full: "40 minutes ago"
+      const result = isCompact 
+        ? `${number} min...`
+        : `${number} ${unit} ago`;
+      
+      console.log('Result:', result);
+      console.log('=== END ===');
+      return result;
+    }
+  
+    // If no match, return the original title
+    return title;
+  }
+
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
       <div className="mb-6 flex w-full flex-row justify-between">
         {/* Title and Editable Logic */}
-        <div className="flex items-center gap-[13px]">
-          <div className="flex h-8 w-8 items-center justify-center">
+        <div className="flex items-center gap-[13px] max-w-[70%]">
+          <div className="flex h-8 w-8 items-center justify-center flex-shrink-0">
             <VoiceSquareIcon />
           </div>
 
           {/* Title (Editable or Static) */}
-          <div className="font-inter text-2xl font-semibold leading-[31px] text-white">
+          <div className="font-inter text-2xl font-semibold leading-[31px] text-white overflow-hidden">
             {isEditing ? (
               <input
                 ref={inputRef}
@@ -164,15 +198,24 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
                 onChange={handleTitleChange}
                 onBlur={handleTitleBlur}
                 onKeyDown={handleKeyDown}
-                className="font-inter bg-transparent text-2xl font-semibold leading-[31px] text-white outline-none"
+                className="font-inter bg-transparent text-2xl font-semibold leading-[31px] text-white outline-none w-full"
               />
             ) : (
               <h1
                 className="font-inter flex cursor-pointer items-center text-2xl font-semibold leading-[31px] text-white"
                 onClick={() => setIsEditing(true)}
               >
-                {title}
-                <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white" />
+                <div className="relative w-full">
+                  {/* Full title for larger screens */}
+                  <div className="hidden lg:block truncate">
+                    {truncateTitle(title, false)}
+                  </div>
+                  {/* Compact title for smaller screens */}
+                  <div className="block lg:hidden truncate">
+                    {truncateTitle(title, true)}
+                  </div>
+                </div>
+                <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white flex-shrink-0" />
               </h1>
             )}
           </div>
