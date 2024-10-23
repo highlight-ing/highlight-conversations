@@ -5,7 +5,7 @@ import { useConversations } from '@/contexts/ConversationContext'
 import Transcript from '../../Components/Transcript'
 
 const ActiveConversation: React.FC = () => {
-  const { currentConversation, saveCurrentConversation } = useConversations()
+  const { currentConversation, saveCurrentConversation, elapsedTime } = useConversations()
 
   const isSaveDisabled = currentConversation.trim().length === 0
 
