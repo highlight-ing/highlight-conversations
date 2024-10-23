@@ -23,7 +23,11 @@ const parseTranscript = (transcript: string): Message[] => {
       const match = line.match(regex)
       if (match) {
         const [, time, sender, text] = match
-        return { time, sender, text }
+        return { 
+          time, 
+          sender: sender.toLowerCase() === 'self' ? 'Me' : sender,  
+          text 
+        }
       }
       return null
     })
@@ -86,13 +90,13 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
         {messages.map((message, index) => (
           <div key={index} className="flex flex-col items-start justify-start gap-1 self-stretch">
             <div
-              className={`font-inter self-stretch text-[13px] font-medium leading-tight ${
-                message.sender.toLowerCase() === 'me' || message.sender.toLowerCase() === 'self'
-                  ? 'text-[#4ceda0]/40'
-                  : 'text-white opacity-20'
-              }`}
+             className={`font-inter self-stretch text-[13px] font-medium leading-tight ${
+              message.sender === 'Me' || message.sender.toLowerCase().includes('self')
+                ? 'text-[#4ceda0]/40'
+                : 'text-white opacity-20'
+            }`}
             >
-              {message.time} - {message.sender}:
+              {message.time} - {message.sender.toLowerCase().includes('self') ? 'Me' : message.sender}:
             </div>
             <div className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee]">
               {message.text}
