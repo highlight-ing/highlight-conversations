@@ -86,7 +86,7 @@ const getStandardTimezoneAbbr = (timeZone: string): string => {
     // Asia
     'Asia/Tokyo': 'JST',
     'Asia/Seoul': 'KST',
-    'Asia/Shanghai': 'CST', // China Standard Time
+    'Asia/Shanghai': 'CST', 
     'Asia/Singapore': 'SGT',
     'Asia/Dubai': 'GST',
     'Asia/Bangkok': 'ICT',
