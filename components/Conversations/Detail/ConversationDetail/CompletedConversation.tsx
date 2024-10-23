@@ -12,7 +12,7 @@ import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog
 import VoiceSquareIcon from '../Icon/VoiceSquareIcon'
 
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
-import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
+import { ShareMenu } from '@/components/Card/SavedConversation/ShareMenu'
 
 interface CompletedConversationProps {
   conversation: ConversationData
@@ -188,7 +188,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
           >
             <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
           </div>
-          <ShareButton
+          <ShareMenu
             onShare={handleShare}
             isSharing={shareStatus === 'processing'}
             isDeleting={isDeleting}
