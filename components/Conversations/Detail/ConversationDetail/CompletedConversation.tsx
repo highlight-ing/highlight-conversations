@@ -179,7 +179,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
         </div>
         {/* Delete, Open, Copy Link buttons */}
         <div className="inline-flex items-center gap-4">
-          <div className="relative flex h-6 w-6 items-center justify-center opacity-40">
+          <div className="relative flex h-6 w-6 items-center justify-center">
             <DeleteConversationDialog onDelete={handleDelete} />
           </div>
           <div
