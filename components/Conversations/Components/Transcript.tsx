@@ -80,7 +80,7 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
             <div className="relative flex h-6 w-6 items-center justify-center">
               <LoadingSpinner />
             </div>
-            <div className="font-inter text-[15px] font-normal leading-normal text-[#484848]">Taking notes...</div>
+            <div className="font-inter text-[15px] font-normal leading-normal text-[#484848]">Taking notes... transcript will update every ~30s</div>
           </div>
         )}
         {messages.map((message, index) => (
