@@ -56,9 +56,10 @@ const parseTranscript = (transcript: string): Message[] => {
 interface TranscriptProps {
   transcript: string
   isActive?: boolean
+  searchQuery?: string  
 }
 
-const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false }) => {
+const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false, searchQuery = '' }) => {
   const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
   const messages: Message[] = parseTranscript(transcript)
 
@@ -107,9 +108,12 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
           </div>
         )}
         {messages.map((message, index) => (
-          <div key={index} className="flex flex-col items-start justify-start gap-1 self-stretch">
+          <div 
+            key={index} 
+            className="flex flex-col items-start justify-start gap-1 self-stretch"
+          >
             <div
-              className={`font-inter self-stretch text-[13px] font-medium leading-tight ${
+              className={`font-inter self-stretch text-[13px] font-medium leading-tight select-text ${
                 message.sender === 'Me' || message.sender.toLowerCase().includes('self')
                   ? 'text-[#4ceda0]/40'
                   : 'text-white opacity-20'
@@ -117,7 +121,7 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
             >
               {message.time} - {message.sender}
             </div>
-            <div className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee]">
+            <div className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee] select-text">
               {message.text}
             </div>
           </div>
