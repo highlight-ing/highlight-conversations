@@ -122,7 +122,17 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     )
 
-    const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => {})
+    const removeExternalMessageListener = Highlight.app.addListener(
+      'onExternalMessage',
+      async (caller: string, message: any) => {
+        if (caller === 'highlight' && message?.type === 'open-conversation-by-id') {
+          setSelectedConversationId(message?.conversationId)
+        }
+        console.log({ caller, message })
+      }
+    )
+
+    const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => { })
 
     const removeConversationSavedListener = Highlight.app.addListener('onConversationSaved', () => {
       setIsSaving(true)
@@ -141,6 +151,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       removeAutoClearUpdatedListener()
       removeSaveConversationListener()
       removeConversationSavedListener()
+      removeExternalMessageListener()
     }
   }, [isAudioOn, trackEvent])
 
