@@ -1,23 +1,59 @@
 import React from 'react';
 
-const LoadingSpinner = () => (
-  <svg 
-    width="24" 
-    height="24" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg"
-    className="animate-spin"
-  >
-    <path d="M12 2V6" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M12 18V22" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M4.93018 4.93018L7.76018 7.76018" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M16.2402 16.2402L19.0702 19.0702" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M2 12H6" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M18 12H22" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M4.93018 19.0702L7.76018 16.2402" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M16.2402 7.76018L19.0702 4.93018" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
+const LoadingSpinner = ({
+  size = 24,
+  baseColor = '#FFFFFF',
+  segments = 12,
+  minOpacity = 0.2,  // Increased range - darkest segment
+  maxOpacity = 0.8,     // Brightest segment
+}) => {
+  const center = size / 2;
+  const lineLength = size * 0.16;
+  const startDistance = size * 0.12;
 
-export default LoadingSpinner;
+  // Enhanced opacity calculation
+  const getSegmentOpacity = (index: number) => {
+    // Create a wider range between min and max opacity
+    return maxOpacity - ((maxOpacity - minOpacity) * (index / (segments - 1)));
+  };
+
+  const segmentElements = Array.from({ length: segments }, (_, i) => {
+    const rotation = (i / segments) * 360;
+    const opacity = getSegmentOpacity(i);
+
+    // Calculate segment positions
+    const x1 = center + startDistance * Math.cos((rotation - 90) * (Math.PI / 180));
+    const y1 = center + startDistance * Math.sin((rotation - 90) * (Math.PI / 180));
+    const x2 = center + (startDistance + lineLength) * Math.cos((rotation - 90) * (Math.PI / 180));
+    const y2 = center + (startDistance + lineLength) * Math.sin((rotation - 90) * (Math.PI / 180));
+
+    return (
+      <path
+        key={i}
+        d={`M${x1} ${y1} L${x2} ${y2}`}
+        stroke={baseColor}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ opacity }}
+      />
+    );
+  });
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="animate-spin"
+      style={{ animationDuration: '1s', animationTimingFunction: 'linear' }}
+    >
+      {segmentElements}
+    </svg>
+  );
+};
+
+
+export default LoadingSpinner
