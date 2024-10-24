@@ -12,6 +12,8 @@ const ActiveConversation: React.FC = () => {
 
   const startTime = new Date(Date.now() - elapsedTime)
 
+  const truncateSaveButtonText = (text: string)
+
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
       <div className="mb-6 flex w-full flex-row justify-between">

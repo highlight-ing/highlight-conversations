@@ -56,10 +56,9 @@ const parseTranscript = (transcript: string): Message[] => {
 interface TranscriptProps {
   transcript: string
   isActive?: boolean
-  searchQuery?: string  
 }
 
-const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false, searchQuery = '' }) => {
+const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false }) => {
   const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
   const messages: Message[] = parseTranscript(transcript)
 
