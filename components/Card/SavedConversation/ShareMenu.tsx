@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
 import { ShareOptionsMenu } from './ShareOptionsMenu'
 
-interface ShareButtonProps {
+interface ShareMenuProps {
   onShare: () => void
   isSharing: boolean
   isDeleting: boolean
@@ -14,7 +14,7 @@ interface ShareButtonProps {
   onDeleteLink: () => void
 }
 
-export const ShareButton: React.FC<ShareButtonProps> = ({
+export const ShareMenu: React.FC<ShareMenuProps> = ({
   onShare,
   isSharing,
   isDeleting,
@@ -33,12 +33,12 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       >
         {isSharing && !hasExistingShareLink ? (
           <>
-            <span className="border-brand mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-r-transparent align-[-0.125em]" />
+            <span className="border-brand mr-2 inline-block animate-spin rounded-full border-2 border-solid border-r-transparent align-[-0.125em]" />
             Generating...
           </>
         ) : isDeleting ? (
           <>
-            <span className="border-brand mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-r-transparent align-[-0.125em]" />
+            <span className="border-brand mr-2 inline-block animate-spin rounded-full border-2 border-solid border-r-transparent align-[-0.125em]" />
             Deleting...
           </>
         ) : (

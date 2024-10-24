@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { TrashIcon } from '@/components/ui/icons'
-import { Tooltip, TooltipState } from '@/components/Tooltip/Tooltip'
+import { TooltipState } from '@/components/Tooltip/Tooltip'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,9 +16,14 @@ import { Trash } from 'iconsax-react'
 interface DeleteConversationDialogProps {
   onDelete: () => void
   size?: number
+  colorVariant?: 'default' | 'tertiary'
 }
 
-const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({ onDelete, size = 24 }) => {
+const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({
+  onDelete,
+  size = 24,
+  colorVariant = 'default'
+}) => {
   const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle')
   const [isAlertOpen, setIsAlertOpen] = useState(false)
 
@@ -38,18 +42,15 @@ const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({ onD
   return (
     <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
       <AlertDialogTrigger asChild>
-        <button
+        <Trash
+          variant="Bold"
+          className={`${colorVariant === 'default' ? 'text-primary/40' : 'text-tertiary'} hover:text-destructive cursor-pointer transition-colors duration-200 hover:text-secondary`}
+          color={'currentColor'}
+          size={size}
           onClick={handleDeleteClick}
           onMouseEnter={() => setDeleteTooltipState('active')}
           onMouseLeave={() => setDeleteTooltipState('idle')}
-          className="text-muted-foreground hover:text-destructive relative flex h-fit w-fit items-center justify-center transition-colors duration-200"
-        >
-          <Trash
-            variant="Bold"
-            className="group-hover:text-destructive text-primary hover:text-secondary"
-            size={size}
-          />
-        </button>
+        />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
