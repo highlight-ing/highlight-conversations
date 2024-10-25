@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { summarizeConversation } from '@/services/highlightService'
+import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons'
+import { ClipboardText } from 'iconsax-react'
 
 interface SummaryProps {
   transcript: string
@@ -12,6 +14,7 @@ interface SummaryProps {
 const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conversationId, existingSummary }) => {
   const [isSummarizing, setIsSummarizing] = useState(false)
   const [generatedSummary, setGeneratedSummary] = useState<string | null>(existingSummary || null)
+  const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
 
   const handleSummarizeClick = async () => {
     setIsSummarizing(true)
@@ -31,9 +34,39 @@ const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conve
     setGeneratedSummary(existingSummary || null)
   }, [conversationId])
 
+  const buttons = useTranscriptButtons({
+    message: generatedSummary ?? '',
+    // buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback']
+    buttonTypes: ['Copy'] // TODO: Add other buttons
+  })
+
+    // Function to copy transcript to clipboard
+    const copyToClipboard = () => {
+      navigator.clipboard
+        .writeText(generatedSummary ?? '')
+        .then(() => {
+          setCopyStatus('success')
+          setTimeout(() => setCopyStatus('default'), 2000) // Reset status after 2 seconds
+        })
+        .catch((err) => {
+          console.error('Failed to copy summary: ', err)
+        })
+    }
+
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="text-xl font-semibold leading-tight text-[#eeeeee]">Summary</div>
+      <h2 className="flex items-center gap-2 text-xl font-semibold leading-tight text-[#eeeeee]">
+        <span>Summary</span>
+        <button onClick={copyToClipboard} className="flex h-5 w-5">
+          {generatedSummary && <ClipboardText
+                variant="Bold"
+                size={20}
+                className={`text-subtle transition-colors transition-transform duration-200 ${
+                  copyStatus === 'success' ? 'animate-gentle-scale scale-110' : ''
+                } hover:text-primary`}
+            />}
+        </button>
+      </h2>
       {/* Generated Summary */}
       {generatedSummary ? (
         <div className="text-sm text-[#eeeeee] sm:text-base">{generatedSummary}</div>

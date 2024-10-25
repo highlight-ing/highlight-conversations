@@ -20,7 +20,6 @@ const ActiveConversation: React.FC = () => {
     )
   }
 
-
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
       <div className="mb-6 flex w-full flex-row justify-between">
