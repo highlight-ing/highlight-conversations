@@ -2,24 +2,26 @@ import React from 'react';
 
 const LoadingSpinner = ({
   size = 24,
-  baseColor = '#FFFFFF',
-  segments = 12,
+  baseColor = '#333333', 
+  activeColor = '#777777',
+  segments = 8,
+  animationDuration = 1.0,
 }) => {
   const center = size / 2;
-  const lineLength = size * 0.16;
-  const startDistance = size * 0.12;
-  const minOpacity = 0.2;
-  const maxOpacity = 0.5;
+  const lineLength = size * 0.12;
+  const startDistance = size * 0.2;
 
-  // Enhanced opacity calculation
-  const getSegmentOpacity = (index: number) => {
-    // Create a wider range between min and max opacity
-    return maxOpacity - ((maxOpacity - minOpacity) * (index / (segments - 1)));
+  // Get the appropriate color based on the animation phase
+  const getSegmentColor = (index: number) => {
+    const delay = (index / segments) * animationDuration;
+    return {
+      animation: `colorChange ${animationDuration}s ${delay}s infinite`,
+      stroke: baseColor,
+    };
   };
 
   const segmentElements = Array.from({ length: segments }, (_, i) => {
     const rotation = (i / segments) * 360;
-    const opacity = getSegmentOpacity(i);
 
     // Calculate segment positions
     const x1 = center + startDistance * Math.cos((rotation - 90) * (Math.PI / 180));
@@ -31,11 +33,10 @@ const LoadingSpinner = ({
       <path
         key={i}
         d={`M${x1} ${y1} L${x2} ${y2}`}
-        stroke={baseColor}
-        strokeWidth="1.5"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={{ opacity }}
+        style={getSegmentColor(i)}
       />
     );
   });
@@ -47,13 +48,22 @@ const LoadingSpinner = ({
       viewBox={`0 0 ${size} ${size}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="animate-spin"
-      style={{ animationDuration: '1s', animationTimingFunction: 'linear' }}
     >
       {segmentElements}
+      <style>
+        {`
+          @keyframes colorChange {
+            0%, 100% {
+              stroke: ${baseColor}; /* Light gray at the start and end */
+            }
+            50% {
+              stroke: ${activeColor}; /* Dark gray when active */
+            }
+          }
+        `}
+      </style>
     </svg>
   );
 };
 
-
-export default LoadingSpinner
+export default LoadingSpinner;
