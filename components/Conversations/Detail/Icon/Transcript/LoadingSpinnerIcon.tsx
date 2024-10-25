@@ -4,12 +4,12 @@ const LoadingSpinner = ({
   size = 24,
   baseColor = '#FFFFFF',
   segments = 12,
-  minOpacity = 0.2,  // Increased range - darkest segment
-  maxOpacity = 0.8,     // Brightest segment
 }) => {
   const center = size / 2;
   const lineLength = size * 0.16;
   const startDistance = size * 0.12;
+  const minOpacity = 0.2;
+  const maxOpacity = 0.5;
 
   // Enhanced opacity calculation
   const getSegmentOpacity = (index: number) => {

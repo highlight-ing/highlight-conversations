@@ -7,12 +7,19 @@ import { formatTimestampWithTimer } from '@/utils/dateUtils'
 
 const ActiveConversation: React.FC = () => {
   const { currentConversation, saveCurrentConversation, elapsedTime } = useConversations()
-
   const isSaveDisabled = currentConversation.trim().length === 0
-
   const startTime = new Date(Date.now() - elapsedTime)
 
-  const truncateSaveButtonText = (text: string)
+  // Truncate the save button text for smaller screens
+  const TruncateSaveButton = (text: string) => {
+    return (
+      <>
+        <span className="hidden lg:block">{text}</span>
+        <span className="block lg:hidden">Save</span>
+      </>
+    )
+  }
+
 
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
@@ -33,7 +40,7 @@ const ActiveConversation: React.FC = () => {
           className={`flex ${!isSaveDisabled && 'cursor-pointer'} items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 text-[15px] font-medium leading-tight text-[#b4b4b4] hover:bg-white/20 disabled:bg-white/5`}
           disabled={isSaveDisabled}
         >
-          Save Transcript Now
+          {TruncateSaveButton('Save Transcript Now')}
         </button>
       </div>
       <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">
