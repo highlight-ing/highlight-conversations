@@ -1,26 +1,11 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import { useConversations } from '@/contexts/ConversationContext'
 import ConversationPanel from './Panel/ConversationPanel'
 import ConversationDetail from './Detail/ConversationDetail'
-import Highlight from '@highlight-ai/app-runtime'
 
 export const ConversationLayout: React.FC = () => {
-  const { selectedConversationId, conversations, handleConversationSelect } = useConversations()
+  const { selectedConversationId, conversations } = useConversations()
   const selectedConversation = conversations.find((conv) => conv.id === selectedConversationId)
-
-  useEffect(() => {
-    if (!Highlight.isRunningInHighlight()) {
-      return
-    }
-    const unsub = Highlight.app.addListener('onExternalMessage', (caller, message) => {
-      if (message.type === 'open-conversation-by-id' && caller === 'highlight') {
-        handleConversationSelect(message.conversationId)
-      }
-    })
-    return () => {
-      unsub()
-    }
-  }, []);
 
   return (
     <div className="flex h-screen">
