@@ -128,7 +128,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (caller === 'highlight' && message?.type === 'open-conversation-by-id') {
           setSelectedConversationId(message?.conversationId)
         }
-        console.log({ caller, message })
       }
     )
 
