@@ -4,6 +4,7 @@ import BigGreenSoundIcon from '../Icon/ActiveConversationIcon/BigGreenSoundIcon'
 import { useConversations } from '@/contexts/ConversationContext'
 import Transcript from '../../Components/Transcript'
 import { formatTimestampWithTimer } from '@/utils/dateUtils'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const ActiveConversation: React.FC = () => {
   const { currentConversation, saveCurrentConversation, elapsedTime } = useConversations()

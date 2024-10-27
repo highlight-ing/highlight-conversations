@@ -6,20 +6,22 @@ import { ClipboardText } from 'iconsax-react'
 
 interface SummaryProps {
   transcript: string
+  customPrompt?: string
   onSummaryGenerated: (summary: string) => void
   conversationId: string
   existingSummary?: string | null
 }
 
-const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conversationId, existingSummary }) => {
+const Summary: React.FC<SummaryProps> = ({ transcript, customPrompt, onSummaryGenerated, conversationId, existingSummary }) => {
   const [isSummarizing, setIsSummarizing] = useState(false)
   const [generatedSummary, setGeneratedSummary] = useState<string | null>(existingSummary || null)
   const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
+  const [editedSummary, setEditedSummary] = useState<string | null>(existingSummary || null)
 
   const handleSummarizeClick = async () => {
     setIsSummarizing(true)
     try {
-      const result = await summarizeConversation(transcript)
+      const result = await summarizeConversation(transcript, customPrompt)
       setGeneratedSummary(result.summary)
       onSummaryGenerated(result.summary)
     } catch (error) {
@@ -28,6 +30,16 @@ const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conve
       setIsSummarizing(false)
     }
   }
+
+  /**
+   * 
+   * const handleSaveEdit = () => {
+    setEditedSummary(generatedSummary)
+    onSummaryGenerated(editedSummary)
+    setIsEditing(false)
+  }
+
+   */
 
   // Reset summary when conversationId changes
   useEffect(() => {
@@ -69,7 +81,7 @@ const Summary: React.FC<SummaryProps> = ({ transcript, onSummaryGenerated, conve
       </h2>
       {/* Generated Summary */}
       {generatedSummary ? (
-        <div className="text-sm text-[#eeeeee] sm:text-base">{generatedSummary}</div>
+        <div className="text-sm text-[#eeeeee] sm:text-base select-text">{generatedSummary}</div>
       ) : (
         <AnimatePresence>
           {!generatedSummary && (
