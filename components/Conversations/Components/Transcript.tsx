@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState } from 'react'
 import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons'
 import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow'
 import { ClipboardText } from 'iconsax-react'
@@ -59,47 +58,9 @@ interface TranscriptProps {
   isActive?: boolean
 }
 
-interface DisplayedMessage {
-  message: Message
-  displayedWords: string[]
-  firstNewWordIndex: number
-}
-
 const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false }) => {
   const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
   const messages: Message[] = parseTranscript(transcript)
-  const [displayedMessages, setDisplayedMessages] = useState<DisplayedMessage[]>([])
-  const [firstNewMessageIndex, setFirstNewMessageIndex] = useState<number>(0);
-
-  // Update displayedMessages when messages change
-  useEffect(() => {
-    if (messages.length > displayedMessages.length) {
-      const newMessages = messages.slice(displayedMessages.length).map((message) => ({
-        message,
-        displayedWords: [],
-        firstNewWordIndex: 0,
-      }));
-      setDisplayedMessages((prev) => [...prev, ...newMessages]);
-      setFirstNewMessageIndex(displayedMessages.length);
-    }
-  }, [messages, displayedMessages]);
-
-  // Update displayed words for each message
-  useEffect(() => {
-    const updatedDisplayedMessages = displayedMessages.map((item) => {
-      const words = item.message.text.split(' ');
-      if (words.length > item.displayedWords.length) {
-        const newFirstNewWordIndex = item.displayedWords.length;
-        return {
-          ...item,
-          displayedWords: words,
-          firstNewWordIndex: newFirstNewWordIndex,
-        };
-      }
-      return item;
-    });
-    setDisplayedMessages(updatedDisplayedMessages);
-  }, [messages, displayedMessages]);
 
   const buttons = useTranscriptButtons({
     message: transcript,
@@ -142,74 +103,32 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
             <div className="relative flex h-6 w-6 items-center justify-center">
               <LoadingSpinner />
             </div>
-            <div className="font-inter text-[15px] font-normal leading-normal text-[#484848]">
-              Taking notes... transcript will update every ~30s
-            </div>
+            <div className="font-inter text-[15px] font-normal leading-normal text-[#484848]">Taking notes... transcript will update every ~30s</div>
           </div>
         )}
-        {displayedMessages.map((message, messageIndex) => {
-          // Determine if this is a new message
-          const isNewMessage = messageIndex >= firstNewMessageIndex;
-
-          // Split the message text into words
-          const words = message.message.text.split(' ');
-
-          // State to track the index from where new words start (for each message)
-          const [displayedWords, setDisplayedWords] = useState<string[]>([]);
-          const [firstNewWordIndex, setFirstNewWordIndex] = useState<number>(0);
-
-          useEffect(() => {
-            if (words.length > displayedWords.length) {
-              const newFirstNewWordIndex = displayedWords.length;
-              setDisplayedWords(words);
-              setFirstNewWordIndex(newFirstNewWordIndex);
-            }
-          }, [words, displayedWords.length]);
-
-          return (
+        {messages.map((message, index) => (
+          <div 
+            key={index} 
+            className="flex flex-col items-start justify-start gap-1 self-stretch"
+          >
             <div
-              key={`${message.message.time}-${message.message.sender}-${messageIndex}`}
-              className="flex flex-col items-start justify-start gap-1 self-stretch"
+              className={`font-inter self-stretch text-[13px] font-medium leading-tight select-text ${
+                message.sender === 'Me' || message.sender.toLowerCase().includes('self')
+                  ? 'text-[#4ceda0]/40'
+                  : 'text-white opacity-20'
+              }`}
             >
-              <div
-                className={`font-inter self-stretch text-[13px] font-medium leading-tight select-text ${
-                  message.message.sender === 'Me' || message.message.sender.toLowerCase().includes('self')
-                    ? 'text-[#4ceda0]/40'
-                    : 'text-white opacity-20'
-                }`}
-              >
-                {message.message.time} - {message.message.sender}
-              </div>
-              <div className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee] select-text">
-                {displayedWords.map((word, wordIndex) => {
-                  const isNewWord = isNewMessage && wordIndex >= firstNewWordIndex;
-                  return isNewWord ? (
-                    <motion.span
-                      key={`${messageIndex}-${wordIndex}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2, delay: wordIndex * 0.05 }}
-                      style={{ display: 'inline-block', marginRight: '4px' }}
-                    >
-                      {word}{' '}
-                    </motion.span>
-                  ) : (
-                    <span
-                      key={`${messageIndex}-${wordIndex}`}
-                      style={{ display: 'inline-block', marginRight: '4px' }}
-                    >
-                      {word}{' '}
-                    </span>
-                  );
-                })}
-              </div>
+              {message.time} - {message.sender}
             </div>
-          );
-        })}
+            <div className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee] select-text">
+              {message.text}
+            </div>
+          </div>
+        ))}
       </div>
       <TranscriptButtonRow buttons={buttons} />
     </div>
-  );
-};
+  )
+}
 
-export default Transcript;
+export default Transcript

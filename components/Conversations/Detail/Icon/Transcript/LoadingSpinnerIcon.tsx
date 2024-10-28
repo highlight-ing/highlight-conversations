@@ -13,7 +13,7 @@ const LoadingSpinner = ({
 
   // Get the appropriate color based on the animation phase
   const getSegmentColor = (index: number) => {
-    const delay = (index / segments) * animationDuration;
+    const delay = (index / segments) * animationDuration
     return {
       animation: `colorChange ${animationDuration}s ${delay}s infinite`,
       stroke: baseColor,
@@ -24,10 +24,10 @@ const LoadingSpinner = ({
     const rotation = (i / segments) * 360;
 
     // Calculate segment positions
-    const x1 = center + startDistance * Math.cos((rotation - 90) * (Math.PI / 180));
-    const y1 = center + startDistance * Math.sin((rotation - 90) * (Math.PI / 180));
-    const x2 = center + (startDistance + lineLength) * Math.cos((rotation - 90) * (Math.PI / 180));
-    const y2 = center + (startDistance + lineLength) * Math.sin((rotation - 90) * (Math.PI / 180));
+    const x1 = center + startDistance * Math.cos((rotation - 90) * (Math.PI / 180))
+    const y1 = center + startDistance * Math.sin((rotation - 90) * (Math.PI / 180))
+    const x2 = center + (startDistance + lineLength) * Math.cos((rotation - 90) * (Math.PI / 180))
+    const y2 = center + (startDistance + lineLength) * Math.sin((rotation - 90) * (Math.PI / 180))
 
     return (
       <path
@@ -63,7 +63,7 @@ const LoadingSpinner = ({
         `}
       </style>
     </svg>
-  );
-};
+  )
+}
 
-export default LoadingSpinner;
+export default LoadingSpinner
