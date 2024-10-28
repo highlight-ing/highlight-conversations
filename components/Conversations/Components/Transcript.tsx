@@ -1,30 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ClipboardText } from 'iconsax-react';
-import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons';
-import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow';
-import LoadingSpinner from '../Detail/Icon/Transcript/LoadingSpinnerIcon';
+import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { ClipboardText } from 'iconsax-react'
+import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons'
+import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow'
+import LoadingSpinner from '../Detail/Icon/Transcript/LoadingSpinnerIcon'
 
 interface Message {
-  time: string;
-  sender: string;
+  time: string
+  sender: string
   text: string;
 }
 
 const parseTranscript = (transcript: string): Message[] => {
   if (typeof transcript !== 'string') {
-    console.error('Invalid transcript provided to parseTranscript:', transcript);
-    return [];
+    console.error('Invalid transcript provided to parseTranscript:', transcript)
+    return []
   }
 
   return transcript
     .split('\n')
     .map((line): Message | null => {
-      const regex = /^(\d{2}:\d{2}:\d{2}\s+(?:AM|PM))\s+-\s+(.+?)(?:\s*:\s*|\s+-\s+)(.*)$/;
-      const match = line.match(regex);
+      const regex = /^(\d{2}:\d{2}:\d{2}\s+(?:AM|PM))\s+-\s+(.+?)(?:\s*:\s*|\s+-\s+)(.*)$/
+      const match = line.match(regex)
 
       if (match) {
-        const [, time, sender, text] = match;
+        const [, time, sender, text] = match
         return {
           time,
           sender: sender.trim(),
@@ -33,12 +33,12 @@ const parseTranscript = (transcript: string): Message[] => {
       }
       return null;
     })
-    .filter((message): message is Message => message !== null);
-};
+    .filter((message): message is Message => message !== null)
+}
 
 interface TranscriptProps {
-  transcript: string;
-  isActive?: boolean;
+  transcript: string
+  isActive?: boolean
 }
 
 const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
@@ -47,7 +47,7 @@ const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
       <div className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee] select-text">
         {text}
       </div>
-    );
+    )
   }
 
   return (
@@ -72,48 +72,48 @@ const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
     >
       {text}
     </motion.div>
-  );
-};
+  )
+}
 
 const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false }) => {
-  const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default');
-  const [seenMessageKeys, setSeenMessageKeys] = useState(new Set<string>());
-  const messages = parseTranscript(transcript);
+  const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
+  const [seenMessageKeys, setSeenMessageKeys] = useState(new Set<string>())
+  const messages = parseTranscript(transcript)
 
   // Create a unique key for each message
   const getMessageKey = (message: Message) => {
-    return `${message.time}-${message.sender}-${message.text}`;
-  };
+    return `${message.time}-${message.sender}-${message.text}`
+  }
 
   // Update seen messages after each animation completes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const newSeenMessages = new Set(seenMessageKeys);
+      const newSeenMessages = new Set(seenMessageKeys)
       messages.forEach(message => {
-        newSeenMessages.add(getMessageKey(message));
-      });
-      setSeenMessageKeys(newSeenMessages);
-    }, 2000);
-    return () => clearTimeout(timeoutId);
-  }, [messages]);
+        newSeenMessages.add(getMessageKey(message))
+      })
+      setSeenMessageKeys(newSeenMessages)
+    }, 2000)
+    return () => clearTimeout(timeoutId)
+  }, [messages])
 
   const buttons = useTranscriptButtons({
     message: transcript,
     buttonTypes: ['Copy']
-  });
+  })
 
   const copyToClipboard = () => {
     navigator.clipboard
       .writeText(transcript)
       .then(() => {
-        setCopyStatus('success');
-        setTimeout(() => setCopyStatus('default'), 2000);
+        setCopyStatus('success')
+        setTimeout(() => setCopyStatus('default'), 2000)
       })
       .catch((err) => {
-        console.error('Failed to copy transcript: ', err);
-      });
-  };
-
+        console.error('Failed to copy transcript: ', err)
+      })
+  }
+  
   return (
     <div className="flex h-fit flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
       <div className="bg-blue flex items-center justify-between gap-4">
@@ -161,13 +161,13 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
               </div>
               <MessageText text={message.text} isNew={isNewMessage} />
             </div>
-          );
+          )
         })}
       </div>
 
       <TranscriptButtonRow buttons={buttons} />
     </div>
-  );
-};
+  )
+}
 
-export default Transcript;
+export default Transcript
