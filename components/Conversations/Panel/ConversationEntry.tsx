@@ -81,6 +81,7 @@ export function ConversationEntry({
   }
 
   const [attachmentTooltipState, setAttachmentTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
+  const [deleteTooltipState, setDeleteTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
 
   return (
     <div
@@ -116,12 +117,24 @@ export function ConversationEntry({
               type="save-attachment" 
               state={attachmentTooltipState}
               className="whitespace-nowrap"
-              message="Add Context"
-            >
-              Add files or notes
-            </Tooltip>
+              message="Add Context" 
+            />
           </div>
-          <DeleteConversationDialog onDelete={handleDelete} size={20} colorVariant="tertiary" />
+          <div className="relative"
+               onMouseEnter={() => setDeleteTooltipState('active')}
+               onMouseLeave={() => setDeleteTooltipState('idle')}>
+            <DeleteConversationDialog 
+              onDelete={handleDelete} 
+              size={20} 
+              colorVariant="tertiary"
+            />
+            <Tooltip 
+              type="delete" 
+              state={deleteTooltipState}
+              className="whitespace-nowrap"
+              message="Delete"
+            />
+          </div>
         </div>
       )}
     </div>
