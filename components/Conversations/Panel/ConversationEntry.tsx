@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
 import VoiceSquareIcon from '../Detail/Icon/VoiceSquareIcon'
@@ -8,6 +8,7 @@ import { useConversationActions } from '@/components/Card/SavedConversation/useC
 import { MessageText } from 'iconsax-react'
 import { ShareButton } from './ShareButton'
 import { toast } from 'sonner'
+import { Tooltip } from '@/components/Tooltip/Tooltip'
 
 interface ConversationEntryProps {
   conversation: ConversationData
@@ -79,6 +80,8 @@ export function ConversationEntry({
     }
   }
 
+  const [attachmentTooltipState, setAttachmentTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
+
   return (
     <div
       className={`flex w-full cursor-pointer items-center justify-between border-t border-[#010101] bg-tertiary py-[18px] pl-4 pr-[19px] transition-all duration-300 ease-in-out hover:bg-white/10 ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover cursor-pointer' : ''} ${selectedClass} group`}
@@ -97,12 +100,27 @@ export function ConversationEntry({
             onGenerateShareLink={handleGenerateShareLink}
             onCopyLink={handleCopyLink}
           />
-          <MessageText
-            variant="Bold"
-            size={20}
-            className="transition-colors duration-200 hover:text-secondary"
-            onClick={handleAttachment}
-          />
+          <div className="relative">
+            <MessageText
+              variant="Bold"
+              size={20}
+              className="transition-colors duration-200 hover:text-secondary"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleAttachment()
+              }}
+              onMouseEnter={() => setAttachmentTooltipState('active')}
+              onMouseLeave={() => setAttachmentTooltipState('idle')}
+            />
+            <Tooltip 
+              type="save-attachment" 
+              state={attachmentTooltipState}
+              className="whitespace-nowrap"
+              message="Add Context"
+            >
+              Add files or notes
+            </Tooltip>
+          </div>
           <DeleteConversationDialog onDelete={handleDelete} size={20} colorVariant="tertiary" />
         </div>
       )}

@@ -28,7 +28,7 @@ interface ConversationContextType {
   autoSaveTime: number
   autoClearDays: number
   micActivity: number
-  isAudioOn: boolean
+  isAudioOn: boolean  
   searchQuery: string
   isMergeActive: boolean
   saveCurrentConversation: () => Promise<void>
@@ -49,6 +49,7 @@ interface ConversationContextType {
   selectedConversationId: string | null
   setSelectedConversationId: (id: string | null) => void
   handleCurrentConversationSelect: () => void
+  startTime: Date | null
 }
 
 const ConversationContext = createContext<ConversationContextType | undefined>(undefined)
@@ -65,6 +66,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [searchQuery, setSearchQuery] = useState('')
   const [isMergeActive, setIsMergeActive] = useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
+  const [startTime, setStartTime] = useState<Date | null>(null)
 
   // Use the useAudioPermission hook
   const { isAudioPermissionEnabled: isAudioOn, toggleAudioPermission } = useAudioPermission()
@@ -100,6 +102,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const removeElapsedTimeUpdatedListener = Highlight.app.addListener(
       'onConversationsElapsedTimeUpdated',
       (time: number) => {
+        console.log('Elapsed time update:', time)
         if (isAudioOn) {
           setElapsedTime(time)
         }
@@ -412,6 +415,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     autoClearDays,
     micActivity,
     isAudioOn,
+    startTime,
     searchQuery,
     isMergeActive,
     saveCurrentConversation: async () => {

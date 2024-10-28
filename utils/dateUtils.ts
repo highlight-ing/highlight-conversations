@@ -120,24 +120,20 @@ const getStandardTimezoneAbbr = (timeZone: string): string => {
 }
 
 export const formatTimestampWithTimer = (startTime: Date, elapsedMs: number): string => {
-  // Get the user's timezone
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   
-  // Format the start time (e.g., "8:45am")
+  // Fixed start time (e.g. "10:50am") - use the passed in startTime
   const timeStr = formatInTimeZone(startTime, userTimeZone, 'h:mma').toLowerCase()
-  
-  // Get standard timezone abbreviation (e.g., KST, PST, EST) 
   const tzAbbr = getStandardTimezoneAbbr(userTimeZone)
   
-  // Format the timer (e.g., "04:20")
-  const minutes = Math.floor(elapsedMs / 60000)
-  const seconds = Math.floor((elapsedMs % 60000) / 1000)
-  const timerStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  // Use the passed in elapsedMs to show elapsed time
+  const totalSeconds = Math.floor(elapsedMs / 1000)
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  const timerStr = `${minutes}:${seconds.toString().padStart(2, '0')}`
   
   return `Started ${timeStr} ${tzAbbr} — ${timerStr}`
 }
-
-
 
 export const getTimeDifference = (date: Date, now: Date = new Date()): number => {
   return now.getTime() - date.getTime()
