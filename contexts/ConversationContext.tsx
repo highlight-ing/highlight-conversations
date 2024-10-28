@@ -27,6 +27,7 @@ interface ConversationContextType {
   elapsedTime: number
   autoSaveTime: number
   autoClearDays: number
+  asrCloudFallback: boolean
   micActivity: number
   isAudioOn: boolean
   searchQuery: string
@@ -38,6 +39,7 @@ interface ConversationContextType {
   deleteAllConversations: () => Promise<void>
   setAutoSaveTime: (time: number) => Promise<void>
   setAutoClearDays: (days: number) => Promise<void>
+  setAsrCloudFallback: (enabled: boolean) => Promise<void>
   setIsAudioOn: (isOn: boolean) => Promise<void>
   setSearchQuery: (query: string) => void
   isSaving: boolean
@@ -60,6 +62,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [elapsedTime, setElapsedTime] = useState<number>(0)
   const [autoSaveTime, setAutoSaveTime] = useState<number>(AUTO_SAVE_TIME_DEFAULT)
   const [autoClearDays, setAutoClearDays] = useState<number>(AUTO_CLEAR_DAYS_DEFAULT)
+  const [asrCloudFallback, setAsrCloudFallback] = useState<boolean>(false)
   const [micActivity, setMicActivity] = useState(0)
   const [isSaving, setIsSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -131,7 +134,15 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     )
 
-    const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => { })
+    const removeOnAsrCloudFallbackListener = Highlight.app.addListener(
+      'onAsrCloudFallbackUpdated',
+      (enabled: boolean) => {
+        console.log('onAsrCloudFallbackUpdated:', enabled)
+        setAsrCloudFallback(enabled)
+      }
+    )
+
+    const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => {})
 
     const removeConversationSavedListener = Highlight.app.addListener('onConversationSaved', () => {
       setIsSaving(true)
@@ -151,6 +162,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       removeSaveConversationListener()
       removeConversationSavedListener()
       removeExternalMessageListener()
+      removeOnAsrCloudFallbackListener()
     }
   }, [isAudioOn, trackEvent])
 
@@ -240,6 +252,11 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const autoClearDaysFromAPI = await Highlight.conversations.getAutoClearDays()
       const validAutoClearDays = autoClearDaysFromAPI !== 0 ? autoClearDaysFromAPI : AUTO_CLEAR_DAYS_DEFAULT
       setAutoClearDays(validAutoClearDays)
+
+      // const asrCloudFallback = await Highlight.conversations.getAsrCloudFallback()
+      const asrCloudCallbackFromApi = await window.highlight.conversations.getAsrCloudFallback()
+      console.log('asrCloudCallback:', asrCloudCallbackFromApi)
+      setAsrCloudFallback(asrCloudCallbackFromApi)
 
       // Fetch conversations again after setting autoClearDays
       const { allConversations, appStorageConversations } = await fetchConversations()
@@ -420,6 +437,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     elapsedTime,
     autoSaveTime,
     autoClearDays,
+    asrCloudFallback,
     micActivity,
     isAudioOn,
     searchQuery,
@@ -446,6 +464,10 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       await Highlight.conversations.setAutoClearDays(validDays)
       setAutoClearDays(validDays)
       trackEvent('changed_auto_clear_value', { newValue: validDays })
+    },
+    setAsrCloudFallback: async (enabled: boolean) => {
+      await Highlight.conversations.setAsrCloudFallback(enabled)
+      trackEvent('changed_asr_cloud_fallback', { newValue: enabled })
     },
     setIsAudioOn: setIsAudioOnAndSave,
     setSearchQuery,
