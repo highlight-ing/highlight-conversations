@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-
+import React, { useState, useEffect, useRef } from 'react'
 import Highlight from '@highlight-ai/app-runtime'
 import BigGreenSoundIcon from '../Icon/ActiveConversationIcon/BigGreenSoundIcon'
 import { useConversations } from '@/contexts/ConversationContext'
@@ -9,20 +8,27 @@ import { formatTimestampWithTimer } from '@/utils/dateUtils'
 const ActiveConversation: React.FC = () => {
   const { currentConversation, saveCurrentConversation, elapsedTime, isAudioOn } = useConversations()
   const isSaveDisabled = currentConversation.trim().length === 0
-
   const [startTime, setStartTime] = useState<Date | null>(null)
+  const startTimeRef = useRef(startTime)
 
-  // store the start time when the audio starts
+  // Keep the ref updated with the latest startTime
+  useEffect(() => {
+    startTimeRef.current = startTime
+  }, [startTime])
+
+  // Store the start time when the conversation starts
   useEffect(() => {
     const removeCurrentConversationListener = Highlight.app.addListener(
       'onCurrentConversationUpdate',
       (conversation: string) => {
-        setStartTime(new Date())
+        // Only set startTime if it's not already set
+        if (startTimeRef.current === null) {
+          setStartTime(new Date())
+        }
       }
     )
-    return () => 
-      removeCurrentConversationListener()
-  }, [isAudioOn, startTime])
+    return () => removeCurrentConversationListener()
+  }, [isAudioOn]) // Removed startTime from dependencies
 
   // Reset the startTime when the conversation is saved
   useEffect(() => {
@@ -32,9 +38,8 @@ const ActiveConversation: React.FC = () => {
         setStartTime(null)
       }
     )
-    return () => 
-      removeConversationSavedListener()
-  }, [startTime])
+    return () => removeConversationSavedListener()
+  }, []) 
 
   // Truncate the save button text for smaller screens
   const TruncateSaveButton = (text: string) => {
@@ -62,7 +67,9 @@ const ActiveConversation: React.FC = () => {
         </div>
         <button
           onClick={saveCurrentConversation}
-          className={`flex ${!isSaveDisabled && 'cursor-pointer'} items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 text-[15px] font-medium leading-tight text-[#b4b4b4] hover:bg-white/20 disabled:bg-white/5`}
+          className={`flex ${
+            !isSaveDisabled && 'cursor-pointer'
+          } items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 text-[15px] font-medium leading-tight text-[#b4b4b4] hover:bg-white/20 disabled:bg-white/5`}
           disabled={isSaveDisabled}
         >
           {TruncateSaveButton('Save Transcript Now')}
