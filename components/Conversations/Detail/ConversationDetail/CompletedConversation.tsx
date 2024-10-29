@@ -9,7 +9,7 @@ import { Toaster, toast } from 'sonner'
 
 import { Pencil1Icon } from '@radix-ui/react-icons'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
-import VoiceSquareIcon from '../Icon/VoiceSquareIcon'
+import VoiceSquareIcon from '../Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
 
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
@@ -34,7 +34,6 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState('')
   const summaryRef = useRef<HTMLDivElement>(null)
@@ -109,16 +108,6 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     if (conversation) {
       deleteConversation(conversation.id)
     }
-  }
-
-  // Open the delete confirmation dialog
-  const openDeleteDialog = () => {
-    setIsDeleteDialogOpen(true)
-  }
-
-  // Close the delete confirmation dialog
-  const closeDeleteDialog = () => {
-    setIsDeleteDialogOpen(false)
   }
 
   // Handle the title blur

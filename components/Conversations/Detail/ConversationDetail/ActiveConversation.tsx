@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Highlight from '@highlight-ai/app-runtime'
-import BigGreenSoundIcon from '../Icon/ActiveConversationIcon/BigGreenSoundIcon'
+import BigGreenSoundIcon from '../Icon/DetailIcons/ActiveConversationIcon/BigGreenSoundIcon'
 import { useConversations } from '@/contexts/ConversationContext'
 import Transcript from '../../Components/Transcript'
 import { formatTimestampWithTimer } from '@/utils/dateUtils'

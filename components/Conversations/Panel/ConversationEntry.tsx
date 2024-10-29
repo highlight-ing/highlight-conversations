@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
-import VoiceSquareIcon from '../Detail/Icon/VoiceSquareIcon'
+import VoiceSquareIcon from '../Detail/Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
 import { truncateText } from '@/utils/textUtils'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
@@ -34,9 +34,6 @@ export function ConversationEntry({
     shareStatus,
     handleGenerateShareLink,
     handleCopyLink,
-    isDeleting,
-    handleDeleteLink,
-    handleDownloadAsFile,
     shareMessage,
     setShareMessage,
     handleAttachment
@@ -157,15 +154,6 @@ function getRelativeTimeString(date: Date): string {
     const days = Math.floor(diffInSeconds / 86400)
     return `${days} day${days > 1 ? 's' : ''} ago`
   }
-}
-
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date)
 }
 
 function removeTimestamps(text: string): string {

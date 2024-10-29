@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const HighlightGreenLogo: React.FC = () => (
   <svg width="22" height="14" viewBox="0 0 22 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,6 +22,6 @@ const HighlightGreenLogo: React.FC = () => (
       </filter>
     </defs>
   </svg>
-);
+)
 
-export default HighlightGreenLogo;
+export default HighlightGreenLogo

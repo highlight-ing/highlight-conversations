@@ -1,9 +1,9 @@
 import React from 'react'
-import ShieldTickIcon from '../Icon/ShieldTickIcon'
-import CalendarIcon from '../Icon/CalendarIcon'
-import VideoPlayIcon from '../Icon/VideoPlayIcon'
-import MicrophoneIcon from '../Icon/MicrophoneIcon'
-import BigSoundIcon from '../Icon/BigSoundIcon'
+import ShieldTickIcon from '../Icon/DetailIcons/TranscriptionDisabled/ShieldTickIcon'
+import CalendarIcon from '../Icon/DetailIcons/TranscriptionDisabled/CalendarIcon'
+import VideoPlayIcon from '../Icon/DetailIcons/TranscriptionDisabled/VideoPlayIcon'
+import MicrophoneIcon from '../Icon/DetailIcons/TranscriptionDisabled/MicrophoneIcon'
+import BigSoundIcon from '../Icon/DetailIcons/NoAudioDetected/BigSoundIcon'
 
 const TranscriptionDisabled: React.FC = () => (
   <div className="relative flex flex-col space-y-8 px-6 py-12 md:px-16 lg:px-20 max-w-4xl mx-auto">

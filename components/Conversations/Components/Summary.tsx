@@ -68,6 +68,7 @@ const Summary: React.FC<SummaryProps> = ({ transcript, customPrompt, onSummaryGe
             />}
         </button>
       </h2>
+      
       {/* Generated Summary */}
       {generatedSummary ? (
         <div className="text-sm text-[#eeeeee] sm:text-base select-text">{generatedSummary}</div>
