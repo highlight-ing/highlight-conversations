@@ -31,16 +31,6 @@ const Summary: React.FC<SummaryProps> = ({ transcript, customPrompt, onSummaryGe
     }
   }
 
-  /**
-   * 
-   * const handleSaveEdit = () => {
-    setEditedSummary(generatedSummary)
-    onSummaryGenerated(editedSummary)
-    setIsEditing(false)
-  }
-
-   */
-
   // Reset summary when conversationId changes
   useEffect(() => {
     setGeneratedSummary(existingSummary || null)
@@ -48,8 +38,7 @@ const Summary: React.FC<SummaryProps> = ({ transcript, customPrompt, onSummaryGe
 
   const buttons = useTranscriptButtons({
     message: generatedSummary ?? '',
-    // buttonTypes: ['Copy', 'Share', 'Save', 'SendFeedback']
-    buttonTypes: ['Copy'] // TODO: Add other buttons
+    buttonTypes: ['Copy']
   })
 
     // Function to copy transcript to clipboard
