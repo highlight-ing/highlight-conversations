@@ -2,49 +2,58 @@ import React from 'react'
 import GreyShieldTick from '../Icon/GreyShieldTick'
 import BigSoundIcon from '../Icon/BigSoundIcon'
 import { Trash } from 'iconsax-react'
-// import TrashIcon from '../Icon/TrashIcon';
 
-const NoAudioDetected: React.FC = () => (
-  <div className="font-inter relative h-[1829px] w-[840px]">
-    <div className="absolute left-[62px] top-[48px] inline-flex items-center gap-[13px]">
-      <div className="flex h-8 w-8 items-center justify-center">
-        <div className="relative h-8 w-8">
-          <BigSoundIcon />
+const NoAudioDetected: React.FC = () => {
+  return (
+    <div className="flex flex-col items-center min-h-screen bg-black px-6 py-8 md:px-12 md:py-16 lg:px-20 lg:py-20 max-w-5xl mx-auto space-y-8">
+      
+      {/* Header Section */}
+      <div className="flex flex-col w-full space-y-2">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 flex items-center justify-center">
+              <BigSoundIcon />
+            </div>
+            <h1 className="text-white text-lg md:text-2xl font-semibold font-inter leading-snug">
+              No Audio Detected...
+            </h1>
+          </div>
+          
+          {/* Right Action Buttons */}
+          <div className="flex items-center gap-4">
+            <div className="w-6 h-6 opacity-40 flex items-center justify-center">
+              <Trash variant="Bold" className="text-primary" size={24} />
+            </div>
+            <button className="px-4 py-1.5 bg-white/10 rounded-lg flex items-center justify-center gap-2 hover:bg-white/20">
+              <span className="text-[#b4b4b4] text-sm md:text-base font-medium font-inter leading-tight">Open</span>
+            </button>
+            <button className="px-4 py-1.5 bg-white/10 rounded-lg flex items-center justify-center gap-2 hover:bg-white/20">
+              <span className="text-[#b4b4b4] text-sm md:text-base font-medium font-inter leading-tight">Copy Link</span>
+            </button>
+          </div>
         </div>
+
+        {/* Subtitle directly below header */}
+        <p className="text-[#484848] text-[14px] md:text-[15px] font-normal font-inter leading-relaxed max-w-lg">
+          Transcript will update every ~30s
+        </p>
       </div>
-      <div className="text-2xl font-semibold leading-[31px] text-white">No Audio Detected...</div>
-    </div>
-    <div className="absolute left-[64px] top-[104px] w-[624px] text-[15px] font-normal leading-normal text-[#484848]">
-      Transcript will update every ~30s
-    </div>
-    <div className="absolute left-[549px] top-[48px] inline-flex items-center gap-4">
-      <div className="flex h-6 w-6 items-center justify-center opacity-40">
-        <div className="relative h-6 w-6">
-          <Trash variant="Bold" className="group-hover:text-destructive text-primary" size={24} />
-        </div>
-      </div>
-      <div className="flex items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5">
-        <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
-      </div>
-      <div className="flex items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5">
-        <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Copy Link</div>
-      </div>
-    </div>
-    <div className="absolute left-[87px] top-[266px] flex h-40 flex-col items-center justify-center gap-2 rounded-2xl border border-black py-6 pl-0.5">
-      <div className="inline-flex h-6 w-6 items-center justify-center">
-        <div className="relative h-6 w-6">
+
+      {/* Information Box */}
+      <div className="flex flex-col items-center justify-center p-6 md:p-8 rounded-2xl border border-[#222222]/25 w-full max-w-3xl text-center space-y-3">
+        <div className="w-6 h-6 flex items-center justify-center">
           <GreyShieldTick />
         </div>
-      </div>
-      <div className="text-[15px] font-semibold leading-normal text-[#6e6e6e]">
-        Highlight will automatically transcribe your meetings and content
-      </div>
-      <div className="w-[586px] text-center text-[15px] font-normal leading-normal text-[#484848]">
-        All transcriptions are private and only accessible by you on your computer. No audio is stored anywhere and
-        nothing is sent to the cloud without your permission.
+        <p className="text-[#6e6e6e] text-[15px] font-semibold font-inter leading-normal">
+          Highlight will automatically transcribe your meetings and content
+        </p>
+        <p className="text-[#484848] text-[15px] font-normal font-inter leading-normal max-w-[90%]">
+          All transcriptions are private and only accessible by you on your computer. No audio is stored anywhere, and
+          nothing is sent to the cloud without your permission.
+        </p>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default NoAudioDetected
