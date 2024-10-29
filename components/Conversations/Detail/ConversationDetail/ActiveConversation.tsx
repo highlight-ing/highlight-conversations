@@ -1,14 +1,40 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
+import Highlight from '@highlight-ai/app-runtime'
 import BigGreenSoundIcon from '../Icon/ActiveConversationIcon/BigGreenSoundIcon'
 import { useConversations } from '@/contexts/ConversationContext'
 import Transcript from '../../Components/Transcript'
 import { formatTimestampWithTimer } from '@/utils/dateUtils'
 
 const ActiveConversation: React.FC = () => {
-  const { currentConversation, saveCurrentConversation, elapsedTime } = useConversations()
+  const { currentConversation, saveCurrentConversation, elapsedTime, isAudioOn } = useConversations()
   const isSaveDisabled = currentConversation.trim().length === 0
-  const startTime = new Date(Date.now() - elapsedTime)
+
+  const [startTime, setStartTime] = useState<Date | null>(null)
+
+  // store the start time when the audio starts
+  useEffect(() => {
+    const removeCurrentConversationListener = Highlight.app.addListener(
+      'onCurrentConversationUpdate',
+      (conversation: string) => {
+        setStartTime(new Date())
+      }
+    )
+    return () => 
+      removeCurrentConversationListener()
+  }, [isAudioOn, startTime])
+
+  // Reset the startTime when the conversation is saved
+  useEffect(() => {
+    const removeConversationSavedListener = Highlight.app.addListener(
+      'onConversationSaved',
+      () => {
+        setStartTime(null)
+      }
+    )
+    return () => 
+      removeConversationSavedListener()
+  }, [startTime])
 
   // Truncate the save button text for smaller screens
   const TruncateSaveButton = (text: string) => {
@@ -43,7 +69,7 @@ const ActiveConversation: React.FC = () => {
         </button>
       </div>
       <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">
-        {formatTimestampWithTimer(startTime, elapsedTime)}
+        {formatTimestampWithTimer(startTime ?? new Date(), elapsedTime * 1000)}
       </div>
       <div className="transition-all duration-300 ease-in-out">
         <Transcript transcript={currentConversation} isActive={true} />
