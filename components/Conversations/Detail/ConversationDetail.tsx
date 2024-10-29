@@ -58,18 +58,22 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
     }
   }, [isAudioOn, micActivity, saveTimer, saveCurrentConversation])
 
+  // Completed Conversation when a user clicks on a conversation
   if (conversation) {
     return <CompletedConversation conversation={conversation} />
   }
 
+  // When the audio is off, TranscriptionDisabled
   if (!isAudioOn) {
     return <TranscriptionDisabled />
   }
 
+  // when the audio is off and there's no transcription, show noAudioDetected
   if (isAudioOn && !isTranscribing) {
     return <NoAudioDetected />
   }
 
+  // When the audio is on and there's transcription, show ActiveConversation
   return <ActiveConversation />
 }
 export default ConversationDetail
