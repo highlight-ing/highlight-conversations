@@ -34,20 +34,6 @@ const SettingsPage: React.FC = () => {
     setAudioState(isAudioOn ? 'active' : 'off')
   }, [isAudioOn])
 
-  // Options for the dropdown (box 3)
-  const asrDurationOptions = useMemo(() => {
-    return [
-      { label: '2 hours', value: 2 },
-      { label: '4 hours', value: 4 },
-      { label: '8 hours', value: 8 },
-      { label: '12 hours', value: 12 },
-      { label: '24 hours', value: 24 }
-    ]
-  }, [])
-  const handleAsrDurationChange = (option: { value: number }) => {
-    setAsrDuration(option.value)
-  }
-
   // Toggle Audio Transcription
   const handleToggle = () => {
     const newIsOn = !isAudioOn
@@ -59,9 +45,6 @@ const SettingsPage: React.FC = () => {
     return audioState === 'active' ? '#4CEDA0' : '#484848'
   }
 
-  const handleCloudToggle = () => {
-    setIsCloudTranscriptOn(!isCloudTranscriptOn)
-  }
 
   return (
     <>
