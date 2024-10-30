@@ -8,8 +8,7 @@ import { useConversationActions } from '@/components/Card/SavedConversation/useC
 import { MessageText } from 'iconsax-react'
 import { ShareButton } from './ShareButton'
 import { toast } from 'sonner'
-import { Tooltip } from '@/components/Tooltip/Tooltip'
-import TooltipDebug from '@/components/Tooltip/TooltipDebug'
+import NewTooltip from '@/components/Tooltip/NewTooltip'
 
 interface ConversationEntryProps {
   conversation: ConversationData
@@ -104,21 +103,22 @@ export function ConversationEntry({
             <MessageText
               variant="Bold"
               size={20}
-              className="transition-colors duration-200 hover:text-secondary"
+              className="cursor-pointer transition-colors duration-200 hover:text-secondary"
               onClick={(e) => {
-                e.stopPropagation()
-                handleAttachment()
+                e.stopPropagation();
+                handleAttachment();
               }}
               onMouseEnter={() => setAttachmentTooltipState('active')}
               onMouseLeave={() => setAttachmentTooltipState('idle')}
             />
-            <TooltipDebug 
-              type="save-attachment" 
+            <NewTooltip
+              type="save-attachment"
               state={attachmentTooltipState}
               className="whitespace-nowrap"
-              message="Add Context" 
+              message="Add Context"
             />
           </div>
+
           <div className="relative"
                onMouseEnter={() => setDeleteTooltipState('active')}
                onMouseLeave={() => setDeleteTooltipState('idle')}>
@@ -127,7 +127,7 @@ export function ConversationEntry({
               size={20} 
               colorVariant="tertiary"
             />
-            <TooltipDebug 
+            <NewTooltip 
               type="delete" 
               state={deleteTooltipState}
               className="whitespace-nowrap"
