@@ -22,12 +22,10 @@ type AudioState = 'active' | 'inactive' | 'off'
 
 const SettingsPage: React.FC = () => {
   // Conversation State
-  const { isAudioOn, setIsAudioOn, conversations } = useConversations()
+  const { isAudioOn, setIsAudioOn, conversations, deleteAllConversations } = useConversations()
   // Audio Transcription State
   const [audioState, setAudioState] = useState<AudioState>('inactive')
   const [asrDuration, setAsrDuration] = useState<number>(2)
-  const [isCloudTranscriptOn, setIsCloudTranscriptOn] = useState<boolean>(true)
-  const { deleteAllConversations } = useConversations()
 
   // Initialize audioState based on isAudioOn
   useEffect(() => {
@@ -44,7 +42,6 @@ const SettingsPage: React.FC = () => {
   const getSoundIconColor = () => {
     return audioState === 'active' ? '#4CEDA0' : '#484848'
   }
-
 
   return (
     <>

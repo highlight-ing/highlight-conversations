@@ -18,7 +18,13 @@ const AsrDurationSelection: React.FC = () => {
   }
 
   return (
-    <Dropdown value={asrDuration} options={options} onSelect={onSelect} style={{ minWidth: '100px' }} size="medium" />
+    <Dropdown
+      value={asrDuration}
+      options={options}
+      onSelect={onSelect}
+      style={{ minWidth: '100px' }}
+      size="medium"
+    />
   )
 }
 
