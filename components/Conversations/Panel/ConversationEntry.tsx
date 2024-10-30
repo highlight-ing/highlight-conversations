@@ -89,51 +89,54 @@ export function ConversationEntry({
         <VoiceSquareIcon />
         <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
       </div>
-      {!isMergeActive && (
-        <div className="align-center hidden justify-center gap-[22px] text-tertiary group-hover:flex">
-          {/* Share Button */}
-          <ShareButton
-            onShare={handleShare}
-            isSharing={shareStatus === 'processing'}
-            hasExistingShareLink={!!localConversation.shareLink}
-            onGenerateShareLink={handleGenerateShareLink}
-            onCopyLink={handleCopyLink}
-          />
-          <div className="relative">
-            <MessageText
-              variant="Bold"
-              size={20}
-              className="cursor-pointer transition-colors duration-200 hover:text-secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAttachment();
-              }}
-              onMouseEnter={() => setAttachmentTooltipState('active')}
-              onMouseLeave={() => setAttachmentTooltipState('idle')}
-            />
-            <NewTooltip
-              type="save-attachment"
-              state={attachmentTooltipState}
-              className="whitespace-nowrap"
-              message="Add Context"
-            />
-          </div>
+{!isMergeActive && (
+  <div className="align-center hidden justify-center gap-[22px] text-tertiary group-hover:flex">
+    {/* Share Button */}
+    <ShareButton
+      onShare={handleShare}
+      isSharing={shareStatus === 'processing'}
+      hasExistingShareLink={!!localConversation.shareLink}
+      onGenerateShareLink={handleGenerateShareLink}
+      onCopyLink={handleCopyLink}
+    />
+    <div className="flex gap-[22px]">
+      {/* Add Context Button */}
+      <NewTooltip
+        type="save-attachment"
+        message="Add Context"
+        state={attachmentTooltipState}
+      >
+        <MessageText
+          variant="Bold"
+          size={20}
+          className="cursor-pointer transition-colors duration-200 hover:text-secondary"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAttachment();
+          }}
+          onMouseEnter={() => setAttachmentTooltipState('active')}
+          onMouseLeave={() => setAttachmentTooltipState('idle')}
+        />
+      </NewTooltip>
 
-          <div className="relative"
-               onMouseEnter={() => setDeleteTooltipState('active')}
-               onMouseLeave={() => setDeleteTooltipState('idle')}>
-            <DeleteConversationDialog 
-              onDelete={handleDelete} 
-              size={20} 
-              colorVariant="tertiary"
-            />
-            <NewTooltip 
-              type="delete" 
-              state={deleteTooltipState}
-              className="whitespace-nowrap"
-              message="Delete"
-            />
-          </div>
+      {/* Delete Button */}
+      <div 
+        onMouseEnter={() => setDeleteTooltipState('active')}
+        onMouseLeave={() => setDeleteTooltipState('idle')}
+      >
+        <NewTooltip
+          type="delete"
+          message="Delete"
+          state={deleteTooltipState}
+        >
+          <DeleteConversationDialog
+            onDelete={handleDelete}
+            size={20}
+            colorVariant="tertiary"
+          />
+        </NewTooltip>
+      </div>
+    </div>
         </div>
       )}
     </div>

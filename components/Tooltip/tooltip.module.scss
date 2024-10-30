@@ -1,15 +1,32 @@
 .tooltip {
   display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #333333;
   border: 1px solid #cccccc;
   border-radius: 4px;
   color: #ffffff;
   padding: 2px 6px;
-  position: fixed;
+  position: absolute;
   white-space: nowrap;
   z-index: 1000;
   font-size: 10px;
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transform: translate(-50%, -100%); // Center horizontally and position above the element
+  bottom: 100%;  /* Position above the icon */
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px); /* Center and offset up */
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    background-color: #333333;
+    border-right: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+  }
 }
