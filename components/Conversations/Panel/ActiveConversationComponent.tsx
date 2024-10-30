@@ -6,9 +6,6 @@ import { Sound } from 'iconsax-react'
 
 type AudioState = 'active' | 'inactive' | 'off' | 'noPermissions' | 'saving'
 
-const ACTIVE_LINE_COLOR = 'rgba(76, 237, 160, 1.0)'
-const INACTIVE_LINE_COLOR = 'rgba(72, 72, 72, 1)'
-
 export default function ActiveConversationComponent() {
   const [audioState, setAudioState] = useState<AudioState>('inactive')
   const { micActivity, isSaving, isAudioOn, setIsAudioOn, saveCurrentConversation, handleCurrentConversationSelect } =
