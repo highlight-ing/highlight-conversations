@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
-import VoiceSquareIcon from '../Detail/Icon/VoiceSquareIcon'
+import VoiceSquareIcon from '../Detail/Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
 import { truncateText } from '@/utils/textUtils'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { MessageText } from 'iconsax-react'
 import { ShareButton } from './ShareButton'
 import { toast } from 'sonner'
+import { Tooltip } from '@/components/Tooltip/Tooltip'
 
 interface ConversationEntryProps {
   conversation: ConversationData
@@ -33,9 +34,6 @@ export function ConversationEntry({
     shareStatus,
     handleGenerateShareLink,
     handleCopyLink,
-    isDeleting,
-    handleDeleteLink,
-    handleDownloadAsFile,
     shareMessage,
     setShareMessage,
     handleAttachment
@@ -79,6 +77,9 @@ export function ConversationEntry({
     }
   }
 
+  const [attachmentTooltipState, setAttachmentTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
+  const [deleteTooltipState, setDeleteTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
+
   return (
     <div
       className={`flex w-full cursor-pointer items-center justify-between border-t border-[#010101] bg-tertiary py-[18px] pl-4 pr-[19px] transition-all duration-300 ease-in-out hover:bg-white/10 ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover cursor-pointer' : ''} ${selectedClass} group`}
@@ -97,13 +98,40 @@ export function ConversationEntry({
             onGenerateShareLink={handleGenerateShareLink}
             onCopyLink={handleCopyLink}
           />
-          <MessageText
-            variant="Bold"
-            size={20}
-            className="transition-colors duration-200 hover:text-secondary"
-            onClick={handleAttachment}
-          />
-          <DeleteConversationDialog onDelete={handleDelete} size={20} colorVariant="tertiary" />
+          <div className="relative">
+            <MessageText
+              variant="Bold"
+              size={20}
+              className="transition-colors duration-200 hover:text-secondary"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleAttachment()
+              }}
+              onMouseEnter={() => setAttachmentTooltipState('active')}
+              onMouseLeave={() => setAttachmentTooltipState('idle')}
+            />
+            <Tooltip 
+              type="save-attachment" 
+              state={attachmentTooltipState}
+              className="whitespace-nowrap"
+              message="Add Context" 
+            />
+          </div>
+          <div className="relative"
+               onMouseEnter={() => setDeleteTooltipState('active')}
+               onMouseLeave={() => setDeleteTooltipState('idle')}>
+            <DeleteConversationDialog 
+              onDelete={handleDelete} 
+              size={20} 
+              colorVariant="tertiary"
+            />
+            <Tooltip 
+              type="delete" 
+              state={deleteTooltipState}
+              className="whitespace-nowrap"
+              message="Delete"
+            />
+          </div>
         </div>
       )}
     </div>
@@ -126,15 +154,6 @@ function getRelativeTimeString(date: Date): string {
     const days = Math.floor(diffInSeconds / 86400)
     return `${days} day${days > 1 ? 's' : ''} ago`
   }
-}
-
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date)
 }
 
 function removeTimestamps(text: string): string {

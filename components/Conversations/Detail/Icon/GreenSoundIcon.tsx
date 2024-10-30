@@ -8,6 +8,6 @@ const GreenSoundIcon: React.FC = () => (
         <path d="M16.5 19C16.09 19 15.75 18.66 15.75 18.25V5.75C15.75 5.34 16.09 5 16.5 5C16.91 5 17.25 5.34 17.25 5.75V18.25C17.25 18.66 16.91 19 16.5 19Z" fill="#4CEDA0"/>
         <path d="M21 16.5C20.59 16.5 20.25 16.16 20.25 15.75V8.25C20.25 7.84 20.59 7.5 21 7.5C21.41 7.5 21.75 7.84 21.75 8.25V15.75C21.75 16.16 21.41 16.5 21 16.5Z" fill="#4CEDA0"/>
     </svg>
-);
+)
 
-export default GreenSoundIcon; 
+export default GreenSoundIcon

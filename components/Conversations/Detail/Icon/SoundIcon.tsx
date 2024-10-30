@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'
 
 type SoundIconProps = {
-    color: string; 
-};
+    color: string
+}
 
 const SoundIcon: React.FC<SoundIconProps> = ({ color }) => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,6 +16,6 @@ const SoundIcon: React.FC<SoundIconProps> = ({ color }) => (
         </g>
         </g>
     </svg>
-);
+)
 
-export default SoundIcon; 
+export default SoundIcon
