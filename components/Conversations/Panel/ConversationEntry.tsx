@@ -9,6 +9,7 @@ import { MessageText } from 'iconsax-react'
 import { ShareButton } from './ShareButton'
 import { toast } from 'sonner'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
+import TooltipDebug from '@/components/Tooltip/TooltipDebug'
 
 interface ConversationEntryProps {
   conversation: ConversationData
@@ -91,6 +92,7 @@ export function ConversationEntry({
       </div>
       {!isMergeActive && (
         <div className="align-center hidden justify-center gap-[22px] text-tertiary group-hover:flex">
+          {/* Share Button */}
           <ShareButton
             onShare={handleShare}
             isSharing={shareStatus === 'processing'}
@@ -110,7 +112,7 @@ export function ConversationEntry({
               onMouseEnter={() => setAttachmentTooltipState('active')}
               onMouseLeave={() => setAttachmentTooltipState('idle')}
             />
-            <Tooltip 
+            <TooltipDebug 
               type="save-attachment" 
               state={attachmentTooltipState}
               className="whitespace-nowrap"
@@ -125,7 +127,7 @@ export function ConversationEntry({
               size={20} 
               colorVariant="tertiary"
             />
-            <Tooltip 
+            <TooltipDebug 
               type="delete" 
               state={deleteTooltipState}
               className="whitespace-nowrap"
@@ -159,3 +161,5 @@ function getRelativeTimeString(date: Date): string {
 function removeTimestamps(text: string): string {
   return text.replace(/\d{2}:\d{2}:\d{2} [AP]M - (other\(s\)|self):/g, '').trim()
 }
+
+export default ConversationEntry

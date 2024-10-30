@@ -1,0 +1,16 @@
+/* tooltip.module.scss */
+.tooltip {
+  display: flex;
+  background-color: #333333; // Dark background color for tooltip
+  border: 1px solid #cccccc; // Light border color for contrast
+  border-radius: 12px;
+  color: #ffffff; // White text color
+  padding: 8px 12px;
+  position: fixed;
+  white-space: pre-wrap;
+  z-index: 1000;
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+}
