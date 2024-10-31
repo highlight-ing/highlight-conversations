@@ -90,34 +90,31 @@ const SettingsPage: React.FC = () => {
         </div>
       </div>
 
-      {audioState !== 'off' && (
-        <>
-          <div className="mb-8 flex flex-col gap-px">
-            <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
-              <div className="font-inter text-[15px] font-medium leading-6 text-[#EEEEEE]">Auto Save</div>
-              <AutoSaveSelection />
-            </div>
-
-            <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
-              <div className="font-inter text-[15px] font-normal leading-6 text-[#B4B4B4] opacity-50">
-                Highlight will automatically save your conversation transcript after this duration of silence
-              </div>
-            </div>
+      {/* Auto Save Section */}
+      <div className="mb-8 flex flex-col gap-px">
+        <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
+          <div className="font-inter text-[15px] font-medium leading-6 text-[#EEEEEE]">Auto Save</div>
+          <AutoSaveSelection />
+        </div>
+        <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
+          <div className="font-inter text-[15px] font-normal leading-6 text-[#B4B4B4] opacity-50">
+            Highlight will automatically save your conversation transcript after this duration of silence
           </div>
+        </div>
+      </div>
 
-          <div className="mb-8 flex flex-col gap-px">
-            <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
-              <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Auto Clear</div>
-              <AutoClearSelection />
-            </div>
-            <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
-              <div className="font-inter shrink grow basis-0 text-[15px] font-normal leading-normal text-[#b4b4b4] opacity-50">
-                Highlight will automatically delete all of your conversation transcripts based on this setting
-              </div>
-            </div>
+      {/* Auto Clear Section */}
+      <div className="mb-8 flex flex-col gap-px">
+        <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
+          <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Auto Clear</div>
+          <AutoClearSelection />
+        </div>
+        <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
+          <div className="font-inter shrink grow basis-0 text-[15px] font-normal leading-normal text-[#b4b4b4] opacity-50">
+            Highlight will automatically delete all of your conversation transcripts based on this setting
           </div>
-        </>
-      )}
+        </div>
+      </div>
 
       {/* Audio Transcript Duration */}
       <div className="mb-8 flex flex-col gap-px">
@@ -137,11 +134,16 @@ const SettingsPage: React.FC = () => {
       </div>
 
       {/* Cloud Transcript */}
-
-      <div className="mb-8 flex flex-col gap-px">
+      <div
+        className={`mb-8 flex flex-col gap-px rounded-2xl ${
+          isAudioOn ? 'border-[#4ceda0]/20' : 'border-[#222222]'
+        }`}
+      >
         <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
           <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Cloud Transcript</div>
-          <AsrCloudFallbackSelection />
+          <div className="flex items-center gap-2">
+            <AsrCloudFallbackSelection />
+          </div>
         </div>
 
         <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">

@@ -1,25 +1,24 @@
 import React from 'react'
-import Dropdown from './Dropdown'
 import { useConversations } from '@/contexts/ConversationContext'
 
 const AsrCloudFallbackSelection: React.FC = () => {
   const { asrCloudFallback, setAsrCloudFallback } = useConversations()
 
-  const options = [
-    { value: 2, label: '2 hours' },
-    { value: 4, label: '4 hours' },
-    { value: 8, label: '8 hours' },
-    { value: 12, label: '12 hours' },
-    { value: 24, label: '24 hours' }
-  ]
-
   const handleToggle = () => {
-    setAsrCloudFallback(!asrCloudFallback)
+    try {
+      setAsrCloudFallback(!asrCloudFallback)
+    } catch (error) {
+      console.error('Error toggling ASR cloud fallback:', error)
+    }
   }
 
   return (
     <div className="flex items-center gap-2">
-      <button onClick={handleToggle} className="font-publicsans flex items-center gap-1.5 text-xs">
+      <button 
+        onClick={handleToggle} 
+        className="font-publicsans flex items-center gap-1.5 text-xs"
+        type="button"
+      >
         <div
           className={`text-right ${
             asrCloudFallback ? 'text-[#00cc88]' : 'text-white/40'
@@ -31,12 +30,12 @@ const AsrCloudFallbackSelection: React.FC = () => {
           <div
             className={`absolute left-0 top-0 h-[26px] w-[49px] ${
               asrCloudFallback ? 'bg-[#00cc88]' : 'bg-black'
-            } rounded-full`}
+            } rounded-full transition-all duration-500`}
           />
           <div
             className={`absolute h-6 w-6 ${
               asrCloudFallback ? 'left-[24px] bg-white' : 'left-[1px] bg-white/40'
-            } top-[1px] rounded-full shadow`}
+            } top-[1px] rounded-full shadow transition-all duration-500`}
           />
         </div>
       </button>

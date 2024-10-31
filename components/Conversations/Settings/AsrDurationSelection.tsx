@@ -13,17 +13,21 @@ const AsrDurationSelection: React.FC = () => {
     { value: 24, label: '24 hours' }
   ]
 
-  const onSelect = (option: { value: number }) => {
-    setAsrDuration(option.value)
+  const onSelect = (option: { value: number; label: string }) => {
+    try {
+      setAsrDuration(option.value)
+    } catch (error) {
+      console.error('Error setting ASR duration:', error)
+    }
   }
 
   return (
-    <Dropdown
-      value={asrDuration}
-      options={options}
-      onSelect={onSelect}
-      style={{ minWidth: '100px' }}
-      size="medium"
+    <Dropdown 
+      value={asrDuration} 
+      options={options} 
+      onSelect={onSelect} 
+      style={{ minWidth: '100px' }} 
+      size="medium" 
     />
   )
 }

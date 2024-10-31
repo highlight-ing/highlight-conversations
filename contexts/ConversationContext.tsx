@@ -149,16 +149,15 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }, 10)
     })
 
-    const removeOnAsrDurationListener = Highlight.app.addListener('onAsrDurationUpdated', (duration: number) => {
+    const removeOnAsrDurationListener = Highlight.app.addListener?.('onAsrDurationUpdated', (duration: number) => {
       setAsrDuration(duration)
-    })
+    }) ?? (() => {})
 
-    const removeOnAsrCloudFallbackListener = Highlight.app.addListener(
-      'onAsrCloudFallbackUpdated',
+    const removeOnAsrCloudFallbackListener = Highlight.app.addListener?.('onAsrCloudFallbackUpdated', 
       (enabled: boolean) => {
         setAsrCloudFallback(enabled)
       }
-    )
+    ) ?? (() => {})
 
     return () => {
       removeCurrentConversationListener()
@@ -261,12 +260,21 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const validAutoClearDays = autoClearDaysFromAPI !== 0 ? autoClearDaysFromAPI : AUTO_CLEAR_DAYS_DEFAULT
       setAutoClearDays(validAutoClearDays)
 
-      const asrDurationFromAPI = await Highlight.conversations.getAsrDuration()
-      const validAsrDuration = asrDurationFromAPI !== 0 ? asrDurationFromAPI : ASR_DURATION_HOURS_DEFAULT
-      setAsrDuration(validAsrDuration)
+      try {
+        const duration = await Highlight.conversations.getAsrDuration?.() ?? ASR_DURATION_HOURS_DEFAULT
+        setAsrDuration(duration)
+      } catch (error) {
+        console.warn('ASR Duration API not available, using default:', ASR_DURATION_HOURS_DEFAULT)
+        setAsrDuration(ASR_DURATION_HOURS_DEFAULT)
+      }
 
-      const asrCloudFallbackFromAPI = await Highlight.conversations.getAsrCloudFallback()
-      setAsrCloudFallback(asrCloudFallbackFromAPI)
+      try {
+        const cloudFallback = await Highlight.conversations.getAsrCloudFallback?.() ?? false
+        setAsrCloudFallback(cloudFallback)
+      } catch (error) {
+        console.warn('ASR Cloud Fallback API not available, using default: false')
+        setAsrCloudFallback(false)
+      }
 
       // Fetch conversations again after setting autoClearDays
       const { allConversations, appStorageConversations } = await fetchConversations()
@@ -481,14 +489,28 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         console.log('Invalid ASR duration. Skipping update:', hours)
         return
       }
-      await Highlight.conversations.setAsrDuration(hours)
-      setAsrDuration(hours)
-      trackEvent('changed_asr_duration', { newValue: hours })
+      try {
+        if (Highlight.conversations.setAsrDuration) {
+          await Highlight.conversations.setAsrDuration(hours)
+        }
+        setAsrDuration(hours)
+        trackEvent('changed_asr_duration', { newValue: hours })
+      } catch (error) {
+        console.error('Error setting ASR duration:', error)
+        throw error
+      }
     },
     setAsrCloudFallback: async (enabled: boolean) => {
-      await Highlight.conversations.setAsrCloudFallback(enabled)
-      setAsrCloudFallback(enabled)
-      trackEvent('changed_asr_cloud_fallback', { newValue: enabled })
+      try {
+        if (Highlight.conversations.setAsrCloudFallback) {
+          await Highlight.conversations.setAsrCloudFallback(enabled)
+        }
+        setAsrCloudFallback(enabled)
+        trackEvent('changed_asr_cloud_fallback', { newValue: enabled })
+      } catch (error) {
+        console.error('Error setting ASR cloud fallback:', error)
+        throw error
+      }
     },
     setIsAudioOn: setIsAudioOnAndSave,
     setSearchQuery,
