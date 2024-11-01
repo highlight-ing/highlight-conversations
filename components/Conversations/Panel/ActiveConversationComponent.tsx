@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useConversations } from '@/contexts/ConversationContext'
 import { useDebouncedCallback } from 'use-debounce'
 import { Sound } from 'iconsax-react'
+import { cn } from '@/lib/utils'
 
 type AudioState = 'active' | 'inactive' | 'off' | 'noPermissions' | 'saving'
 

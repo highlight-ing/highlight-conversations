@@ -57,7 +57,18 @@ const SettingsPage: React.FC = () => {
                 {audioState === 'active' ? <GreenSoundIcon /> : <SoundIcon color={getSoundIconColor()} />}
               </div>
               <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">
-                {audioState === 'active' ? 'Transcribing Audio...' : 'Audio Transcription Off'}
+                {audioState === 'active' ? 'Transcribing Audio...' : (
+                  <div className="relative w-full">
+                    {/* Full title for larger screens */}
+                    <div className="hidden lg:block truncate">
+                      Audio Transcription Off
+                    </div>
+                    {/* Compact title for smaller screens */}
+                    <div className="block lg:hidden truncate">
+                      Audio Off
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
