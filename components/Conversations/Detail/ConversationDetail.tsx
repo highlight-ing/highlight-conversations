@@ -82,12 +82,10 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
   if (!isAudioOn) {
     return <TranscriptionDisabled />
   }
-
-  // when the audio is off and there's no transcription, show noAudioDetected
+      // when the audio is off and there's no transcription, show noAudioDetected
   if (isAudioOn && !isTranscribing) {
     return <NoAudioDetected />
   }
-
   // When the audio is on and there's transcription, show ActiveConversation
   return <ActiveConversation />
 }
