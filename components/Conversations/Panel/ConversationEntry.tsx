@@ -85,58 +85,58 @@ export function ConversationEntry({
       className={`flex w-full cursor-pointer items-center justify-between border-t border-[#010101] bg-tertiary py-[18px] pl-4 pr-[19px] transition-all duration-300 ease-in-out hover:bg-white/10 ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover cursor-pointer' : ''} ${selectedClass} group`}
       onClick={handleClick}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
         <VoiceSquareIcon />
-        <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
+        <h3 className="truncate text-[15px] font-medium text-primary">{displayTitle}</h3>
       </div>
-{!isMergeActive && (
-  <div className="align-center hidden justify-center gap-[22px] text-tertiary group-hover:flex">
-    {/* Share Button */}
-    <ShareButton
-      onShare={handleShare}
-      isSharing={shareStatus === 'processing'}
-      hasExistingShareLink={!!localConversation.shareLink}
-      onGenerateShareLink={handleGenerateShareLink}
-      onCopyLink={handleCopyLink}
-    />
-    <div className="flex gap-[22px]">
-      {/* Add Context Button */}
-      <NewTooltip
-        type="save-attachment"
-        message="Add Context"
-        state={attachmentTooltipState}
-      >
-        <MessageText
-          variant="Bold"
-          size={20}
-          className="cursor-pointer transition-colors duration-200 hover:text-secondary"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleAttachment();
-          }}
-          onMouseEnter={() => setAttachmentTooltipState('active')}
-          onMouseLeave={() => setAttachmentTooltipState('idle')}
-        />
-      </NewTooltip>
-
-      {/* Delete Button */}
-      <div 
-        onMouseEnter={() => setDeleteTooltipState('active')}
-        onMouseLeave={() => setDeleteTooltipState('idle')}
-      >
-        <NewTooltip
-          type="delete"
-          message="Delete"
-          state={deleteTooltipState}
-        >
-          <DeleteConversationDialog
-            onDelete={handleDelete}
-            size={20}
-            colorVariant="tertiary"
+      {!isMergeActive && (
+        <div className="align-center hidden min-w-fit justify-center gap-3 text-tertiary group-hover:flex">
+          {/* Share Button */}
+          <ShareButton
+            onShare={handleShare}
+            isSharing={shareStatus === 'processing'}
+            hasExistingShareLink={!!localConversation.shareLink}
+            onGenerateShareLink={handleGenerateShareLink}
+            onCopyLink={handleCopyLink}
           />
-        </NewTooltip>
-      </div>
-    </div>
+          <div className="flex gap-3">
+            {/* Add Context Button */}
+            <NewTooltip
+              type="save-attachment"
+              message="Add Context"
+              state={attachmentTooltipState}
+            >
+              <MessageText
+                variant="Bold"
+                size={20}
+                className="cursor-pointer transition-colors duration-200 hover:text-secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAttachment();
+                }}
+                onMouseEnter={() => setAttachmentTooltipState('active')}
+                onMouseLeave={() => setAttachmentTooltipState('idle')}
+              />
+            </NewTooltip>
+
+            {/* Delete Button */}
+            <div 
+              onMouseEnter={() => setDeleteTooltipState('active')}
+              onMouseLeave={() => setDeleteTooltipState('idle')}
+            >
+              <NewTooltip
+                type="delete"
+                message="Delete"
+                state={deleteTooltipState}
+              >
+                <DeleteConversationDialog
+                  onDelete={handleDelete}
+                  size={20}
+                  colorVariant="tertiary"
+                />
+              </NewTooltip>
+            </div>
+          </div>
         </div>
       )}
     </div>
