@@ -90,7 +90,7 @@ export function ConversationEntry({
         <h3 className="truncate text-[15px] font-medium text-primary">{displayTitle}</h3>
       </div>
       {!isMergeActive && (
-        <div className="align-center hidden min-w-fit justify-center gap-3 text-tertiary group-hover:flex">
+        <div className="align-center flex min-w-fit justify-center gap-3 text-tertiary opacity-0 group-hover:opacity-100">
           {/* Share Button */}
           <ShareButton
             onShare={handleShare}
