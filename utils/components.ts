@@ -20,7 +20,7 @@ export const calculatePositionedStyle = (
     styles.left = targetRect.left + targetRect.width / 2 - positionedElement.offsetWidth / 2;
   }
 
-  if (styles.left !== undefined && (styles.left < 0 || styles.left + positionedElement.offsetWidth > window.innerWidth)) {
+  if (typeof styles.left === 'number' && (styles.left < 0 || styles.left + positionedElement.offsetWidth > window.innerWidth)) {
     styles.left = Math.max(PIXEL_SPACING, Math.min(styles.left, window.innerWidth - positionedElement.offsetWidth - PIXEL_SPACING));
   }
 
