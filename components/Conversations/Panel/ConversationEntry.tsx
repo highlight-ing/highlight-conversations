@@ -8,7 +8,7 @@ import { useConversationActions } from '@/components/Card/SavedConversation/useC
 import { MessageText } from 'iconsax-react'
 import { ShareButton } from './ShareButton'
 import { toast } from 'sonner'
-import NewTooltip from '@/components/Tooltip/NewTooltip'
+import NewTooltip from '@/components/Tooltip/newTooltip'
 
 interface ConversationEntryProps {
   conversation: ConversationData

@@ -79,7 +79,6 @@ export const useConversationActions = (
         userId: updatedConversation.userId,
       }
   
-      // **Pass plainConversation to getShareLink**
       const shareLink = await getShareLink(plainConversation, userId)
   
       updatedConversation = {
