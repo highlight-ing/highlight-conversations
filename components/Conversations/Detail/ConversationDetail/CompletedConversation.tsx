@@ -98,10 +98,20 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     setTitle(e.target.value)
   }
 
-  const formattedTimestamp =
-    conversation && conversation.startedAt && conversation.endedAt
-      ? formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)
-      : ''
+  const getDisplayTitle = useCallback(() => {
+    return getRelativeTimeString(conversation.startedAt)
+  }, [conversation.startedAt])
+
+  useEffect(() => {
+    const newTitle = getDisplayTitle()
+    setTitle(newTitle)
+
+    // Update every minute to keep the relative time current
+    const timer = setInterval(() => {
+      setTitle(getDisplayTitle())
+    }, 60000)
+    return () => clearInterval(timer)
+  }, [getDisplayTitle])
 
   // delete function for the trash icon
   const handleDelete = () => {
@@ -248,7 +258,9 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
           />
         </div>
       </div>
-      <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">{formattedTimestamp}</div>
+      <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">
+        {formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)}
+      </div>
 
       {/* Summary Component */}
       <div ref={summaryRef} className="mb-8 flex w-full flex-col gap-4">

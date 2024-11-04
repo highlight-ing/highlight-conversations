@@ -40,6 +40,7 @@ export function ConversationEntry({
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
+  // format timestamp 
   const formatTime = (date: Date) => {
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const timeStr = formatInTimeZone(new Date(date), userTimeZone, 'h:mma').toLowerCase()
