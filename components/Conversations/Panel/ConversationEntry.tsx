@@ -80,66 +80,84 @@ export function ConversationEntry({
   const [attachmentTooltipState, setAttachmentTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
   const [deleteTooltipState, setDeleteTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
 
-  return (
-    <div
-      className={`min-h-[56px] w-full cursor-pointer border-t border-[#010101] bg-tertiary ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover' : 'hover:bg-white/10'} ${selectedClass} group`}
-      onClick={handleClick}
-    >
-      {/* Main Content Container */}
-      <div className="px-4 py-4 flex flex-col gap-3">
-
-        {/* Title Row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 relative flex-shrink-0">
-              <VoiceSquareIcon />
+  return(
+      <div
+        className={`min-h-[56px] w-full cursor-pointer border-t border-[#010101] bg-tertiary ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover' : 'hover:bg-white/10'} ${selectedClass} group`}
+        onClick={handleClick}
+      >
+        {/* Main Content Container */}
+        <div className="px-4 py-4 flex flex-col gap-3">
+          {/* Title Row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 relative flex-shrink-0">
+                <VoiceSquareIcon />
+              </div>
+              <span className="text-[15px] font-medium text-[#eeeeee]">
+                Audio Note
+              </span>
             </div>
-            <span className="text-[15px] font-medium text-[#eeeeee]">
-              Audio Note
+    
+            {/* Action Buttons - Only show on hover */}
+            {!isMergeActive && (
+              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100">
+                <ShareButton
+                  onShare={handleShare}
+                  isSharing={shareStatus === 'processing'}
+                  hasExistingShareLink={!!localConversation.shareLink}
+                  onGenerateShareLink={handleGenerateShareLink}
+                  onCopyLink={handleCopyLink}
+                />
+                <NewTooltip
+                  type="save-attachment"
+                  message="Add Context"
+                  state={attachmentTooltipState}
+                >
+                  <MessageText
+                    variant="Bold"
+                    size={18}
+                    className="cursor-pointer transition-colors duration-200 text-tertiary hover:text-secondary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAttachment();
+                    }}
+                    onMouseEnter={() => setAttachmentTooltipState('active')}
+                    onMouseLeave={() => setAttachmentTooltipState('idle')}
+                  />
+                </NewTooltip>
+                <NewTooltip
+                  type="delete"
+                  message="Delete"
+                  state={deleteTooltipState}
+                >
+                  <div 
+                    onMouseEnter={() => setDeleteTooltipState('active')}
+                    onMouseLeave={() => setDeleteTooltipState('idle')}
+                  >
+                    <DeleteConversationDialog
+                      onDelete={handleDelete}
+                      size={18}
+                      colorVariant="tertiary"
+                    />
+                  </div>
+                </NewTooltip>
+              </div>
+            )}
+          </div>
+    
+          {/* Metadata Row */}
+          <div className="flex items-center gap-2 text-[13px] font-medium text-[#484848]">
+            <span className="whitespace-nowrap">{formatTime(conversation.timestamp)}</span>
+            <span className="whitespace-nowrap">
+              {Math.round(conversation.duration || 0)} Minutes
+            </span>
+            <span className="whitespace-nowrap">
+              {getWordCount(conversation.transcript).toLocaleString()} Words
             </span>
           </div>
-
-          {/* Action Buttons - Only show on hover */}
-          {!isMergeActive && (
-            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100">
-              <ShareButton
-                onShare={handleShare}
-                isSharing={shareStatus === 'processing'}
-                hasExistingShareLink={!!localConversation.shareLink}
-                onGenerateShareLink={handleGenerateShareLink}
-                onCopyLink={handleCopyLink}
-              />
-              <MessageText
-                variant="Bold"
-                size={18}
-                className="cursor-pointer hover:text-secondary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAttachment();
-                }}
-              />
-              <DeleteConversationDialog
-                onDelete={handleDelete}
-                size={18}
-                colorVariant="tertiary"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Metadata Row */}
-        <div className="flex items-center gap-2 text-[13px] font-medium text-[#484848]">
-          <span className="whitespace-nowrap">{formatTime(conversation.timestamp)}</span>
-          <span className="whitespace-nowrap">
-            {Math.round(conversation.duration || 0)} Minutes
-          </span>
-          <span className="whitespace-nowrap">
-            {getWordCount(conversation.transcript).toLocaleString()} Words
-          </span>
         </div>
       </div>
-    </div>
-  )
+    )
 }
 
 function getRelativeTimeString(date: Date): string {
