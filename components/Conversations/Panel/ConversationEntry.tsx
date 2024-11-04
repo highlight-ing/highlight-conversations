@@ -29,6 +29,8 @@ export function ConversationEntry({
   const { getWordCount, handleConversationSelect, selectedConversationId, deleteConversation, updateConversation } =
     useConversations()
 
+
+
   const {
     localConversation,
     handleShare,
@@ -65,6 +67,16 @@ export function ConversationEntry({
 
   const handleClick = () => {
     handleConversationSelect(conversation.id)
+  }
+
+  const calculateDurationInMinutes = (conversation: ConversationData) => {
+    if (conversation.startedAt && conversation.endedAt) {
+      const start = new Date(conversation.startedAt)
+      const end = new Date(conversation.endedAt)
+      const diffMs = end.getTime() - start.getTime() + 1000
+      return Math.round(diffMs / (1000 * 60)) 
+    }
+    return 0
   }
 
   const isSelectedConversation = isMergeActive ? isSelected : selectedConversationId === conversation.id
@@ -149,7 +161,7 @@ export function ConversationEntry({
           <div className="flex items-center gap-2 text-[13px] font-medium text-[#484848]">
             <span className="whitespace-nowrap">{formatTime(conversation.timestamp)}</span>
             <span className="whitespace-nowrap">
-              {Math.round(conversation.duration || 0)} Minutes
+              {calculateDurationInMinutes(conversation)} Minutes
             </span>
             <span className="whitespace-nowrap">
               {getWordCount(conversation.transcript).toLocaleString()} Words
