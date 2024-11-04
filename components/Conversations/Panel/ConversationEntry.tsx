@@ -29,8 +29,6 @@ export function ConversationEntry({
   const { getWordCount, handleConversationSelect, selectedConversationId, deleteConversation, updateConversation } =
     useConversations()
 
-
-
   const {
     localConversation,
     handleShare,
@@ -73,8 +71,11 @@ export function ConversationEntry({
     if (conversation.startedAt && conversation.endedAt) {
       const start = new Date(conversation.startedAt)
       const end = new Date(conversation.endedAt)
-      const diffMs = end.getTime() - start.getTime() + 1000
-      return Math.round(diffMs / (1000 * 60)) 
+      
+      const startMinutes = start.getHours() * 60 + start.getMinutes()
+      const endMinutes = end.getHours() * 60 + end.getMinutes()
+      
+      return endMinutes - startMinutes
     }
     return 0
   }
