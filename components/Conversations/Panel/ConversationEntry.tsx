@@ -40,7 +40,7 @@ export function ConversationEntry({
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
-  // format timestamp 
+  // format
   const formatTime = (date: Date) => {
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const timeStr = formatInTimeZone(new Date(date), userTimeZone, 'h:mma').toLowerCase()
@@ -153,6 +153,7 @@ export function ConversationEntry({
                   <div 
                     onMouseEnter={() => setDeleteTooltipState('active')}
                     onMouseLeave={() => setDeleteTooltipState('idle')}
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <DeleteConversationDialog
                       onDelete={handleDelete}
