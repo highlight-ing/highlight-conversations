@@ -246,16 +246,16 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
           >
             <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
           </div>
-          <ShareButton
-            onShare={handleShare}
-            isSharing={shareStatus === 'processing'}
-            isDeleting={isDeleting}
-            hasExistingShareLink={!!localConversation.shareLink}
-            onGenerateShareLink={handleGenerateShareLink}
-            onCopyLink={handleCopyLink}
-            onDeleteLink={handleDeleteLink}
-            onDownloadAsFile={handleDownloadAsFile}
-          />
+            <ShareButton
+              onShare={handleShare}
+              isSharing={shareStatus === 'processing'}
+              isDeleting={isDeleting}
+              hasExistingShareLink={!!localConversation.shareLink}
+              onGenerateShareLink={handleGenerateShareLink}
+              onCopyLink={handleCopyLink}
+              onDeleteLink={handleDeleteLink}
+              onDownloadAsFile={handleDownloadAsFile}
+            />
         </div>
       </div>
       <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">
@@ -267,8 +267,12 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
         <Summary
           transcript={conversation.transcript}
           onSummaryGenerated={(summary) => {
-            // Update the conversation with the new summary
-            updateConversation({ ...conversation, summary })
+            // Preserve the current title while updating the summary
+            updateConversation({ 
+              ...conversation, 
+              summary,
+              title: title || conversation.title // Keep the current title
+            })
           }}
           conversationId={conversation.id}
           existingSummary={conversation.summary}
