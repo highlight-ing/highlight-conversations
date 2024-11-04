@@ -95,76 +95,86 @@ export function ConversationEntry({
 
   return (
     <div
-      className={`flex w-full cursor-pointer items-center justify-between border-t border-[#010101] bg-tertiary py-[18px] pl-4 pr-[19px] transition-all duration-300 ease-in-out hover:bg-white/10 ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover cursor-pointer' : ''} ${selectedClass} group`}
+      className={`h-[84px] p-4 flex flex-col justify-start items-start gap-3 w-full cursor-pointer border-t border-[#010101] bg-tertiary transition-all duration-300 ease-in-out hover:bg-white/10 ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover cursor-pointer' : ''} ${selectedClass} group`}
       onClick={handleClick}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-3">
-        <VoiceSquareIcon />
-        <h3 className="truncate text-[15px] font-medium text-primary">{tempTitle}</h3>
-      </div>
-      {!isMergeActive && (
-        <div className="align-center flex min-w-fit justify-center gap-3 text-tertiary opacity-0 group-hover:opacity-100">
-          {/* Share Button */}
-          <ShareButton
-            onShare={handleShare}
-            isSharing={shareStatus === 'processing'}
-            hasExistingShareLink={!!localConversation.shareLink}
-            onGenerateShareLink={handleGenerateShareLink}
-            onCopyLink={handleCopyLink}
-          />
-          <div className="flex gap-3">
-            {/* Add Context Button */}
-            <NewTooltip
-              type="save-attachment"
-              message="Add Context"
-              state={attachmentTooltipState}
-            >
-              <MessageText
-                variant="Bold"
-                size={20}
-                className="cursor-pointer transition-colors duration-200 hover:text-secondary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAttachment();
-                }}
-                onMouseEnter={() => setAttachmentTooltipState('active')}
-                onMouseLeave={() => setAttachmentTooltipState('idle')}
-              />
-            </NewTooltip>
-
-            {/* Delete Button */}
-            <div 
-              onMouseEnter={() => setDeleteTooltipState('active')}
-              onMouseLeave={() => setDeleteTooltipState('idle')}
-            >
-              <NewTooltip
-                type="delete"
-                message="Delete"
-                state={deleteTooltipState}
-              >
-                <DeleteConversationDialog
-                  onDelete={handleDelete}
-                  size={20}
-                  colorVariant="tertiary"
-                />
-              </NewTooltip>
+          {/* Title Row */}
+          <div className="w-full pl-0.5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 relative">
+            <div className="w-6 h-6 left-0 top-0 absolute rounded-lg" />
+            <div className="w-6 h-6 left-0 top-0 absolute justify-center items-center inline-flex">
+              <div className="w-6 h-6 relative">
+                <VoiceSquareIcon />
+              </div>
             </div>
           </div>
+          <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-normal">
+            Audio Note
+          </div>
         </div>
-      )}
-      {/* Metadata Row */}
-      <div className="px-1 justify-start items-center gap-3 inline-flex">
+
+        {/* Action Buttons */}
+        {!isMergeActive && (
+          <div className="flex gap-3 text-tertiary opacity-0 group-hover:opacity-100">
+            <ShareButton
+              onShare={handleShare}
+              isSharing={shareStatus === 'processing'}
+              hasExistingShareLink={!!localConversation.shareLink}
+              onGenerateShareLink={handleGenerateShareLink}
+              onCopyLink={handleCopyLink}
+            />
+            <div className="flex gap-3">
+              <NewTooltip
+                type="save-attachment"
+                message="Add Context"
+                state={attachmentTooltipState}
+              >
+                <MessageText
+                  variant="Bold"
+                  size={20}
+                  className="cursor-pointer transition-colors duration-200 hover:text-secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAttachment();
+                  }}
+                  onMouseEnter={() => setAttachmentTooltipState('active')}
+                  onMouseLeave={() => setAttachmentTooltipState('idle')}
+                />
+              </NewTooltip>
+              <div 
+                onMouseEnter={() => setDeleteTooltipState('active')}
+                onMouseLeave={() => setDeleteTooltipState('idle')}
+              >
+                <NewTooltip
+                  type="delete"
+                  message="Delete"
+                  state={deleteTooltipState}
+                >
+                  <DeleteConversationDialog
+                    onDelete={handleDelete}
+                    size={20}
+                    colorVariant="tertiary"
+                  />
+                </NewTooltip>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+       {/* Metadata Row */}
+       <div className="px-1 flex items-center gap-3">
         <div className="text-[#484848] text-[13px] font-medium font-inter leading-none">
-            {formatTime(conversation.timestamp)}
-          </div>
-          <div className="text-[#484848] text-[13px] font-medium font-inter leading-none">
-            {Math.round(conversation.duration || 0)} Minutes
-          </div>
+          {formatTime(conversation.timestamp)}
+        </div>
+        <div className="text-[#484848] text-[13px] font-medium font-inter leading-none">
+          {Math.round(conversation.duration || 0)} Minutes
+        </div>
         <div className="text-[#484848] text-[13px] font-medium font-inter leading-none">
           {getWordCount(conversation.transcript).toLocaleString()} Words
         </div>
       </div>
-      </div>
+    </div>
   )
 }
 
