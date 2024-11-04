@@ -16,7 +16,7 @@ const ConversationPanel: React.FC = () => {
   const [isSettingsActive, setIsSettingsActive] = useState(false)
   const [audioState, setAudioState] = useState<AudioState>('off')
 
-  const { filteredConversations, isMergeActive, toggleMergeActive, isAudioOn } = useConversations()
+  const { filteredConversations, isMergeActive, toggleMergeActive } = useConversations()
 
   const last24HoursConversations = filteredConversations.filter((convo) => isLast24Hours(new Date(convo.timestamp)))
   const last24HoursTitle = last24HoursConversations.length > 0 ? 'Last 24 Hours' : undefined

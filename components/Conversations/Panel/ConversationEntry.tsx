@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
+import { getStandardTimezoneAbbr, formatTimestamp, formatTimestampSimple } from '@/utils/dateUtils'
 import VoiceSquareIcon from '../Detail/Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
 import { truncateText } from '@/utils/textUtils'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
@@ -9,6 +10,7 @@ import { MessageText } from 'iconsax-react'
 import { ShareButton } from './ShareButton'
 import { toast } from 'sonner'
 import NewTooltip from '@/components/Tooltip/newTooltip'
+import { formatInTimeZone } from 'date-fns-tz'
 
 interface ConversationEntryProps {
   conversation: ConversationData
@@ -39,6 +41,13 @@ export function ConversationEntry({
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
+  const formatTime = (date: Date) => {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const timeStr = formatInTimeZone(new Date(date), userTimeZone, 'h:mma').toLowerCase()
+    const tzAbbr = getStandardTimezoneAbbr(userTimeZone)
+    return `${timeStr} ${tzAbbr}`
+  }
+
   useEffect(() => {
     if (shareMessage) {
       if (shareMessage.type === 'success') {
@@ -64,6 +73,10 @@ export function ConversationEntry({
   const selectedClass = isSelectedConversation ? 'bg-white/10' : ''
 
   const isDefaultTitle = conversation.title?.startsWith('Conversation ended at')
+
+  // Changed for a new design 
+  const tempTitle = 'Audio Note'
+
   const displayTitle =
     !conversation.title || isDefaultTitle ? getRelativeTimeString(conversation.timestamp) : conversation.title
 
@@ -87,7 +100,7 @@ export function ConversationEntry({
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <VoiceSquareIcon />
-        <h3 className="truncate text-[15px] font-medium text-primary">{displayTitle}</h3>
+        <h3 className="truncate text-[15px] font-medium text-primary">{tempTitle}</h3>
       </div>
       {!isMergeActive && (
         <div className="align-center flex min-w-fit justify-center gap-3 text-tertiary opacity-0 group-hover:opacity-100">
@@ -139,7 +152,19 @@ export function ConversationEntry({
           </div>
         </div>
       )}
-    </div>
+      {/* Metadata Row */}
+      <div className="px-1 justify-start items-center gap-3 inline-flex">
+        <div className="text-[#484848] text-[13px] font-medium font-inter leading-none">
+            {formatTime(conversation.timestamp)}
+          </div>
+          <div className="text-[#484848] text-[13px] font-medium font-inter leading-none">
+            {Math.round(conversation.duration || 0)} Minutes
+          </div>
+        <div className="text-[#484848] text-[13px] font-medium font-inter leading-none">
+          {getWordCount(conversation.transcript).toLocaleString()} Words
+        </div>
+      </div>
+      </div>
   )
 }
 
