@@ -2,7 +2,7 @@
 'use client'
 import Highlight from '@highlight-ai/app-runtime'
 import { GeneratedPrompt, LLMMessage } from '../types/types'
-import { ConversationData } from '@/data/conversations'
+import { ConversationData, DEFAULT_SUMMARY_INSTRUCTION, BASE_SYSTEM_PROMPT } from '@/data/conversations'
 
 export const CONVERSATIONS_STORAGE_KEY = 'conversations'
 export const AUTO_CLEAR_VALUE_KEY = 'autoClearValue'
@@ -122,21 +122,51 @@ const sendAttachment = async (targetAppId: string, attachment: string): Promise<
   }
 }
 
-interface ProcessedConversationData {
+export interface ProcessedConversationData {
   topics: string[]
   summary: string
   title: string
 }
 
-export const getTextPredictionFromHighlight = async (
+export const summarizeConversation = async (
   transcript: string,
+  customPrompt?: string,
   signal?: AbortSignal
 ): Promise<ProcessedConversationData> => {
+  try {
+    const processedData = await getTextPredictionFromHighlight(transcript, customPrompt, signal)
+    console.log('Processed data:', processedData)
+    return {
+      topics: processedData.topics,
+      summary: processedData.summary,
+      title: processedData.title
+    }
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      console.log('Conversation summarization was aborted')
+      throw error
+    }
+    console.error('Error in summarizeConversation:', error)
+    throw new Error('Failed to summarize conversation')
+  }
+}
+
+const getTextPredictionFromHighlight = async (
+  transcript: string,
+  customPrompt?: string,
+  signal?: AbortSignal
+): Promise<ProcessedConversationData> => {
+  const summaryInstruction = customPrompt || DEFAULT_SUMMARY_INSTRUCTION
+  const systemPrompt = `${BASE_SYSTEM_PROMPT} ${summaryInstruction}`
+
+  console.log('Transcript:', transcript)
+  console.log('Summary instruction:', summaryInstruction)
+  console.log('System prompt:', systemPrompt)
+
   const messages: LLMMessage[] = [
     {
       role: 'system',
-      content:
-        'Analyze the following conversation transcript and generate a JSON object containing the following fields: \'topics\' (an array of main topics discussed), \'summary\' (a brief summary of the conversation), and \'title\' (a concise title no more than 26 characters long). The Summary should jump straight into listing important topics discussed in the first sentence, with following sentences expanding on conclusions and takeaways. Your response must be valid JSON and nothing else. Do not include any explanations or markdown formatting. The response should be in this exact format: {"topics": ["topic1", "topic2", ...], "summary": "Brief summary here", "title": "Concise title (max 26 chars)"}'
+      content: systemPrompt
     },
     {
       role: 'user',
@@ -158,11 +188,9 @@ export const getTextPredictionFromHighlight = async (
 
     // Parse the accumulated text as JSON
     const parsedData: ProcessedConversationData = JSON.parse(accumulatedText)
-    console.log('Parsed data:', parsedData)
     return parsedData
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      console.log('Text prediction was aborted')
       throw error
     }
     console.error('Error in text prediction or parsing:', error)
@@ -220,7 +248,6 @@ export const requestAudioPermissionEvents = async (): Promise<void> => {
   if (typeof window !== 'undefined' && window.highlight && window.highlight.internal) {
     try {
       await window.highlight.internal.requestAudioPermissionEvents()
-      console.log('Audio permission events requested successfully')
     } catch (error) {
       console.error('Error sending audio permission request:', error)
       throw error
@@ -231,9 +258,7 @@ export const requestAudioPermissionEvents = async (): Promise<void> => {
 }
 
 export const setupSimpleAudioPermissionListener = () => {
-  console.log('Setting up simple audio permission listener')
   Highlight.app.addListener('onAudioPermissionUpdate', (event: any) => {
-    console.log('Audio permission event received:', event)
     // If you know the exact structure of the event, you can log specific properties
     // For example, if there's a hasPermission property:
     // console.log('Audio permission changed:', event.hasPermission);
@@ -342,7 +367,6 @@ export const deleteAllConversationsInAppStorage = async (): Promise<void> => {
   if (appStorage) {
     await appStorage.whenHydrated()
     appStorage.delete(CONVERSATIONS_STORAGE_KEY)
-    console.log('Deleted conversations: ', appStorage.get(CONVERSATIONS_STORAGE_KEY))
   }
 }
 

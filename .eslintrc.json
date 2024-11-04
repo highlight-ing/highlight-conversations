@@ -1,3 +1,30 @@
 {
-  "extends": "next"
+  "extends": [
+    "next",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "react", "import"],
+  "rules": {
+    "import/no-default-export": "error",
+    "react/function-component-definition": [
+      "error",
+      {
+        "namedComponents": "function-declaration",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
+    "react/prop-types": "off",
+    "import/order": ["error", { "newlines-between": "always", "alphabetize": { "order": "asc" } }]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }

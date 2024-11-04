@@ -35,7 +35,7 @@ export const ShareOptionsMenu: React.FC<ShareOptionsMenuProps> = ({
       <>
         <MenuOption
           icon={<Link1Icon className="h-4 w-4" />}
-          label="Generate Share Link"
+          label="Copy Link"
           onClick={onGenerateShareLink}
         />
         <div className="my-1 h-px bg-border" />

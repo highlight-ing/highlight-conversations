@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { TrashIcon } from '@/components/ui/icons';
-import { Tooltip, TooltipState } from "@/components/Tooltip/Tooltip";
+import React, { useState } from 'react'
+import { TooltipState } from '@/components/Tooltip/Tooltip'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,61 +9,66 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
+import { Trash } from 'iconsax-react'
 
 interface DeleteConversationDialogProps {
-  onDelete: () => void;
+  onDelete: () => void
+  size?: number
+  colorVariant?: 'default' | 'tertiary'
 }
 
-const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({ onDelete }) => {
-  const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle');
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
+const DeleteConversationDialog: React.FC<DeleteConversationDialogProps> = ({
+  onDelete,
+  size = 24,
+  colorVariant = 'default'
+}) => {
+  const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle')
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   const handleDeleteClick = () => {
-    setIsAlertOpen(true);
-  };
+    setIsAlertOpen(true)
+  }
 
   const handleConfirmDelete = () => {
-    onDelete();
-    setDeleteTooltipState('success');
-    setTimeout(() => setDeleteTooltipState('hiding'), 1500);
-    setTimeout(() => setDeleteTooltipState('idle'), 1700);
-    setIsAlertOpen(false);
-  };
+    onDelete()
+    setDeleteTooltipState('success')
+    setTimeout(() => setDeleteTooltipState('hiding'), 1500)
+    setTimeout(() => setDeleteTooltipState('idle'), 1700)
+    setIsAlertOpen(false)
+  }
 
   return (
     <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
       <AlertDialogTrigger asChild>
-        <button
+        <Trash
+          variant="Bold"
+          className={`${colorVariant === 'default' ? 'text-primary/40' : 'text-tertiary'} hover:text-destructive cursor-pointer transition-colors duration-200 hover:text-secondary`}
+          color={'currentColor'}
+          size={size}
           onClick={handleDeleteClick}
           onMouseEnter={() => setDeleteTooltipState('active')}
           onMouseLeave={() => setDeleteTooltipState('idle')}
-          className="text-muted-foreground transition-colors duration-200 flex items-center justify-center hover:text-destructive relative"
-        >
-          <TrashIcon width={24} height={24} className='group-hover:text-destructive' />
-          <Tooltip type="delete" state={deleteTooltipState} />
-        </button>
+        />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Deleting this conversation will delete it forever.
-          </AlertDialogDescription>
+          <AlertDialogDescription>Deleting this conversation will delete it forever.</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={handleConfirmDelete} 
-            className="bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground transition-colors duration-200"
+          <AlertDialogAction
+            onClick={handleConfirmDelete}
+            className="hover:bg-destructive hover:text-destructive-foreground bg-foreground text-background transition-colors duration-200"
           >
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
-};
+  )
+}
 
-export default DeleteConversationDialog;
+export default DeleteConversationDialog

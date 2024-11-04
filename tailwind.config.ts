@@ -8,7 +8,7 @@ const config = {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
     './app/not-found.tsx',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -28,54 +28,8 @@ const config = {
         mono: ['var(--font-geist-mono)'],
       },
       colors: {
-        border: "hsl(var(--border))",
-        borderColor: {
-          brand: "hsl(var(--brand))",
-          "brand-light": "hsl(var(--brand-light))",
-        },
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: {
-          DEFAULT: 'hsl(var(--background))',
-          100: 'hsl(var(--background-100))',
-          200: 'hsl(var(--background-200))',
-          300: 'hsl(var(--background-300))',
-          400: 'hsl(var(--background-400))',
-          500: 'hsl(var(--background-500))',
-        }, 
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        discord: {
-          DEFAULT: "hsl(var(--discord))",
-          foreground: "hsl(var(--discord-foreground))",
-        },
-        brand: {
-          DEFAULT: "hsl(var(--brand))",
-          foreground: "hsl(var(--brand-foreground))",
-        },
-        brandLight: {
-          DEFAULT: "hsl(var(--brand-light))",
-          foreground: "hsl(var(--brand-light-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -84,6 +38,60 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        green: {
+          DEFAULT: 'rgb(76, 237, 160)',
+          // Opacity variations
+          'opacity-100': 'rgba(76, 237, 160, 1.0)',
+          'opacity-90': 'rgba(76, 237, 160, 0.9)',
+          'opacity-80': 'rgba(76, 237, 160, 0.8)',
+          'opacity-70': 'rgba(76, 237, 160, 0.7)',
+          'opacity-60': 'rgba(76, 237, 160, 0.6)',
+          'opacity-50': 'rgba(76, 237, 160, 0.5)',
+          'opacity-40': 'rgba(76, 237, 160, 0.4)',
+          'opacity-30': 'rgba(76, 237, 160, 0.3)',
+          'opacity-20': 'rgba(76, 237, 160, 0.2)',
+          'opacity-10': 'rgba(76, 237, 160, 0.1)',
+          // Darker shades
+          100: 'rgb(76, 237, 160)',
+          90: 'rgb(68, 213, 144)',
+          80: 'rgb(61, 190, 128)',
+          70: 'rgb(53, 166, 112)',
+          60: 'rgb(46, 142, 96)',
+          50: 'rgb(38, 119, 80)',
+          40: 'rgb(30, 95, 64)',
+          30: 'rgb(23, 71, 48)',
+          20: 'rgb(15, 47, 32)',
+          10: 'rgb(8, 24, 16)',
+        },
+        white: 'rgba(255, 255, 255, 1.0)',
+        'current-preview': 'rgba(102, 141, 122, 1.0)',
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+      },
+      backgroundColor: {
+        primary: 'rgba(15, 15, 15, 1.0)',
+        secondary: 'rgba(34, 34, 34, 1.0)',
+        tertiary: 'rgba(25, 25, 25, 1.0)',
+        subtle: 'rgba(43, 43, 43, 1.0)',
+      },
+      borderColor: {
+        DEFAULT: "hsl(var(--border))",
+        primary: 'rgba(34, 34, 34, 1)',
+        secondary: 'rgba(68, 68, 68, 1)',
+        tertiary: 'rgba(34, 34, 34, 1)',
+        light: 'rgba(255, 255, 255, 1.0)',
+        green: 'rgba(76, 237, 160, 1.0)',
+      },
+      textColor: {
+        primary: 'rgba(238, 238, 238, 1)',
+        secondary: 'rgba(180, 180, 180, 1)',
+        tertiary: 'rgba(135, 135, 135, 1.0)',
+        subtle: 'rgba(72, 72, 72, 1.0)',
+        black: '#0F0F0F',
+      },
+      searchBar: {
+        DEFAULT: 'hsl(var(--searchbar-bg))',
+        active: 'hsl(var(--searchbar-bg-active))',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -113,6 +121,7 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         fadeIn: 'fadeIn 0.2s ease-in',
         fadeOut: 'fadeOut 0.2s ease-out',
+        gentleScale: 'gentleScale 0.3s ease-in-out',
       },
     },
   },
