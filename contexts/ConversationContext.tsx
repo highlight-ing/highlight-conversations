@@ -17,7 +17,7 @@ const AUTO_SAVE_TIME_DEFAULT = 60 * 10
 const AUTO_CLEAR_DAYS_DEFAULT = 7
 
 const MIN_AUTO_SAVE_TIME = 60
-const DEFAULT_AUTO_SAVE_TIME = 60 * 10
+const DEFAULT_AUTO_SAVE_TIME = 600
 
 interface ConversationContextType {
   conversations: ConversationData[]
