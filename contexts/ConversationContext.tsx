@@ -260,7 +260,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       console.log('Finished fetching initial data')
-      await autoClearConversations()
     }
     fetchInitialData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
