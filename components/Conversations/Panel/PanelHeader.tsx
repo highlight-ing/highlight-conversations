@@ -1,13 +1,7 @@
 import React from 'react'
 import HighlightGreenLogo from '../Detail/Icon/HighlightGreenLogo'
 
-interface PanelHeaderProps {
-  onMergeActivate: () => void
-  isMergeActive: boolean
-  setIsSettingsActive: (isActive: boolean) => void; 
-}
-
-const PanelHeader: React.FC<PanelHeaderProps> = () => {
+const PanelHeader: React.FC = () => {
   return (
     <div className="flex items-center justify-between border-b border-tertiary">
       <div className="flex items-center ml-6">
