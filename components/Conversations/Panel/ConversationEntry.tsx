@@ -76,16 +76,12 @@ export function ConversationEntry({
       const start = new Date(conversation.startedAt)
       const end = new Date(conversation.endedAt)
       
-      // For same day calculations - use hours and minutes only
-      if (start.getDate() === end.getDate()) {
-        const startMinutes = start.getHours() * 60 + start.getMinutes()
-        const endMinutes = end.getHours() * 60 + end.getMinutes()
-        return endMinutes - startMinutes
-      } 
-      
-      // For midnight crossings and negative times - use full timestamp
+      // Always use timestamp difference for consistent results
       const diffMs = end.getTime() - start.getTime()
-      return Math.round(diffMs / 60000)
+      const minutes = Math.round(diffMs / 60000)
+      
+      // Return at least 1 minute
+      return Math.max(1, minutes)
     }
     return 0
   }
