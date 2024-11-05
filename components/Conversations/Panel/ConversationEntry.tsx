@@ -80,7 +80,7 @@ export function ConversationEntry({
       const diffMs = end.getTime() - start.getTime()
       const minutes = Math.round(diffMs / 60000)
       
-      // Return at least 1 minute
+      // Return at least 1 minute (to avoid 0 minutes)
       return Math.max(1, minutes)
     }
     return 0
