@@ -83,6 +83,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }, [isEditing])
 
+  // Summary Height 
   useEffect(() => {
     const updateSummaryHeight = () => {
       if (summaryRef.current) {
@@ -96,12 +97,14 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     setTitle(e.target.value)
   }
 
+  // deletes conversation when called when passing the id 
   const handleDelete = () => {
     if (conversation) {
       deleteConversation(conversation.id)
     }
   }
 
+  // Handles the blur event of a title input field 
   const handleTitleBlur = () => {
     setIsEditing(false)
     if (!conversation) return
@@ -116,12 +119,15 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }
 
+  // Listens for keyboard events on an HTML input field
+  // when the enter key is pressed, calls for the fn 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleTitleBlur()
     }
   }
 
+  // 
   const truncateTitle = (title: string, isCompact: boolean) => {    
     const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)/i;
     const match = title.match(regex);
@@ -180,7 +186,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
                 onBlur={handleTitleBlur}
                 onKeyDown={handleKeyDown}
                 className="font-inter bg-transparent text-2xl font-semibold leading-[31px] text-white outline-none w-full"
-              />
+            />
             ) : (
               <h1
                 className="font-inter flex cursor-pointer items-center text-2xl font-semibold leading-[31px] text-white"
@@ -200,7 +206,9 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
           </div>
         </div>
 
+        
         <div className="inline-flex items-center gap-4">
+          {/* Delete Button */}
           <div className="relative flex h-6 w-6 items-center justify-center opacity-40">
             <DeleteConversationDialog onDelete={handleDelete} />
           </div>
@@ -227,6 +235,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       </div>
 
       <div ref={summaryRef} className="mb-8 flex w-full flex-col gap-4">
+        {/* Summary of the transcript */}
         <Summary
           transcript={conversation.transcript}
           onSummaryGenerated={(summary) => {
@@ -240,6 +249,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
         />
       </div>
 
+          
       <div className="transition-all duration-300 ease-in-out">
         <Transcript transcript={conversation.transcript} />
       </div>
