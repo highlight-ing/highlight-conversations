@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import NewTooltip from '@/components/Tooltip/newTooltip'
 import { formatInTimeZone } from 'date-fns-tz'
 
+// Conversation Entry Props 
 interface ConversationEntryProps {
   conversation: ConversationData
   isFirst: boolean
@@ -40,7 +41,7 @@ export function ConversationEntry({
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
-  // format
+  // format timestamp to user's timezone e.g. 11:11 PM KST
   const formatTime = (date: Date) => {
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const timeStr = formatInTimeZone(new Date(date), userTimeZone, 'h:mma').toLowerCase()
@@ -48,6 +49,7 @@ export function ConversationEntry({
     return `${timeStr} ${tzAbbr}`
   }
 
+  // Toast Share Message 
   useEffect(() => {
     if (shareMessage) {
       if (shareMessage.type === 'success') {
@@ -60,6 +62,7 @@ export function ConversationEntry({
       setShareMessage(null)
     }
   }, [shareMessage, setShareMessage])
+
 
   const roundedClasses =
     isFirst && isLast ? 'rounded-[20px]' : isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
@@ -100,6 +103,10 @@ export function ConversationEntry({
   const [attachmentTooltipState, setAttachmentTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
   const [deleteTooltipState, setDeleteTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
 
+  const isDefaultTitle = (title: string): boolean => title.startsWith('Audio Notes from')
+
+  const displayTitle = isDefaultTitle(conversation.title) ? 'Audio Note' : conversation.title
+
   return(
       <div
         className={`min-h-[56px] w-full cursor-pointer border-t border-[#010101] bg-tertiary ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover' : 'hover:bg-white/10'} ${selectedClass} group`}
@@ -114,7 +121,7 @@ export function ConversationEntry({
                 <VoiceSquareIcon />
               </div>
               <span className="text-[15px] font-medium text-[#eeeeee]">
-                Audio Note
+                {displayTitle}
               </span>
             </div>
     
@@ -136,7 +143,7 @@ export function ConversationEntry({
                   <MessageText
                     variant="Bold"
                     size={18}
-                    className="cursor-pointer transition-colors duration-200 text-tertiary hover:text-secondary"
+                    className="cursor-pointer text-[#484848] hover:text-gray-300 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleAttachment();
