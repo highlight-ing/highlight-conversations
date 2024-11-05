@@ -168,7 +168,7 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
         })}
       </div>
 
-      <TranscriptButtonRow buttons={buttons} />
+      {hasContent && <TranscriptButtonRow buttons={buttons} />}
     </div>
   )
 }
