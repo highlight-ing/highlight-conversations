@@ -173,7 +173,7 @@ export function ConversationEntry({
           <div className="flex items-center gap-2 text-[13px] font-medium text-[#484848]">
             <span className="whitespace-nowrap">{formatTime(conversation.timestamp)}</span>
             <span className="whitespace-nowrap">
-              {calculateDurationInMinutes(conversation)} Minutes
+              {calculateDurationInMinutes(conversation)} Minute{calculateDurationInMinutes(conversation) > 1 ? 's' : ''}
             </span>
             <span className="whitespace-nowrap">
               {getWordCount(conversation.transcript).toLocaleString()} Words
@@ -182,28 +182,6 @@ export function ConversationEntry({
         </div>
       </div>
     )
-}
-
-function getRelativeTimeString(date: Date): string {
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-  if (diffInSeconds < 300) {
-    return 'Moments ago'
-  } else if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60)
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600)
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`
-  } else {
-    const days = Math.floor(diffInSeconds / 86400)
-    return `${days} day${days > 1 ? 's' : ''} ago`
-  }
-}
-
-function removeTimestamps(text: string): string {
-  return text.replace(/\d{2}:\d{2}:\d{2} [AP]M - (other\(s\)|self):/g, '').trim()
 }
 
 export default ConversationEntry
