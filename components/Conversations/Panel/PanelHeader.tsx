@@ -7,19 +7,7 @@ interface PanelHeaderProps {
   setIsSettingsActive: (isActive: boolean) => void; 
 }
 
-interface HighLightGreenLogoProps {
-  className?: string; 
-}
-
-const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActive, setIsSettingsActive }) => {
-  const handleDeleteAll = () => {
-    // Implement delete all conversations logic
-  }
-
-  const handleSettings = () => {
-    setIsSettingsActive(true); 
-  }
-
+const PanelHeader: React.FC<PanelHeaderProps> = () => {
   return (
     <div className="flex items-center justify-between border-b border-tertiary">
       <div className="flex items-center ml-6">

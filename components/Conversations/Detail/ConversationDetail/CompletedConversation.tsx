@@ -120,7 +120,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
   }
 
   // Listens for keyboard events on an HTML input field
-  // when the enter key is pressed, calls for the fn 
+  // when the enter key is pressed, calls for the function  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleTitleBlur()
