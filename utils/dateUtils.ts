@@ -55,7 +55,7 @@ export const formatHeaderTimestamp = (startDate: Date | string | number, endDate
 }
 
 // Helper function to get standard timezone abbreviation
-const getStandardTimezoneAbbr = (timeZone: string): string => {
+export const getStandardTimezoneAbbr = (timeZone: string): string => {
   const timezoneMap: { [key: string]: string } = {
     // North America
     'America/Los_Angeles': 'PST',

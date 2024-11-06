@@ -13,11 +13,11 @@ const POLL_MIC_ACTIVITY = 300
 const HOUR_IN_MS = 60 * 60 * 1000
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
-const AUTO_SAVE_TIME_DEFAULT = 60 * 2
+const AUTO_SAVE_TIME_DEFAULT = 60 * 10
 const AUTO_CLEAR_DAYS_DEFAULT = 7
 
 const MIN_AUTO_SAVE_TIME = 60
-const DEFAULT_AUTO_SAVE_TIME = 120
+const DEFAULT_AUTO_SAVE_TIME = 600
 
 interface ConversationContextType {
   conversations: ConversationData[]

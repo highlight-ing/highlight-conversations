@@ -79,6 +79,7 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
   const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
   const [seenMessageKeys, setSeenMessageKeys] = useState(new Set<string>())
   const messages = parseTranscript(transcript)
+  const hasContent = transcript.trim().length > 0
 
   // Create a unique key for each message
   const getMessageKey = (message: Message) => {
@@ -116,8 +117,9 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
   
   return (
     <div className="flex h-fit flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
-      <div className="bg-blue flex items-center justify-between gap-4">
-        <h2 className="font-inter text-xl font-semibold text-primary">Transcript</h2>
+    <div className="bg-blue flex items-center justify-between gap-4">
+      <h2 className="font-inter text-xl font-semibold text-primary">Transcript</h2>
+      {hasContent && (
         <button onClick={copyToClipboard} className="flex h-5 w-5">
           <ClipboardText
             variant="Bold"
@@ -127,6 +129,7 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
             } hover:text-primary`}
           />
         </button>
+        )}
       </div>
       
       <div className="flex flex-col items-start justify-start gap-6 self-stretch">
@@ -165,7 +168,7 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
         })}
       </div>
 
-      <TranscriptButtonRow buttons={buttons} />
+      {hasContent && <TranscriptButtonRow buttons={buttons} />}
     </div>
   )
 }

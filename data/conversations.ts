@@ -14,6 +14,20 @@ export interface ConversationData {
   userId: string
 }
 
+export interface SerializedConversationData {
+  id: string
+  title: string
+  summary: string
+  startedAt: string
+  endedAt: string
+  timestamp: string
+  topic: string
+  transcript: string
+  summarized: boolean
+  shareLink: string
+  userId: string
+}
+
 export type FormatType = "CardTranscript" | "DialogueTranscript"
 
 export const formatDate = (date: Date): string => {

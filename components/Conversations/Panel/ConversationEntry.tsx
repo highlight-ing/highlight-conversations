@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
+import { getStandardTimezoneAbbr, formatTimestamp, formatTimestampSimple } from '@/utils/dateUtils'
 import VoiceSquareIcon from '../Detail/Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
-import { truncateText } from '@/utils/textUtils'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { MessageText } from 'iconsax-react'
 import { ShareButton } from './ShareButton'
 import { toast } from 'sonner'
-import { Tooltip } from '@/components/Tooltip/Tooltip'
+import NewTooltip from '@/components/Tooltip/newTooltip'
+import { formatInTimeZone } from 'date-fns-tz'
 
+// Conversation Entry Props 
 interface ConversationEntryProps {
   conversation: ConversationData
   isFirst: boolean
@@ -39,6 +41,15 @@ export function ConversationEntry({
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
+  // format timestamp to user's timezone e.g. 11:11 PM KST
+  const formatTime = (date: Date) => {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const timeStr = formatInTimeZone(new Date(date), userTimeZone, 'h:mma').toLowerCase()
+    const tzAbbr = getStandardTimezoneAbbr(userTimeZone)
+    return `${timeStr} ${tzAbbr}`
+  }
+
+  // Toast Share Message 
   useEffect(() => {
     if (shareMessage) {
       if (shareMessage.type === 'success') {
@@ -52,6 +63,7 @@ export function ConversationEntry({
     }
   }, [shareMessage, setShareMessage])
 
+
   const roundedClasses =
     isFirst && isLast ? 'rounded-[20px]' : isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
 
@@ -59,17 +71,24 @@ export function ConversationEntry({
     handleConversationSelect(conversation.id)
   }
 
+  const calculateDurationInMinutes = (conversation: ConversationData) => {
+    if (conversation.startedAt && conversation.endedAt) {
+      const start = new Date(conversation.startedAt)
+      const end = new Date(conversation.endedAt)
+      
+      // Always use timestamp difference for consistent results
+      const diffMs = end.getTime() - start.getTime()
+      const minutes = Math.round(diffMs / 60000)
+      
+      // Return at least 1 minute (to avoid 0 minutes)
+      return Math.max(1, minutes)
+    }
+    return 0
+  }
+
   const isSelectedConversation = isMergeActive ? isSelected : selectedConversationId === conversation.id
 
   const selectedClass = isSelectedConversation ? 'bg-white/10' : ''
-
-  const isDefaultTitle = conversation.title?.startsWith('Conversation ended at')
-  const displayTitle =
-    !conversation.title || isDefaultTitle ? getRelativeTimeString(conversation.timestamp) : conversation.title
-
-  const previewText = conversation.summary
-    ? truncateText(conversation.summary, 100)
-    : truncateText(removeTimestamps(conversation.transcript), 100)
 
   const handleDelete = () => {
     if (conversation) {
@@ -80,82 +99,89 @@ export function ConversationEntry({
   const [attachmentTooltipState, setAttachmentTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
   const [deleteTooltipState, setDeleteTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
 
-  return (
-    <div
-      className={`flex w-full cursor-pointer items-center justify-between border-t border-[#010101] bg-tertiary py-[18px] pl-4 pr-[19px] transition-all duration-300 ease-in-out hover:bg-white/10 ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover cursor-pointer' : ''} ${selectedClass} group`}
-      onClick={handleClick}
-    >
-      <div className="flex items-center gap-3">
-        <VoiceSquareIcon />
-        <h3 className="text-[15px] font-medium text-primary">{displayTitle}</h3>
-      </div>
-      {!isMergeActive && (
-        <div className="align-center hidden justify-center gap-[22px] text-tertiary group-hover:flex">
-          <ShareButton
-            onShare={handleShare}
-            isSharing={shareStatus === 'processing'}
-            hasExistingShareLink={!!localConversation.shareLink}
-            onGenerateShareLink={handleGenerateShareLink}
-            onCopyLink={handleCopyLink}
-          />
-          <div className="relative">
-            <MessageText
-              variant="Bold"
-              size={20}
-              className="transition-colors duration-200 hover:text-secondary"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleAttachment()
-              }}
-              onMouseEnter={() => setAttachmentTooltipState('active')}
-              onMouseLeave={() => setAttachmentTooltipState('idle')}
-            />
-            <Tooltip 
-              type="save-attachment" 
-              state={attachmentTooltipState}
-              className="whitespace-nowrap"
-              message="Add Context" 
-            />
+  const isDefaultTitle = (title: string): boolean => title.startsWith('Audio Notes from')
+
+  const displayTitle = isDefaultTitle(conversation.title) ? 'Audio Note' : conversation.title
+
+  return(
+      <div
+        className={`min-h-[56px] w-full cursor-pointer border-t border-[#010101] bg-tertiary ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover' : 'hover:bg-white/10'} ${selectedClass} group`}
+        onClick={handleClick}
+      >
+        {/* Main Content Container */}
+        <div className="px-4 py-4 flex flex-col gap-3">
+          {/* Title Row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 relative flex-shrink-0">
+                <VoiceSquareIcon />
+              </div>
+              <span className="text-[15px] font-medium text-[#eeeeee]">
+                {displayTitle}
+              </span>
+            </div>
+    
+            {/* Action Buttons - Only show on hover */}
+            {!isMergeActive && (
+              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100">
+                <ShareButton
+                  onShare={handleShare}
+                  isSharing={shareStatus === 'processing'}
+                  hasExistingShareLink={!!localConversation.shareLink}
+                  onGenerateShareLink={handleGenerateShareLink}
+                  onCopyLink={handleCopyLink}
+                />
+                <NewTooltip
+                  type="save-attachment"
+                  message="Add Context"
+                  state={attachmentTooltipState}
+                >
+                  <MessageText
+                    variant="Bold"
+                    size={18}
+                    className="cursor-pointer text-[#484848] hover:text-gray-300 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAttachment();
+                    }}
+                    onMouseEnter={() => setAttachmentTooltipState('active')}
+                    onMouseLeave={() => setAttachmentTooltipState('idle')}
+                  />
+                </NewTooltip>
+                <NewTooltip
+                  type="delete"
+                  message="Delete"
+                  state={deleteTooltipState}
+                >
+                  <div 
+                    onMouseEnter={() => setDeleteTooltipState('active')}
+                    onMouseLeave={() => setDeleteTooltipState('idle')}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <DeleteConversationDialog
+                      onDelete={handleDelete}
+                      size={18}
+                      colorVariant="tertiary"
+                    />
+                  </div>
+                </NewTooltip>
+              </div>
+            )}
           </div>
-          <div className="relative"
-               onMouseEnter={() => setDeleteTooltipState('active')}
-               onMouseLeave={() => setDeleteTooltipState('idle')}>
-            <DeleteConversationDialog 
-              onDelete={handleDelete} 
-              size={20} 
-              colorVariant="tertiary"
-            />
-            <Tooltip 
-              type="delete" 
-              state={deleteTooltipState}
-              className="whitespace-nowrap"
-              message="Delete"
-            />
+    
+          {/* Metadata Row */}
+          <div className="flex items-center gap-2 text-[13px] font-medium text-[#484848]">
+            <span className="whitespace-nowrap">{formatTime(conversation.timestamp)}</span>
+            <span className="whitespace-nowrap">
+              {calculateDurationInMinutes(conversation)} Minute{calculateDurationInMinutes(conversation) > 1 ? 's' : ''}
+            </span>
+            <span className="whitespace-nowrap">
+              {getWordCount(conversation.transcript).toLocaleString()} Words
+            </span>
           </div>
         </div>
-      )}
-    </div>
-  )
+      </div>
+    )
 }
 
-function getRelativeTimeString(date: Date): string {
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-  if (diffInSeconds < 300) {
-    return 'Moments ago'
-  } else if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60)
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600)
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`
-  } else {
-    const days = Math.floor(diffInSeconds / 86400)
-    return `${days} day${days > 1 ? 's' : ''} ago`
-  }
-}
-
-function removeTimestamps(text: string): string {
-  return text.replace(/\d{2}:\d{2}:\d{2} [AP]M - (other\(s\)|self):/g, '').trim()
-}
+export default ConversationEntry
