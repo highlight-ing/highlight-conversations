@@ -28,9 +28,9 @@ export const useConversationActions = (
     setIsViewTranscriptOpen(true)
   }
 
-  const handleAttachment = async () => {
-    let toAppId = 'highlightchat'
-    let transcript = localConversation.transcript
+  const handleAttachment = async (conversationTranscript?: string) => {
+    const toAppId = 'highlightchat'
+    const transcript = conversationTranscript ?? localConversation.transcript
     await sendAttachmentAndOpen(toAppId, transcript)
     trackEvent('Added to HL Chat', {})
   }
