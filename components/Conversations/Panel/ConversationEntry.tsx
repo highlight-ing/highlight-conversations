@@ -102,7 +102,8 @@ export function ConversationEntry({
 
   const isDefaultTitle = (title: string): boolean => title.startsWith('Audio Notes from')
 
-  const displayTitle = isDefaultTitle(conversation.title) ? 'Audio Note' : conversation.title
+  // TODO: Need to update this 
+  const displayTitle = isDefaultTitle(conversation.title) ? `Last Updated ${formatTimestampSimple(conversation.timestamp)}` : conversation.title
 
   return(
       <div
