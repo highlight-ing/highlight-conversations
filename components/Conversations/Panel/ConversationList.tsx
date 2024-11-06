@@ -6,29 +6,51 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { SectionHeader } from './SectionHeader'
 
 /**
- * 
- * Optional title for the conversation section
- * Array of conversation data to display
- * Optional className for additional styling 
+ * Props interface for the ConversationList component
+ * @interface ConversationListProps 
+ * @property Optional title for the conversation section
+ * @property Array of conversation data to display
  */
 interface ConversationListProps {
   title?: string
   conversations: ConversationData[]
 }
 
+// Animation constants
+const ANIMATION_CONFIG = {
+  initial: { opacity: 0, height: 0 },
+  animate:  { opacity: 1, height: 'auto' },
+  exit: { opacity: 0, height: 0 },
+  transition: { duration: 0.3 }
+} as const 
+
 
 /**
- * 
+ * @component
  * Displays a list of conversation with animation 
  * and merge functionality
+ * @params {ConversationListProps} props - Component props
+ * @returns {React.ReactElement | null} Returns null if no conversations, otherwise returns the list 
  */
 const ConversationList: React.FC<ConversationListProps> = ({
   title,
-  conversations
+  conversations,
 }) => {
   const { isMergeActive, selectedConversations } = useConversations()
 
+  // Return null if there are no conversations to display 
   if (conversations.length === 0) return null
+
+  /**
+   * Checks if a conversation is selected for merging 
+   * @param conversationId 
+   * @returns 
+   */
+  const isConversationSelected = (conversationId: string): boolean => {
+    return selectedConversations.some(
+      (conv) => conv.id === conversationId
+    )
+  }
 
   return (
     <div className="mb-1"> {/* Adjusted margin */}
@@ -37,19 +59,14 @@ const ConversationList: React.FC<ConversationListProps> = ({
         {conversations.map((conversation, index) => (
           <motion.div
             key={conversation.id}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            {...ANIMATION_CONFIG}
           >
             <ConversationEntry
               conversation={conversation}
               isFirst={index === 0}
               isLast={index === conversations.length - 1}
               isMergeActive={isMergeActive}
-              isSelected={selectedConversations.some(
-                (conv) => conv.id === conversation.id
-              )}
+              isSelected={isConversationSelected(conversation.id)}
             />
           </motion.div>
         ))}
