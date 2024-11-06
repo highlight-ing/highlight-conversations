@@ -127,7 +127,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }
 
-  // 
+  // Formatting titles for display 
   const truncateTitle = (title: string, isCompact: boolean) => {    
     const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)/i;
     const match = title.match(regex);

@@ -5,11 +5,23 @@ import { useConversations } from '@/contexts/ConversationContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SectionHeader } from './SectionHeader'
 
+/**
+ * 
+ * Optional title for the conversation section
+ * Array of conversation data to display
+ * Optional className for additional styling 
+ */
 interface ConversationListProps {
   title?: string
   conversations: ConversationData[]
 }
 
+
+/**
+ * 
+ * Displays a list of conversation with animation 
+ * and merge functionality
+ */
 const ConversationList: React.FC<ConversationListProps> = ({
   title,
   conversations

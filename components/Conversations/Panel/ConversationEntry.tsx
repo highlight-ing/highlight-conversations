@@ -71,6 +71,7 @@ export function ConversationEntry({
     handleConversationSelect(conversation.id)
   }
 
+  // calculate duration of each time, displayed below 
   const calculateDurationInMinutes = (conversation: ConversationData) => {
     if (conversation.startedAt && conversation.endedAt) {
       const start = new Date(conversation.startedAt)
