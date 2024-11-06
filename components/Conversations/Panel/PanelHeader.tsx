@@ -1,6 +1,16 @@
+/**
+ * @fileoverview PanelHeader component for left side panel on the conversations app.
+ * @author Jungyoon Lim, Joanne <joanne@highlight.ing>
+ * @created October 2024 
+ */
+
 import React from 'react'
 import HighlightGreenLogo from '../Detail/Icon/HighlightGreenLogo'
 
+/**
+ * 
+ * @returns 
+ */
 const PanelHeader: React.FC = () => {
   return (
     <div className="flex items-center justify-between border-b border-tertiary">

@@ -2,6 +2,7 @@
  * 
  * @fileoverview Conversation list on the left panel
  * @author Jungyoon Lim, Joanne <[joanne@highlight.ing]>
+ * @created October 2024
  */
 
 import React, { useCallback, useMemo } from 'react'
