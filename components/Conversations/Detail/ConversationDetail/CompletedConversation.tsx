@@ -117,7 +117,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     if (title.trim() === '') {
       const relativeTime = getRelativeTimeString(conversation.startedAt)
       setTitle(relativeTime)
-      updateConversation({ ...conversation, title: ''})
+      updateConversation({ ...conversation, title: '' })
     } else {
       updateConversation({ ...conversation, title })
     }
@@ -138,63 +138,61 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
   }, [summaryRef.current])
 
   // truncate the title
-  const truncateTitle = (title: string, isCompact: boolean) => {    
+  const truncateTitle = (title: string, isCompact: boolean) => {
     // More flexible regex that matches the number and unit separately
-    const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)/i;
-    const match = title.match(regex);
-    
+    const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)/i
+    const match = title.match(regex)
+
     if (match) {
-      const [full, number, unit] = match;
-      
+      const [full, number, unit] = match
+
       const getCompactUnit = (unit: string) => {
-        switch(unit.toLowerCase()) {
+        switch (unit.toLowerCase()) {
           case 'minute':
           case 'minutes':
-            return 'min';
+            return 'min'
           case 'hour':
           case 'hours':
-            return 'hr';
+            return 'hr'
           case 'day':
           case 'days':
-            return 'day';
+            return 'day'
           case 'week':
           case 'weeks':
-            return 'wks';
+            return 'wks'
           case 'month':
           case 'months':
-            return 'mo';
+            return 'mo'
           case 'year':
           case 'years':
-            return 'y';
+            return 'y'
           default:
-            return unit;
+            return unit
         }
-      };
+      }
 
       // For compact: "40 min..." (with space)
       // For full: "40 minutes ago"
-      const result = isCompact 
-        ? `${number} ${getCompactUnit(unit)}...`
-        : title; // Keep original format for full version
-      
-      return result;
+      const result = isCompact ? `${number} ${getCompactUnit(unit)}...` : title // Keep original format for full version
+
+      return result
     }
 
     // If no match, return the original title
-    return title;
+    return title
   }
 
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
       <div className="mb-6 flex w-full flex-row justify-between">
         {/* Title and Editable Logic */}
-        <div className="flex items-center gap-[13px] max-w-[70%]">
-          <div className="flex h-8 w-8 items-center justify-center flex-shrink-0">
+        <div className="flex max-w-[70%] items-center gap-[13px]">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
             <VoiceSquareIcon />
           </div>
 
           {/* Title (Editable or Static) */}
-          <div className="font-inter text-2xl font-semibold leading-[31px] text-white overflow-hidden">
+          <div className="font-inter overflow-hidden text-2xl font-semibold leading-[31px] text-white">
             {isEditing ? (
               <input
                 ref={inputRef}
@@ -203,7 +201,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
                 onChange={handleTitleChange}
                 onBlur={handleTitleBlur}
                 onKeyDown={handleKeyDown}
-                className="font-inter bg-transparent text-2xl font-semibold leading-[31px] text-white outline-none w-full"
+                className="font-inter w-full bg-transparent text-2xl font-semibold leading-[31px] text-white outline-none"
               />
             ) : (
               <h1
@@ -212,15 +210,11 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
               >
                 <div className="relative w-full">
                   {/* Full title for larger screens */}
-                  <div className="hidden lg:block truncate">
-                    {truncateTitle(title, false)}
-                  </div>
+                  <div className="hidden truncate lg:block">{truncateTitle(title, false)}</div>
                   {/* Compact title for smaller screens */}
-                  <div className="block lg:hidden truncate">
-                    {truncateTitle(title, true)}
-                  </div>
+                  <div className="block truncate lg:hidden">{truncateTitle(title, true)}</div>
                 </div>
-                <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white flex-shrink-0" />
+                <Pencil1Icon className="ml-2 h-4 w-4 flex-shrink-0 text-white/50 hover:text-white" />
               </h1>
             )}
           </div>
@@ -232,7 +226,9 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
           </div>
           <div
             className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 hover:bg-white/20"
-            onClick={handleAttachment}
+            onClick={() => {
+              handleAttachment(conversation.transcript)
+            }}
           >
             <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
           </div>
