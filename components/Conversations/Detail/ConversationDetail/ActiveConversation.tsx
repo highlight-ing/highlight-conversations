@@ -1,6 +1,6 @@
 /**
  * @fileoverview ActiveConversation component that handles real-time audio transcription display
- * @author Jungyoon Lim <joanne@highlight.ing>
+ * @author Jungyoon Lim, Joanne <joanne@highlight.ing>
  * @created October 2024
  */
 

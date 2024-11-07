@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
-import { getStandardTimezoneAbbr, formatTimestamp, formatTimestampSimple } from '@/utils/dateUtils'
+import { getStandardTimezoneAbbr, formatTimestamp, formatTimestampSimple, getRelativeTimeString } from '@/utils/dateUtils'
 import VoiceSquareIcon from '../Detail/Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
@@ -103,7 +103,7 @@ export function ConversationEntry({
   const isDefaultTitle = (title: string): boolean => title.startsWith('Audio Notes from')
 
   // TODO: Need to update this 
-  const displayTitle = isDefaultTitle(conversation.title) ? `Last Updated ${formatTimestampSimple(conversation.timestamp)}` : conversation.title
+  const displayTitle = isDefaultTitle(conversation.title) ? `Last Updated ${getRelativeTimeString(conversation.timestamp)}` : conversation.title
 
   return(
       <div
