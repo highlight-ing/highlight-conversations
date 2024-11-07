@@ -2,21 +2,19 @@
 import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
-export const formatTimestamp = (date: Date | string | number, locale?: string): string => {
-  // Default to 'en-US' if no locale is provided
-  const userLocale = locale || 'en-US'
-
-  // Convert to Date object if it's not already
+/**
+ * Formats a given date into a localized string.
+ * @param date - The date to format, can be a Date object, string, or number.
+ * @param locale - Optional locale string, defaults to 'en-US'.
+ * @returns A formatted date string.
+ */
+export const formatTimestamp = (date: Date | string | number, locale: string = 'en-US'): string => {
   const dateObject = date instanceof Date ? date : new Date(date)
-
-  // Check if the date is valid
   if (isNaN(dateObject.getTime())) {
     console.error('Invalid date input:', date)
     return 'Invalid date'
   }
-
-  // Use Intl.DateTimeFormat for consistent formatting in all environments
-  const formatter = new Intl.DateTimeFormat(userLocale, {
+  const formatter = new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -25,36 +23,35 @@ export const formatTimestamp = (date: Date | string | number, locale?: string): 
     second: 'numeric',
     timeZoneName: 'short'
   })
-
   return formatter.format(dateObject)
 }
 
-// New formatting for Header: e.g. September 9 8:24am - 10:45am PDT
+/**
+ * Formats a date range for display in headers.
+ * @param startDate - The start date of the range.
+ * @param endDate - The end date of the range.
+ * @returns A formatted string representing the date range.
+ */
 export const formatHeaderTimestamp = (startDate: Date | string | number, endDate: Date | string | number): string => {
   const startDateObj = startDate instanceof Date ? startDate : new Date(startDate)
   const endDateObj = endDate instanceof Date ? endDate : new Date(endDate)
-
-  // check if dates are valid
   if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
     console.error('Invalid date input:', { startDate, endDate })
     return 'Invalid date range'
   }
-
-  // get the user's time zone
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-
-  // format the date part
   const datePart = format(startDateObj, 'MMMM d')
-
   const startTimePart = formatInTimeZone(startDateObj, userTimeZone, 'h:mma')
   const endTimePart = formatInTimeZone(endDateObj, userTimeZone, 'h:mma')
-
   const timeZoneAbbr = formatInTimeZone(startDateObj, userTimeZone, 'zzz')
-
   return `${datePart} ${startTimePart} - ${endTimePart} ${timeZoneAbbr}`
 }
 
-// Helper function to get standard timezone abbreviation
+/**
+ * Retrieves the standard timezone abbreviation for a given timezone.
+ * @param timeZone - The timezone string.
+ * @returns The standard timezone abbreviation.
+ */
 export const getStandardTimezoneAbbr = (timeZone: string): string => {
   const timezoneMap: { [key: string]: string } = {
     // North America
@@ -119,19 +116,20 @@ export const getStandardTimezoneAbbr = (timeZone: string): string => {
   return timezoneMap[timeZone] || 'UTC'
 }
 
+/**
+ * Formats a timestamp with a timer.
+ * @param startTime - The start time of the event.
+ * @param elapsedMs - The elapsed time in milliseconds.
+ * @returns A formatted string with the start time and elapsed time.
+ */
 export const formatTimestampWithTimer = (startTime: Date, elapsedMs: number): string => {
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  
-  // Fixed start time (e.g. "10:50am") - use the passed in startTime
   const timeStr = formatInTimeZone(startTime, userTimeZone, 'h:mma').toLowerCase()
   const tzAbbr = getStandardTimezoneAbbr(userTimeZone)
-  
-  // Use the passed in elapsedMs to show elapsed time
   const totalSeconds = Math.floor(elapsedMs / 1000)
   const minutes = Math.floor(totalSeconds / 60)
   const seconds = totalSeconds % 60
   const timerStr = `${minutes}:${seconds.toString().padStart(2, '0')}`
-  
   return `Started ${timeStr} ${tzAbbr} — ${timerStr}`
 }
 
