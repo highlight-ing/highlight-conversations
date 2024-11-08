@@ -1,4 +1,8 @@
-// utils/dateUtils.ts
+/**
+ * Utility functions for formatting and manipulating dates.
+ * Author: Jungyoon Lim, Joanne
+ */
+
 import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
