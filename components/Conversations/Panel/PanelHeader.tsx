@@ -25,7 +25,7 @@ const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActiv
       <div className="flex items-center ml-6">
         <HighlightGreenLogo />
         <h1 className="text-primary text-lg font-medium py-3 pl-2">
-          Highlight Meetings
+          Highlight Audio
         </h1>
       </div>
       <div className="flex items-center gap-5 py-5 pr-[30px]">

@@ -1,14 +1,19 @@
-export type TooltipType = 'copy' | 'delete' | 'save' | 'share';
+export type TooltipType = 'copy' | 'delete' | 'save' | 'share' | 'save-attachment';
 export type TooltipState = 'idle' | 'active' | 'success' | 'hiding';
 
 interface TooltipProps {
   type: TooltipType;
   state: TooltipState;
   className?: string;
+  message?: string; 
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ type, state, className = '' }) => {
+export const Tooltip: React.FC<TooltipProps> = ({ type, state, className = '', message }) => {
   const getMessage = () => {
+    if (message) {
+      return state === 'success' ? message : message;
+    }
+
     switch (type) {
       case 'copy':
         return state === 'success' ? 'Copied' : 'Copy';
@@ -18,6 +23,8 @@ export const Tooltip: React.FC<TooltipProps> = ({ type, state, className = '' })
         return state === 'success' ? 'Saved' : 'Save';
       case 'share':
         return state === 'success' ? 'Shared' : 'Share';
+      case 'save-attachment':
+        return state === 'success' ? 'Saved' : 'Save';
     }
   };
 

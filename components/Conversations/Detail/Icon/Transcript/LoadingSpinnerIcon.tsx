@@ -1,23 +1,69 @@
 import React from 'react';
 
-const LoadingSpinner = () => (
-  <svg 
-    width="24" 
-    height="24" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg"
-    className="animate-spin"
-  >
-    <path d="M12 2V6" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M12 18V22" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M4.93018 4.93018L7.76018 7.76018" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M16.2402 16.2402L19.0702 19.0702" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M2 12H6" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M18 12H22" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M4.93018 19.0702L7.76018 16.2402" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M16.2402 7.76018L19.0702 4.93018" stroke="#484848" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
+const LoadingSpinner = ({
+  size = 24,
+  baseColor = '#333333', 
+  activeColor = '#777777',
+  segments = 8,
+  animationDuration = 1.5,
+}) => {
+  const center = size / 2;
+  const lineLength = size * 0.12;
+  const startDistance = size * 0.2;
 
-export default LoadingSpinner;
+  // Get the appropriate color based on the animation phase
+  const getSegmentColor = (index: number) => {
+    const delay = (index / segments) * animationDuration
+    return {
+      animation: `colorChange ${animationDuration}s ${delay}s infinite`,
+      stroke: baseColor,
+    };
+  };
+
+  const segmentElements = Array.from({ length: segments }, (_, i) => {
+    const rotation = (i / segments) * 360;
+
+    // Calculate segment positions
+    const x1 = center + startDistance * Math.cos((rotation - 90) * (Math.PI / 180))
+    const y1 = center + startDistance * Math.sin((rotation - 90) * (Math.PI / 180))
+    const x2 = center + (startDistance + lineLength) * Math.cos((rotation - 90) * (Math.PI / 180))
+    const y2 = center + (startDistance + lineLength) * Math.sin((rotation - 90) * (Math.PI / 180))
+
+    return (
+      <path
+        key={i}
+        d={`M${x1} ${y1} L${x2} ${y2}`}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={getSegmentColor(i)}
+      />
+    );
+  });
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {segmentElements}
+      <style>
+        {`
+          @keyframes colorChange {
+            0%, 100% {
+              stroke: ${baseColor}; /* Light gray at the start and end */
+            }
+            50% {
+              stroke: ${activeColor}; /* Dark gray when active */
+            }
+          }
+        `}
+      </style>
+    </svg>
+  )
+}
+
+export default LoadingSpinner

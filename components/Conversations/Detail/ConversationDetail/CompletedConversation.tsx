@@ -9,10 +9,10 @@ import { Toaster, toast } from 'sonner'
 
 import { Pencil1Icon } from '@radix-ui/react-icons'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
-import VoiceSquareIcon from '../Icon/VoiceSquareIcon'
+import VoiceSquareIcon from '../Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
 
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
-import { ShareMenu } from '@/components/Card/SavedConversation/ShareMenu'
+import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
 
 interface CompletedConversationProps {
   conversation: ConversationData
@@ -36,6 +36,9 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
 
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState('')
+  const [displayTitle, setDisplayTitle] = useState('')
+  const summaryRef = useRef<HTMLDivElement>(null)
+  const [summaryHeight, setSummaryHeight] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -51,29 +54,28 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }, [shareMessage, setShareMessage])
 
-  // title update
-  const updateTitle = useCallback(() => {
-    if (
-      !conversation.title ||
-      conversation.title.trim() === '' ||
-      conversation.title.startsWith('Conversation ended at')
-    ) {
-      setTitle(getRelativeTimeString(conversation.startedAt))
-    } else {
+  // Initialize title from conversation
+  useEffect(() => {
+    if (conversation.title && conversation.title.trim() !== '') {
       setTitle(conversation.title)
+      setDisplayTitle(conversation.title)
+    } else {
+      const relativeTime = getRelativeTimeString(conversation.startedAt)
+      setTitle('') // Keep empty title if none set
+      setDisplayTitle(relativeTime) // Use relative time for display only
     }
   }, [conversation])
 
-  // update the title
+  // Update display title every minute only if no custom title is set
   useEffect(() => {
-    updateTitle()
-  }, [updateTitle])
-
-  // Update every minute
-  useEffect(() => {
-    const timer = setInterval(updateTitle, 60000)
-    return () => clearInterval(timer)
-  }, [updateTitle])
+    if (!conversation.title || conversation.title.trim() === '') {
+      const updateDisplayTitle = () => {
+        setDisplayTitle(getRelativeTimeString(conversation.startedAt))
+      }
+      const timer = setInterval(updateDisplayTitle, 60000)
+      return () => clearInterval(timer)
+    }
+  }, [conversation])
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -81,51 +83,92 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }, [isEditing])
 
+  useEffect(() => {
+    const updateSummaryHeight = () => {
+      if (summaryRef.current) {
+        setSummaryHeight(summaryRef.current.offsetHeight)
+      }
+    }
+    updateSummaryHeight()
+  }, [conversation])
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value)
   }
 
-  const formattedTimestamp =
-    conversation && conversation.startedAt && conversation.endedAt
-      ? formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)
-      : ''
-
-  // delete function for the trash icon
   const handleDelete = () => {
     if (conversation) {
       deleteConversation(conversation.id)
     }
   }
 
-  // Handle the title blur
   const handleTitleBlur = () => {
     setIsEditing(false)
     if (!conversation) return
-    if (title.trim() === '') {
-      setTitle(getRelativeTimeString(conversation.startedAt))
+
+    const newTitle = title.trim()
+    if (newTitle === '') {
+      setDisplayTitle(getRelativeTimeString(conversation.startedAt))
+      updateConversation({ ...conversation, title: '' })
     } else {
-      updateConversation({ ...conversation, title })
+      setDisplayTitle(newTitle)
+      updateConversation({ ...conversation, title: newTitle })
     }
   }
 
-  // Handle the title key down
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleTitleBlur()
     }
   }
 
+  const truncateTitle = (title: string, isCompact: boolean) => {
+    const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)/i
+    const match = title.match(regex)
+
+    if (match) {
+      const [full, number, unit] = match
+
+      const getCompactUnit = (unit: string) => {
+        switch (unit.toLowerCase()) {
+          case 'minute':
+          case 'minutes':
+            return 'min'
+          case 'hour':
+          case 'hours':
+            return 'hr'
+          case 'day':
+          case 'days':
+            return 'day'
+          case 'week':
+          case 'weeks':
+            return 'wks'
+          case 'month':
+          case 'months':
+            return 'mo'
+          case 'year':
+          case 'years':
+            return 'y'
+          default:
+            return unit
+        }
+      }
+
+      return isCompact ? `${number} ${getCompactUnit(unit)}...` : title
+    }
+
+    return title
+  }
+
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
       <div className="mb-6 flex w-full flex-row justify-between">
-        {/* Title and Editable Logic */}
-        <div className="flex items-center gap-[13px]">
-          <div className="flex h-8 w-8 items-center justify-center">
+        <div className="flex max-w-[70%] items-center gap-[13px]">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
             <VoiceSquareIcon />
           </div>
 
-          {/* Title (Editable or Static) */}
-          <div className="font-inter text-2xl font-semibold leading-[31px] text-white">
+          <div className="font-inter overflow-hidden text-2xl font-semibold leading-[31px] text-white">
             {isEditing ? (
               <input
                 ref={inputRef}
@@ -134,31 +177,36 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
                 onChange={handleTitleChange}
                 onBlur={handleTitleBlur}
                 onKeyDown={handleKeyDown}
-                className="font-inter bg-transparent text-2xl font-semibold leading-[31px] text-white outline-none"
+                className="font-inter w-full bg-transparent text-2xl font-semibold leading-[31px] text-white outline-none"
               />
             ) : (
               <h1
                 className="font-inter flex cursor-pointer items-center text-2xl font-semibold leading-[31px] text-white"
                 onClick={() => setIsEditing(true)}
               >
-                {title}
-                <Pencil1Icon className="ml-2 h-4 w-4 text-white/50 hover:text-white" />
+                <div className="relative w-full">
+                  <div className="hidden truncate lg:block">{truncateTitle(displayTitle, false)}</div>
+                  <div className="block truncate lg:hidden">{truncateTitle(displayTitle, true)}</div>
+                </div>
+                <Pencil1Icon className="ml-2 h-4 w-4 flex-shrink-0 text-white/50 hover:text-white" />
               </h1>
             )}
           </div>
         </div>
-        {/* Delete, Open, Copy Link buttons */}
+
         <div className="inline-flex items-center gap-4">
-          <div className="relative flex h-6 w-6 items-center justify-center">
+          <div className="relative flex h-6 w-6 items-center justify-center opacity-40">
             <DeleteConversationDialog onDelete={handleDelete} />
           </div>
           <div
             className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 hover:bg-white/20"
-            onClick={handleAttachment}
+            onClick={() => {
+              handleAttachment(conversation.transcript)
+            }}
           >
             <div className="text-[15px] font-medium leading-tight text-[#b4b4b4]">Open</div>
           </div>
-          <ShareMenu
+          <ShareButton
             onShare={handleShare}
             isSharing={shareStatus === 'processing'}
             isDeleting={isDeleting}
@@ -170,22 +218,24 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
           />
         </div>
       </div>
-      <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">{formattedTimestamp}</div>
+      <div className="font-inter mb-12 text-[15px] font-normal leading-normal text-[#484848]">
+        {formatHeaderTimestamp(conversation.startedAt, conversation.endedAt)}
+      </div>
 
-      {/* Summary Component */}
-      <div className="mb-8 flex w-full flex-col gap-4">
+      <div ref={summaryRef} className="mb-8 flex w-full flex-col gap-4">
         <Summary
           transcript={conversation.transcript}
           onSummaryGenerated={(summary) => {
-            // Update the conversation with the new summary
-            updateConversation({ ...conversation, summary })
+            updateConversation({
+              ...conversation,
+              summary
+            })
           }}
           conversationId={conversation.id}
           existingSummary={conversation.summary}
         />
       </div>
 
-      {/* Transcript Component */}
       <div className="transition-all duration-300 ease-in-out">
         <Transcript transcript={conversation.transcript} />
       </div>

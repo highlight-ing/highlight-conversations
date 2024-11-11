@@ -25,7 +25,6 @@ const SettingsPage: React.FC = () => {
   const { isAudioOn, setIsAudioOn, conversations, deleteAllConversations } = useConversations()
   // Audio Transcription State
   const [audioState, setAudioState] = useState<AudioState>('inactive')
-  const [asrDuration, setAsrDuration] = useState<number>(2)
 
   // Initialize audioState based on isAudioOn
   useEffect(() => {
@@ -58,7 +57,16 @@ const SettingsPage: React.FC = () => {
                 {audioState === 'active' ? <GreenSoundIcon /> : <SoundIcon color={getSoundIconColor()} />}
               </div>
               <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">
-                {audioState === 'active' ? 'Transcribing Audio...' : 'Audio Transcription Off'}
+                {audioState === 'active' ? (
+                  'Transcribing Audio...'
+                ) : (
+                  <div className="relative w-full">
+                    {/* Full title for larger screens */}
+                    <div className="hidden truncate lg:block">Audio Transcription Off</div>
+                    {/* Compact title for smaller screens */}
+                    <div className="block truncate lg:hidden">Audio Off</div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -115,7 +123,6 @@ const SettingsPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Audio Transcript Duration */}
       <div className="mb-8 flex flex-col gap-px">
         <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
@@ -135,9 +142,7 @@ const SettingsPage: React.FC = () => {
 
       {/* Cloud Transcript */}
       <div
-        className={`mb-8 flex flex-col gap-px rounded-2xl ${
-          isAudioOn ? 'border-[#4ceda0]/20' : 'border-[#222222]'
-        }`}
+        className={`mb-8 flex flex-col gap-px rounded-2xl ${isAudioOn ? 'border-[#4ceda0]/20' : 'border-[#222222]'}`}
       >
         <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
           <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Cloud Transcript</div>

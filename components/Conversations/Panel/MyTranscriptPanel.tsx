@@ -20,26 +20,26 @@ const MyTranscriptPanel: React.FC<MyTranscriptPanelProps> = ({ setIsSettingsActi
             <div className="flex w-full">
                 {/* My Transcripts Button */}
                 <motion.div 
-                    className="h-7 px-2 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex cursor-pointer mr-4"
+                    className="h-7 px-2 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex cursor-pointer mr-4 hover:bg-white/5"
                     onClick={handleTranscriptsClick}
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: isSettingsActive ? 0.5 : 1 }}
+                    animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <div className={`text-[15px] font-medium font-inter leading-none ${isSettingsActive ? 'text-[#484848]' : 'text-[#eeeeee]'}`}>
+                    <div className={`text-[15px] font-medium font-inter leading-none ${isSettingsActive ? 'text-white/70' : 'text-[#eeeeee]'}`}>
                         My Transcripts
                     </div>
                 </motion.div>
 
                 {/* Settings Button */}
                 <motion.div 
-                    className="h-7 px-2 py-1.5 rounded-md justify-center items-center gap-2.5 inline-flex cursor-pointer"
+                    className="h-7 px-2 py-1.5 rounded-md justify-center items-center gap-2.5 inline-flex cursor-pointer hover:bg-white/5"
                     onClick={handleSettingsClick}
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: isSettingsActive ? 1 : 0.5 }}
+                    animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <div className="text-[#eeeeee] text-[15px] font-medium font-inter leading-none">
+                    <div className={`text-[15px] font-medium font-inter leading-none ${!isSettingsActive ? 'text-white/70' : 'text-[#eeeeee]'}`}>
                         Settings
                     </div>
                 </motion.div>

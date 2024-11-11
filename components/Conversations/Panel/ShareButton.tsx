@@ -37,7 +37,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           Generating...
         </>
       ) : (
-        <span className="text-[15px] font-medium leading-tight text-[#b4b4b4]">
+        <span className="text-[10px] md:text-[13px] whitespace-nowrap font-medium leading-tight text-[#b4b4b4]">
           {hasExistingShareLink ? 'Copy Link' : 'Share'}
         </span>
       )}

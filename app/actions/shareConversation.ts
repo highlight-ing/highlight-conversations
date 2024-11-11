@@ -1,16 +1,31 @@
 'use server'
 
 import { shareConversation, deleteConversation } from '@/services/shareService'
-import { ConversationData } from '@/data/conversations'
+import { ConversationData, SerializedConversationData } from '@/data/conversations'
 import { supabase } from '@/lib/supabase';
 
-export async function getShareLink(conversation: ConversationData, userId: string): Promise<string> {
+export async function getShareLink(
+    conversation: SerializedConversationData, 
+    userId: string
+): Promise<string> {
     try {
         if (!userId) {
             throw new Error('User ID not found')
         }
-        conversation.userId = userId
-        return await shareConversation(conversation)
+
+        const startedAt = new Date(conversation.startedAt)
+        const endedAt = new Date(conversation.endedAt)
+        const timestamp = new Date(conversation.timestamp)
+
+        const shareData: ConversationData = {
+            ...conversation,
+            startedAt,
+            endedAt,
+            timestamp,
+            userId
+        }
+        
+        return await shareConversation(shareData)
     } catch (error) {
         console.error('Error sharing conversation:', error)
         if (error instanceof Error) {
@@ -21,7 +36,8 @@ export async function getShareLink(conversation: ConversationData, userId: strin
     }
 }
 
-export async function deleteShareLink(conversation: ConversationData): Promise<ConversationData> {
+export async function deleteShareLink(
+    conversation: ConversationData): Promise<ConversationData> {
     try {
         if (!conversation.shareLink) {
             throw new Error('No share link found for this conversation')

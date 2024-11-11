@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Portal } from 'react-portal';
-import styled from 'styled-components';
+import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { Portal } from 'react-portal'
+import styled from 'styled-components'
 
 interface Option {
   label: string;
@@ -46,7 +46,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       }
     },
     [dropdownRef, menuRef],
-  );
+  )
 
   useEffect(() => {
     if (isOpen) {
@@ -57,8 +57,8 @@ const Dropdown: React.FC<DropdownProps> = ({
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, handleClickOutside]);
+    }
+  }, [isOpen, handleClickOutside])
 
   const calculateMenuPosition = () => {
     if (dropdownRef.current && menuRef.current) {
@@ -68,7 +68,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         position: 'fixed',
         minWidth: rect.width,
         zIndex: 1000,
-      };
+      }
 
       if (position === 'bottom') {
         styles.top = rect.bottom + PIXEL_SPACING;
@@ -80,17 +80,17 @@ const Dropdown: React.FC<DropdownProps> = ({
 
       setMenuStyles(styles);
     }
-  };
+  }
 
   const selectedOption = options.find((option) => option.value === value);
 
   const handleMouseEnter = () => {
     if (!disabled) setIsHovered(true);
-  };
+  }
 
   const handleMouseLeave = () => {
     if (!disabled) setIsHovered(false);
-  };
+  }
 
   return (
     <>
@@ -135,10 +135,10 @@ const Dropdown: React.FC<DropdownProps> = ({
         </Portal>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Dropdown;
+export default Dropdown
 
 // Styled-components for Dropdown
 
@@ -324,4 +324,4 @@ const MenuItem = styled.div<{ selected: boolean }>`
   &:hover {
     background-color: rgba(255, 255, 255, 0.08);
   }
-`;
+`

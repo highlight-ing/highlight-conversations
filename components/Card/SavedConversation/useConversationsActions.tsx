@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ConversationData } from '@/data/conversations'
+import { ConversationData, SerializedConversationData } from '@/data/conversations'
 import { sendAttachmentAndOpen } from '@/services/highlightService'
 import { useAmplitude } from '@/hooks/useAmplitude'
 import { getShareLink, deleteShareLink } from '@/app/actions/shareConversation'
@@ -28,9 +28,9 @@ export const useConversationActions = (
     setIsViewTranscriptOpen(true)
   }
 
-  const handleAttachment = async () => {
-    let toAppId = 'highlightchat'
-    let transcript = localConversation.transcript
+  const handleAttachment = async (conversationTranscript?: string) => {
+    const toAppId = 'highlightchat'
+    const transcript = conversationTranscript ?? localConversation.transcript
     await sendAttachmentAndOpen(toAppId, transcript)
     trackEvent('Added to HL Chat', {})
   }
@@ -38,7 +38,7 @@ export const useConversationActions = (
   const handleShare = async () => {
     setShareStatus('processing')
     setShareMessage(null)
-
+  
     if (localConversation.shareLink) {
       setShareUrl(localConversation.shareLink)
       await navigator.clipboard.writeText(localConversation.shareLink)
@@ -46,37 +46,56 @@ export const useConversationActions = (
       setShareMessage({
         type: 'success',
         message: 'Link copied to clipboard',
-        description: localConversation.shareLink
+        description: localConversation.shareLink,
       })
       trackEvent('Shared (Existing Link)', {})
       return
     }
-
+  
     const abortController = new AbortController()
-    const timeoutId = setTimeout(() => abortController.abort(), 15000) // 15 seconds timeout
-
+    const timeoutId = setTimeout(() => abortController.abort(), 15000) 
+  
     try {
       let updatedConversation = localConversation
-
+  
       if (!localConversation.summarized) {
         setLocalConversation(updatedConversation)
         onUpdate(updatedConversation)
       }
-
+  
       const userId = await getUserId()
-      const shareLink = await getShareLink(updatedConversation, userId)
-
+  
+      const plainConversation = {
+        id: updatedConversation.id,
+        title: updatedConversation.title,
+        summary: updatedConversation.summary,
+        startedAt: updatedConversation.startedAt.toISOString(), 
+        endedAt: updatedConversation.endedAt.toISOString(),     
+        timestamp: updatedConversation.timestamp.toISOString(), 
+        topic: updatedConversation.topic,
+        transcript: updatedConversation.transcript,
+        summarized: updatedConversation.summarized,
+        shareLink: updatedConversation.shareLink,
+        userId: updatedConversation.userId,
+      }
+  
+      const shareLink = await getShareLink(plainConversation, userId)
+  
       updatedConversation = {
         ...updatedConversation,
-        shareLink: shareLink
+        shareLink: shareLink,
       }
       setLocalConversation(updatedConversation)
       onUpdate(updatedConversation)
-
+  
       setShareUrl(shareLink)
       await navigator.clipboard.writeText(shareLink)
       setShareStatus('success')
-      setShareMessage({ type: 'success', message: 'Link generated and copied to clipboard', description: shareLink })
+      setShareMessage({
+        type: 'success',
+        message: 'Link generated and copied to clipboard',
+        description: shareLink,
+      })
       trackEvent('Shared (New Link)', {})
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
@@ -91,6 +110,7 @@ export const useConversationActions = (
       clearTimeout(timeoutId)
     }
   }
+  
 
   const handleShareDialogClose = () => {
     setShareStatus('idle')
