@@ -12,16 +12,21 @@ import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog
 import { ShareButton } from './ShareButton'
 import NewTooltip from '@/components/Tooltip/newTooltip'
 
+// Conversation Entry Props 
 interface ConversationEntryProps {
   conversation: ConversationData
   isFirst: boolean
-  isLast: boolean  
+  isLast: boolean
   isMergeActive: boolean
   isSelected: boolean
 }
 
+// Tooltip state type
 type TooltipState = 'idle' | 'active' | 'success' | 'hiding'
 
+/**
+ * Format timestamp to user's timezone e.g. 11:11 PM KST
+ */
 const formatTime = (date: Date) => {
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const timeStr = formatInTimeZone(new Date(date), userTimeZone, 'h:mma').toLowerCase()
@@ -29,6 +34,10 @@ const formatTime = (date: Date) => {
   return `${timeStr} ${tzAbbr}`
 }
 
+/**
+ * Calculate duration of conversation in minutes
+ * Returns at least 1 minute to avoid showing 0 minutes
+ */
 const calculateDurationInMinutes = (conversation: ConversationData) => {
   if (!conversation.startedAt || !conversation.endedAt) return 0
   
@@ -37,6 +46,9 @@ const calculateDurationInMinutes = (conversation: ConversationData) => {
   return Math.max(1, minutes)
 }
 
+/**
+ * Check if the title is a default generated title
+ */
 const isDefaultTitle = (title: string) => title.startsWith('Audio Notes from')
 
 export const ConversationEntry: React.FC<ConversationEntryProps> = ({
@@ -46,9 +58,11 @@ export const ConversationEntry: React.FC<ConversationEntryProps> = ({
   isMergeActive,
   isSelected
 }) => {
+  // Tooltip states
   const [attachmentTooltipState, setAttachmentTooltipState] = useState<TooltipState>('idle')
   const [deleteTooltipState, setDeleteTooltipState] = useState<TooltipState>('idle')
 
+  // Get conversation context and actions
   const { 
     getWordCount, 
     handleConversationSelect, 
@@ -57,6 +71,7 @@ export const ConversationEntry: React.FC<ConversationEntryProps> = ({
     updateConversation 
   } = useConversations()
 
+  // Get conversation-specific actions
   const {
     localConversation,
     handleShare,
@@ -68,6 +83,7 @@ export const ConversationEntry: React.FC<ConversationEntryProps> = ({
     handleAttachment
   } = useConversationActions(conversation, updateConversation, deleteConversation)
 
+  // Handle share message toasts
   useEffect(() => {
     if (!shareMessage) return
     
@@ -79,6 +95,7 @@ export const ConversationEntry: React.FC<ConversationEntryProps> = ({
     setShareMessage(null)
   }, [shareMessage, setShareMessage])
 
+  // Calculate dynamic classes and values
   const roundedClasses = isFirst && isLast 
     ? 'rounded-[20px]' 
     : isFirst 
@@ -93,6 +110,7 @@ export const ConversationEntry: React.FC<ConversationEntryProps> = ({
     ? `Last Updated ${getRelativeTimeString(conversation.timestamp)}` 
     : conversation.title
 
+  // Event handlers
   const handleClick = () => handleConversationSelect(conversation.id)
   const handleDelete = () => deleteConversation(conversation.id)
 
@@ -101,7 +119,9 @@ export const ConversationEntry: React.FC<ConversationEntryProps> = ({
       className={`min-h-[56px] w-full cursor-pointer border-t border-[#010101] bg-tertiary ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover' : 'hover:bg-white/10'} ${selectedClass} group`}
       onClick={handleClick}
     >
+      {/* Main Content Container */}
       <div className="px-4 py-4 flex flex-col gap-3">
+        {/* Title Row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 relative flex-shrink-0">
@@ -112,6 +132,7 @@ export const ConversationEntry: React.FC<ConversationEntryProps> = ({
             </span>
           </div>
 
+          {/* Action Buttons - Only show on hover */}
           {!isMergeActive && (
             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100">
               <ShareButton
@@ -159,6 +180,7 @@ export const ConversationEntry: React.FC<ConversationEntryProps> = ({
           )}
         </div>
 
+        {/* Metadata Row */}
         <div className="flex items-center gap-2 text-[13px] font-medium text-[#484848]">
           <span className="whitespace-nowrap">{formatTime(conversation.timestamp)}</span>
           <span className="whitespace-nowrap">
