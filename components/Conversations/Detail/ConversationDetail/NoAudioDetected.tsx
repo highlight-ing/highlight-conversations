@@ -1,7 +1,6 @@
 import React from 'react'
 import GreyShieldTick from '../Icon/DetailIcons/NoAudioDetected/GreyShieldTick'
 import BigSoundIcon from '../Icon/DetailIcons/NoAudioDetected/BigSoundIcon'
-import { Trash } from 'iconsax-react'
 
 const NoAudioDetected: React.FC = () => {
   return (
