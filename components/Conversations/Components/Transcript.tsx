@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Transcript component that displays conversation messages with animation effects.
+ * Supports real-time updates, message parsing, and copy functionality.
+ * @author Jungyooon Lim, Joanne <joanne@highlight.ing>
+ */
+
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ClipboardText } from 'iconsax-react'
@@ -5,12 +11,22 @@ import { useTranscriptButtons } from '@/components/Conversations/Detail/Transcri
 import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow'
 import LoadingSpinner from '../Detail/Icon/Transcript/LoadingSpinnerIcon'
 
+/**
+ * Represents a single message in the transcript
+ */
 interface Message {
-  time: string
-  sender: string
-  text: string;
+  time: string          // Timestamp of the message
+  sender: string        // Name of the message sender
+  text: string          // Content of the message
 }
 
+/**
+ * Parses raw transcript text into structured Message objects
+ * Format: "HH:MM:SS AM/PM - Sender: Message"
+ * 
+ * @param transcript - Raw transcript string to parse
+ * @returns Array of parsed Message objects
+ */
 const parseTranscript = (transcript: string): Message[] => {
   if (typeof transcript !== 'string') {
     console.error('Invalid transcript provided to parseTranscript:', transcript)
@@ -20,6 +36,7 @@ const parseTranscript = (transcript: string): Message[] => {
   return transcript
     .split('\n')
     .map((line): Message | null => {
+      // Regex matches format: "12:34:56 AM - Sender: Message" or "12:34:56 AM - Sender - Message"
       const regex = /^(\d{2}:\d{2}:\d{2}\s+(?:AM|PM))\s+-\s+(.+?)(?:\s*:\s*|\s+-\s+)(.*)$/
       const match = line.match(regex)
 
@@ -29,18 +46,23 @@ const parseTranscript = (transcript: string): Message[] => {
           time,
           sender: sender.trim(),
           text: text.trim() || '.'
-        };
+        }
       }
-      return null;
+      return null
     })
     .filter((message): message is Message => message !== null)
 }
 
 interface TranscriptProps {
+  /** Raw transcript text to display */
   transcript: string
+  /** Whether the transcript is currently being updated */
   isActive?: boolean
 }
 
+/**
+ * Renders a single message with optional animation for new messages
+ */
 const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
   if (!isNew) {
     return (
@@ -50,6 +72,7 @@ const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
     )
   }
 
+  // Animated entrance for new messages
   return (
     <motion.div 
       className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee] select-text"
@@ -75,18 +98,27 @@ const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
   )
 }
 
+/**
+ * Main transcript component that displays conversation messages
+ * Supports real-time updates, copy functionality, and message animations
+ */
 const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false }) => {
+  // Track copy button state
   const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
+  // Track which messages have been animated
   const [seenMessageKeys, setSeenMessageKeys] = useState(new Set<string>())
+  
   const messages = parseTranscript(transcript)
   const hasContent = transcript.trim().length > 0
 
-  // Create a unique key for each message
+  /**
+   * Generates a unique key for each message based on its content
+   */
   const getMessageKey = (message: Message) => {
     return `${message.time}-${message.sender}-${message.text}`
   }
 
-  // Update seen messages after each animation completes
+  // Mark messages as seen after animation completes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       const newSeenMessages = new Set(seenMessageKeys)
@@ -98,11 +130,15 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
     return () => clearTimeout(timeoutId)
   }, [messages])
 
+  // Initialize transcript action buttons
   const buttons = useTranscriptButtons({
     message: transcript,
     buttonTypes: ['Copy']
   })
 
+  /**
+   * Handles copying transcript to clipboard
+   */
   const copyToClipboard = () => {
     navigator.clipboard
       .writeText(transcript)
@@ -117,22 +153,25 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
   
   return (
     <div className="flex h-fit flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
-    <div className="bg-blue flex items-center justify-between gap-4">
-      <h2 className="font-inter text-xl font-semibold text-primary">Transcript</h2>
-      {hasContent && (
-        <button onClick={copyToClipboard} className="flex h-5 w-5">
-          <ClipboardText
-            variant="Bold"
-            size={20}
-            className={`text-subtle transition-colors transition-transform duration-200 ${
-              copyStatus === 'success' ? 'animate-gentle-scale scale-110' : ''
-            } hover:text-primary`}
-          />
-        </button>
+      {/* Header Section */}
+      <div className="bg-blue flex items-center justify-between gap-4">
+        <h2 className="font-inter text-xl font-semibold text-primary">Transcript</h2>
+        {hasContent && (
+          <button onClick={copyToClipboard} className="flex h-5 w-5">
+            <ClipboardText
+              variant="Bold"
+              size={20}
+              className={`text-subtle transition-colors transition-transform duration-200 ${
+                copyStatus === 'success' ? 'animate-gentle-scale scale-110' : ''
+              } hover:text-primary`}
+            />
+          </button>
         )}
       </div>
       
+      {/* Messages Container */}
       <div className="flex flex-col items-start justify-start gap-6 self-stretch">
+        {/* Loading Indicator */}
         {isActive && (
           <div className="inline-flex items-center justify-start gap-1 self-stretch">
             <div className="relative flex h-6 w-6 items-center justify-center">
@@ -144,15 +183,17 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
           </div>
         )}
 
+        {/* Message List */}
         {messages.map((message, index) => {
-          const messageKey = getMessageKey(message);
-          const isNewMessage = !seenMessageKeys.has(messageKey);
+          const messageKey = getMessageKey(message)
+          const isNewMessage = !seenMessageKeys.has(messageKey)
           
           return (
             <div 
               key={messageKey}
               className="flex flex-col items-start justify-start gap-1 self-stretch"
             >
+              {/* Message Header */}
               <div
                 className={`font-inter self-stretch text-[13px] font-medium leading-tight select-text ${
                   message.sender === 'Me' || message.sender.toLowerCase().includes('self')
@@ -162,12 +203,14 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
               >
                 {message.time} - {message.sender}
               </div>
+              {/* Message Content */}
               <MessageText text={message.text} isNew={isNewMessage} />
             </div>
           )
         })}
       </div>
 
+      {/* Action Buttons */}
       {hasContent && <TranscriptButtonRow buttons={buttons} />}
     </div>
   )
