@@ -15,21 +15,21 @@ import {
 } from '@/components/ui/alert-dialog'
 import AutoSaveSelection from './AutoSaveSelection'
 import AutoClearSelection from './AutoClearSelection'
+import AsrDurationSelection from './AsrDurationSelection'
+import AsrCloudFallbackSelection from './AsrCloudFallbackSelection'
 
 type AudioState = 'active' | 'inactive' | 'off'
 
 const SettingsPage: React.FC = () => {
   // Conversation State
-  const { isAudioOn, setIsAudioOn, conversations } = useConversations()
+  const { isAudioOn, setIsAudioOn, conversations, deleteAllConversations } = useConversations()
   // Audio Transcription State
   const [audioState, setAudioState] = useState<AudioState>('inactive')
-  const { deleteAllConversations } = useConversations()
 
   // Initialize audioState based on isAudioOn
   useEffect(() => {
     setAudioState(isAudioOn ? 'active' : 'off')
   }, [isAudioOn])
-
 
   // Toggle Audio Transcription
   const handleToggle = () => {
@@ -57,16 +57,14 @@ const SettingsPage: React.FC = () => {
                 {audioState === 'active' ? <GreenSoundIcon /> : <SoundIcon color={getSoundIconColor()} />}
               </div>
               <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">
-                {audioState === 'active' ? 'Transcribing Audio...' : (
+                {audioState === 'active' ? (
+                  'Transcribing Audio...'
+                ) : (
                   <div className="relative w-full">
                     {/* Full title for larger screens */}
-                    <div className="hidden lg:block truncate">
-                      Audio Transcription Off
-                    </div>
+                    <div className="hidden truncate lg:block">Audio Transcription Off</div>
                     {/* Compact title for smaller screens */}
-                    <div className="block lg:hidden truncate">
-                      Audio Off
-                    </div>
+                    <div className="block truncate lg:hidden">Audio Off</div>
                   </div>
                 )}
               </div>
@@ -100,34 +98,66 @@ const SettingsPage: React.FC = () => {
         </div>
       </div>
 
-      {audioState !== 'off' && (
-        <>
-          <div className="mb-8 flex flex-col gap-px">
-            <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
-              <div className="font-inter text-[15px] font-medium leading-6 text-[#EEEEEE]">Auto Save</div>
-              <AutoSaveSelection />
-            </div>
-
-            <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
-              <div className="font-inter text-[15px] font-normal leading-6 text-[#B4B4B4] opacity-50">
-                Highlight will automatically save your conversation transcript after this duration of silence
-              </div>
-            </div>
+      {/* Auto Save Section */}
+      <div className="mb-8 flex flex-col gap-px">
+        <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
+          <div className="font-inter text-[15px] font-medium leading-6 text-[#EEEEEE]">Auto Save</div>
+          <AutoSaveSelection />
+        </div>
+        <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
+          <div className="font-inter text-[15px] font-normal leading-6 text-[#B4B4B4] opacity-50">
+            Highlight will automatically save your conversation transcript after this duration of silence
           </div>
+        </div>
+      </div>
 
-          <div className="mb-8 flex flex-col gap-px">
-            <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
-              <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Auto Clear</div>
-              <AutoClearSelection />
-            </div>
-            <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
-              <div className="font-inter shrink grow basis-0 text-[15px] font-normal leading-normal text-[#b4b4b4] opacity-50">
-                Highlight will automatically delete all of your conversation transcripts based on this setting
-              </div>
-            </div>
+      {/* Auto Clear Section */}
+      <div className="mb-8 flex flex-col gap-px">
+        <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
+          <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Auto Clear</div>
+          <AutoClearSelection />
+        </div>
+        <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
+          <div className="font-inter shrink grow basis-0 text-[15px] font-normal leading-normal text-[#b4b4b4] opacity-50">
+            Highlight will automatically delete all of your conversation transcripts based on this setting
           </div>
-        </>
-      )}
+        </div>
+      </div>
+      {/* Audio Transcript Duration */}
+      <div className="mb-8 flex flex-col gap-px">
+        <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
+          <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">
+            Audio Transcript Duration
+          </div>
+          <AsrDurationSelection />
+        </div>
+
+        <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
+          <div className="font-inter shrink grow basis-0 text-[15px] font-normal leading-normal text-[#b4b4b4] opacity-50">
+            Length of audio transcript duration that will be stored in memory. In the interest of your privacy, there is
+            no data saved anywhere.
+          </div>
+        </div>
+      </div>
+
+      {/* Cloud Transcript */}
+      <div
+        className={`mb-8 flex flex-col gap-px rounded-2xl ${isAudioOn ? 'border-[#4ceda0]/20' : 'border-[#222222]'}`}
+      >
+        <div className="flex items-center justify-between overflow-hidden rounded-t-2xl bg-white/[0.02] px-6 py-3 pr-3">
+          <div className="font-inter text-[15px] font-medium leading-normal text-[#eeeeee]">Cloud Transcript</div>
+          <div className="flex items-center gap-2">
+            <AsrCloudFallbackSelection />
+          </div>
+        </div>
+
+        <div className="rounded-b-2xl bg-white/[0.02] px-6 py-4">
+          <div className="font-inter shrink grow basis-0 text-[15px] font-normal leading-normal text-[#b4b4b4] opacity-50">
+            Allow transcription to work in the cloud whenever your device is unable to transcribe your conversations
+            locally. No audio or text transcription is stored anywhere to protect your privacy.
+          </div>
+        </div>
+      </div>
 
       {/* Delete Button */}
       {conversations.length > 0 && (
