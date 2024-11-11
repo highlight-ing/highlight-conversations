@@ -1,88 +1,161 @@
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { summarizeConversation } from '@/services/highlightService'
-import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons'
-import { ClipboardText } from 'iconsax-react'
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ClipboardText } from 'iconsax-react';
+import { summarizeConversation } from '@/services/highlightService';
+import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons';
+
+// Types and Interfaces
 
 interface SummaryProps {
-  transcript: string
-  customPrompt?: string
-  onSummaryGenerated: (summary: string) => void
-  conversationId: string
-  existingSummary?: string | null
+  /** The transcript text to be summarized */
+  transcript: string;
+  /** Optional custom prompt for the summarization */
+  customPrompt?: string;
+  /** Callback function when summary is generated */
+  onSummaryGenerated: (summary: string) => void;
+  /** Unique identifier for the conversation */
+  conversationId: string;
+  /** Pre-existing summary if available */
+  existingSummary?: string | null;
 }
 
-const Summary: React.FC<SummaryProps> = ({ transcript, customPrompt, onSummaryGenerated, conversationId, existingSummary }) => {
-  const [isSummarizing, setIsSummarizing] = useState(false)
-  const [generatedSummary, setGeneratedSummary] = useState<string | null>(existingSummary || null)
-  const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
-  const [editedSummary, setEditedSummary] = useState<string | null>(existingSummary || null)
+type CopyStatus = 'default' | 'success';
 
-  const handleSummarizeClick = async () => {
-    setIsSummarizing(true)
-    try {
-      const result = await summarizeConversation(transcript, customPrompt)
-      setGeneratedSummary(result.summary)
-      onSummaryGenerated(result.summary)
-    } catch (error) {
-      console.error('Error summarizing transcript:', error)
-    } finally {
-      setIsSummarizing(false)
-    }
+// Animation Constants
+const ANIMATIONS = {
+  button: {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+    transition: { duration: 0.3 }
+  },
+  copyIcon: {
+    success: 'animate-gentle-scale scale-110',
+    default: ''
   }
+};
 
-  // Reset summary when conversationId changes
+// Custom Hook for Summary Logic
+
+function useSummary(props: SummaryProps) {
+  const {
+    transcript,
+    customPrompt,
+    onSummaryGenerated,
+    conversationId,
+    existingSummary
+  } = props;
+
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [generatedSummary, setGeneratedSummary] = useState<string | null>(existingSummary || null);
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>('default');
+
+  /**
+   * Handles the generation of summary
+   */
+  const handleSummarizeClick = async () => {
+    setIsSummarizing(true);
+    try {
+      const result = await summarizeConversation(transcript, customPrompt);
+      setGeneratedSummary(result.summary);
+      onSummaryGenerated(result.summary);
+    } catch (error) {
+      console.error('Error summarizing transcript:', error);
+    } finally {
+      setIsSummarizing(false);
+    }
+  };
+
+  /**
+   * Copies the generated summary to clipboard
+   */
+  const copyToClipboard = async () => {
+    if (!generatedSummary) return;
+
+    try {
+      await navigator.clipboard.writeText(generatedSummary);
+      setCopyStatus('success');
+      setTimeout(() => setCopyStatus('default'), 2000);
+    } catch (err) {
+      console.error('Failed to copy summary:', err);
+    }
+  };
+
+  // Reset summary when conversation changes
   useEffect(() => {
-    setGeneratedSummary(existingSummary || null)
-  }, [conversationId])
+    setGeneratedSummary(existingSummary || null);
+  }, [conversationId, existingSummary]);
 
+  return {
+    isSummarizing,
+    generatedSummary,
+    copyStatus,
+    handleSummarizeClick,
+    copyToClipboard
+  };
+}
+
+// Component
+
+const Summary: React.FC<SummaryProps> = (props) => {
+  const {
+    isSummarizing,
+    generatedSummary,
+    copyStatus,
+    handleSummarizeClick,
+    copyToClipboard
+  } = useSummary(props);
+
+  // Initialize transcript buttons
   const buttons = useTranscriptButtons({
     message: generatedSummary ?? '',
     buttonTypes: ['Copy']
-  })
-
-    // Function to copy transcript to clipboard
-    const copyToClipboard = () => {
-      navigator.clipboard
-        .writeText(generatedSummary ?? '')
-        .then(() => {
-          setCopyStatus('success')
-          setTimeout(() => setCopyStatus('default'), 2000) // Reset status after 2 seconds
-        })
-        .catch((err) => {
-          console.error('Failed to copy summary: ', err)
-        })
-    }
+  });
 
   return (
     <div className="flex w-full flex-col gap-6">
+      {/* Header Section */}
       <h2 className="flex items-center gap-2 text-xl font-semibold leading-tight text-[#eeeeee]">
         <span>Summary</span>
-        <button onClick={copyToClipboard} className="flex h-5 w-5">
-          {generatedSummary && <ClipboardText
-                variant="Bold"
-                size={20}
-                className={`text-subtle transition-colors transition-transform duration-200 ${
-                  copyStatus === 'success' ? 'animate-gentle-scale scale-110' : ''
-                } hover:text-primary`}
-            />}
-        </button>
+        {generatedSummary && (
+          <button 
+            onClick={copyToClipboard} 
+            className="flex h-5 w-5"
+            aria-label="Copy summary to clipboard"
+          >
+            <ClipboardText
+              variant="Bold"
+              size={20}
+              className={`
+                text-subtle transition-colors transition-transform duration-200
+                ${copyStatus === 'success' ? ANIMATIONS.copyIcon.success : ''}
+                hover:text-primary
+              `}
+            />
+          </button>
+        )}
       </h2>
-      
-      {/* Generated Summary */}
+
+      {/* Content Section */}
       {generatedSummary ? (
-        <div className="text-sm text-[#eeeeee] sm:text-base select-text">{generatedSummary}</div>
+        // Display generated summary
+        <div className="text-sm text-[#eeeeee] sm:text-base select-text">
+          {generatedSummary}
+        </div>
       ) : (
+        // Display summarize button if no summary exists
         <AnimatePresence>
           {!generatedSummary && (
             <motion.button
               onClick={handleSummarizeClick}
               disabled={isSummarizing}
-              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#4ceda0]/20 px-8 py-3.5 text-[17px] font-medium leading-tight text-[#4bec9f] hover:bg-[#4ceda0]/30"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}  
-              transition={{ duration: 0.3 }}
+              className="
+                inline-flex w-full cursor-pointer items-center justify-center gap-2 
+                rounded-xl bg-[#4ceda0]/20 px-8 py-3.5 text-[17px] font-medium 
+                leading-tight text-[#4bec9f] hover:bg-[#4ceda0]/30
+                disabled:cursor-not-allowed disabled:opacity-50
+              "
+              {...ANIMATIONS.button}
             >
               {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
             </motion.button>
@@ -90,7 +163,7 @@ const Summary: React.FC<SummaryProps> = ({ transcript, customPrompt, onSummaryGe
         </AnimatePresence>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Summary
+export default Summary;
