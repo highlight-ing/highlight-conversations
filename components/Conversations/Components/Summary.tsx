@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Summary component that displays conversation messages with animation effects.
+ * Supports real-time updates, message parsing, and copy functionality.
+ * @author Jungyooon Lim, Joanne <joanne@highlight.ing>
+ */
+
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClipboardText } from 'iconsax-react';
@@ -7,15 +14,10 @@ import { useTranscriptButtons } from '@/components/Conversations/Detail/Transcri
 // Types and Interfaces
 
 interface SummaryProps {
-  /** The transcript text to be summarized */
   transcript: string;
-  /** Optional custom prompt for the summarization */
   customPrompt?: string;
-  /** Callback function when summary is generated */
   onSummaryGenerated: (summary: string) => void;
-  /** Unique identifier for the conversation */
   conversationId: string;
-  /** Pre-existing summary if available */
   existingSummary?: string | null;
 }
 
