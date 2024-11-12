@@ -1,4 +1,9 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+/**
+ * @fileoverview Completed Conversation component that shows on the right panel when clicked
+ * @author Jungyoon Lim, Joanne <joanne@highlight.ing>
+ */
+
+import React, { useEffect, useState, useRef } from 'react'
 import Summary from '../../Components/Summary'
 import Transcript from '../../Components/Transcript'
 
