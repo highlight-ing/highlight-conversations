@@ -71,31 +71,32 @@ const useTranscriptionTimer = (
 }
 
 const ConversationDetail: React.FC<ConversationDetailProps> = ({ 
-  conversation
+  conversation 
 }) => {
   const { micActivity, isAudioOn, saveCurrentConversation, conversations } = useConversations()
   const isTranscribing = useTranscriptionTimer(isAudioOn, micActivity, saveCurrentConversation)
 
-  // If a specific conversation is selected, show it
+  // First priority: Show ActiveConversation when transcribing
+  if (isAudioOn && isTranscribing) {
+    return <ActiveConversation />
+  }
+
+  // Second priority: Show selected conversation
   if (conversation) {
     return <CompletedConversation conversation={conversation} />
   }
 
-  // If no conversation is selected but we have conversations, show the first one
+  // Third priority: Show most recent conversation by default
   if (!conversation && conversations.length > 0) {
     return <CompletedConversation conversation={conversations[0]} />
   }
 
-  // show transcription disabled 
+  // Fall back to audio states if no conversations exist
   if (!isAudioOn) {
     return <TranscriptionDisabled />
   }
 
-  if (isAudioOn && !isTranscribing) {
-    return <NoAudioDetected />
-  }
-
-  return <ActiveConversation />
+  return <NoAudioDetected />
 }
 
 export default ConversationDetail
