@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useState, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import OnboardingFlow from '@/components/Onboarding/OnboardingFlow'
@@ -33,9 +34,12 @@ const MainPageContent: React.FC = () => {
     return null
   }
 
-  if (showOnboarding) {
-    return <OnboardingFlow onComplete={handleOnboardingComplete} />
-  }
+  // commented out the welcome page, new conversations onboarding will take place 
+/**
+if (showOnboarding) {
+  return <OnboardingFlow onComplete={handleOnboardingComplete} />
+}
+*/
 
   return (
     <div className="flex max-h-screen min-h-screen flex-col overflow-hidden">
