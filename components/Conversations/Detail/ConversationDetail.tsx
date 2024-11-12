@@ -21,11 +21,9 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
     saveTimeout: 60000 // 60 seconds
   })
 
-  // If there's an active transcription, show ActiveConversation
-  if (isTranscribing) {
-    return <ActiveConversation />
+  if (conversation) {
+    return <CompletedConversation conversation={conversation} />
   }
-
   // If no conversation prop is provided, get the most recent conversation
   const recentConversation = conversation || (conversations && conversations[0])
 
@@ -37,6 +35,12 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
   if (!isAudioOn) {
     return <TranscriptionDisabled />
   }
+
+    // If there's an active transcription, show ActiveConversation
+    if (isTranscribing) {
+      return <ActiveConversation />
+    }
+  
 
   // When the audio is on and there's no transcription, show NoAudioDetected
   return <NoAudioDetected />
