@@ -159,7 +159,6 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
             return unit;
         }
       };
-
       return isCompact 
         ? `${number} ${getCompactUnit(unit)}...`
         : title;
