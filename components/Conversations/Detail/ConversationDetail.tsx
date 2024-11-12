@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
 import TranscriptionDisabled from './ConversationDetail/TranscriptionDisabled'
@@ -13,6 +13,13 @@ interface ConversationDetailProps {
 
 const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
   const { micActivity, isAudioOn, saveCurrentConversation, conversations } = useConversations()
+  const [showActiveConversation, setShowActiveConversation] = useState(false)
+
+  // Handler for click on conversation entry
+  const handleConversationClick = () => {
+    setShowActiveConversation(prevState => !prevState)
+  }
+
   const isTranscribing = useTranscriptionTimer({
     isAudioOn,
     micActivity,
@@ -21,26 +28,25 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
     saveTimeout: 60000 // 60 seconds
   })
 
-  if (conversation) {
-    return <CompletedConversation conversation={conversation} />
-  }
-  // If no conversation prop is provided, get the most recent conversation
+  // Get the most recent conversation
   const recentConversation = conversation || (conversations && conversations[0])
 
   if (recentConversation) {
-    return <CompletedConversation conversation={recentConversation} />
+    return (
+      <div onClick={handleConversationClick}>
+        {showActiveConversation && isTranscribing ? (
+          <ActiveConversation />
+        ) : (
+          <CompletedConversation conversation={recentConversation} />
+        )}
+      </div>
+    )
   }
 
   // When the audio is off, show TranscriptionDisabled
   if (!isAudioOn) {
     return <TranscriptionDisabled />
   }
-
-    // If there's an active transcription, show ActiveConversation
-    if (isTranscribing) {
-      return <ActiveConversation />
-    }
-  
 
   // When the audio is on and there's no transcription, show NoAudioDetected
   return <NoAudioDetected />
