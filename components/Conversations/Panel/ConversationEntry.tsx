@@ -103,6 +103,7 @@ export function ConversationEntry({
   const displayTitle = isDefaultTitle(conversation.title)
     ? `Last Updated ${getRelativeTimeString(conversation.timestamp)}`
     : conversation.title
+
   return (
     <div
       className={`min-h-[56px] w-full cursor-pointer border-t border-[#010101] bg-tertiary ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover' : 'hover:bg-white/10'} ${selectedClass} group`}
