@@ -34,7 +34,7 @@ interface ConversationContextType {
   isAudioOn: boolean
   searchQuery: string
   isMergeActive: boolean
-  saveCurrentConversation: () => Promise<void>
+  saveCurrentConversation: () => Promise<ConversationData>
   addConversation: (conversation: ConversationData) => Promise<void>
   updateConversation: (conversation: ConversationData) => Promise<void>
   deleteConversation: (id: string) => Promise<void>

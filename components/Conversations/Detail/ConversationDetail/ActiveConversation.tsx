@@ -49,7 +49,9 @@ const ActiveConversation: React.FC<ActiveConversationProps> = ({ onConversationS
   const handleSaveConversation = async () => {
     try {
       const savedConversation = await saveCurrentConversation()
-      onConversationSaved(savedConversation)
+      if (savedConversation) {
+        onConversationSaved(savedConversation)
+      }
     } catch (error) {
       console.error('Error saving conversation:', error)
     }
