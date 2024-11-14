@@ -19,7 +19,13 @@ const AutoSaveSelection: React.FC = () => {
   }
 
   return (
-    <Dropdown value={autoSaveTime} options={options} onSelect={onSelect} style={{ minWidth: '100px' }} size="medium" />
+    <Dropdown
+      value={autoSaveTime}
+      options={options}
+      onSelect={onSelect}
+      style={{ minWidth: '100px' }}
+      size="medium"
+    />
   )
 }
 
