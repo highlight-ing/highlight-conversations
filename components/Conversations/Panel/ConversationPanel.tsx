@@ -19,15 +19,15 @@ const ConversationPanel: React.FC = () => {
   const { filteredConversations, isMergeActive, toggleMergeActive } = useConversations()
 
   const last24HoursConversations = filteredConversations.filter((convo) => isLast24Hours(new Date(convo.timestamp)))
-  const last24HoursTitle = last24HoursConversations.length > 0 ? 'Last 24 Hours' : undefined
+  const last24HoursTitle = last24HoursConversations.length > 0 ? 'Today' : undefined
 
   const past7DaysConversations = filteredConversations.filter(
     (convo) => isPast7Days(new Date(convo.timestamp)) && !isLast24Hours(new Date(convo.timestamp))
   )
-  const past7DaysTitle = past7DaysConversations.length > 0 ? 'Past 7 Days' : undefined
+  const past7DaysTitle = past7DaysConversations.length > 0 ? 'This Week' : undefined
 
   const olderConversations = filteredConversations.filter((convo) => isOlderThan7Days(new Date(convo.timestamp)))
-  const olderTitle = olderConversations.length > 0 ? 'Older' : undefined
+  const olderTitle = olderConversations.length > 0 ? 'Past Month' : undefined
 
   // Example: Simulate turning on/off the microphone (for testing purposes)
   useEffect(() => {
