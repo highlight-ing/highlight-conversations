@@ -2,10 +2,15 @@ import React, { useState, useEffect, useRef } from 'react'
 import Highlight from '@highlight-ai/app-runtime'
 import BigGreenSoundIcon from '../Icon/DetailIcons/ActiveConversationIcon/BigGreenSoundIcon'
 import { useConversations } from '@/contexts/ConversationContext'
+import { ConversationData } from '@/data/conversations'
 import Transcript from '../../Components/Transcript'
 import { formatTimestampWithTimer } from '@/utils/dateUtils'
 
-const ActiveConversation: React.FC = () => {
+interface ActiveConversationProps {
+  onConversationSaved: (conversation: ConversationData) => void
+}
+
+const ActiveConversation: React.FC<ActiveConversationProps> = ({ onConversationSaved }) => {
   const { currentConversation, saveCurrentConversation, elapsedTime, isAudioOn } = useConversations()
   const hasTranscription = currentConversation.trim().length > 0
   const [startTime, setStartTime] = useState<Date | null>(null)
@@ -40,6 +45,17 @@ const ActiveConversation: React.FC = () => {
     )
     return () => removeConversationSavedListener()
   }, [])
+
+  const handleSaveConversation = async () => {
+    try {
+      const savedConversation = await saveCurrentConversation()
+      onConversationSaved(savedConversation)
+    } catch (error) {
+      console.error('Error saving conversation:', error)
+      // Optionally, display an error message to the user
+    }
+  }
+  
 
   // Truncate the save button text for smaller screens
   const TruncateSaveButton = (text: string) => {

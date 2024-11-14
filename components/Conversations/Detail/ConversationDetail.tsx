@@ -72,21 +72,27 @@ const useTranscriptionTimer = (
 const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
   const { micActivity, isAudioOn, saveCurrentConversation } = useConversations()
   const isTranscribing = useTranscriptionTimer(isAudioOn, micActivity, saveCurrentConversation)
-  
-  // Completed Conversation when a user clicks on a conversation
-  if (conversation) {
-    return <CompletedConversation conversation={conversation} />
+  const [savedConversation, setSavedConversation] = useState<ConversationData | null>(conversation || null)
+
+ useEffect(() => {
+    if (conversation) {
+      setSavedConversation(conversation)
+    }
+  }, [conversation])
+
+  if (savedConversation) {
+    return <CompletedConversation conversation={savedConversation} />
   }
 
-  // When the audio is off, TranscriptionDisabled
   if (!isAudioOn) {
     return <TranscriptionDisabled />
   }
-      // when the audio is off and there's no transcription, show noAudioDetected
+
   if (isAudioOn && !isTranscribing) {
     return <NoAudioDetected />
   }
-  // When the audio is on and there's transcription, show ActiveConversation
-  return <ActiveConversation />
+
+  return <ActiveConversation onConversationSaved={setSavedConversation} />
 }
+
 export default ConversationDetail

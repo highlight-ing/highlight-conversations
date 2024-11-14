@@ -464,6 +464,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     saveCurrentConversation: async () => {
       const savedConversation = await Highlight.conversations.saveCurrentConversation()
       trackEvent('conversation_added', {})
+      return savedConversation
     },
     addConversation,
     updateConversation,
