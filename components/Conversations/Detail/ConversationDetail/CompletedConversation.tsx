@@ -127,7 +127,6 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     }
   }
 
-<<<<<<<<< Temporary merge branch 1
   const truncateTitle = (title: string, isCompact: boolean) => {
     const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)/i
     const match = title.match(regex)
