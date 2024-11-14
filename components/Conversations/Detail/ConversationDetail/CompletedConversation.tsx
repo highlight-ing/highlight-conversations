@@ -40,6 +40,8 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
   const summaryRef = useRef<HTMLDivElement>(null)
   const [summaryHeight, setSummaryHeight] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const defaultTitleRef = useRef(conversation.title || 'Untitled Conversation')
+  const [originalTitle, setOriginalTitle] = useState(conversation.title || 'Untitled Conversation')
 
   useEffect(() => {
     if (shareMessage) {
@@ -56,15 +58,11 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
 
   // Initialize title from conversation
   useEffect(() => {
-    if (conversation.title && conversation.title.trim() !== '') {
-      setTitle(conversation.title)
-      setDisplayTitle(conversation.title)
-    } else {
-      const relativeTime = getRelativeTimeString(conversation.startedAt)
-      setTitle('') // Keep empty title if none set
-      setDisplayTitle(relativeTime) // Use relative time for display only
-    }
-  }, [conversation])
+    defaultTitleRef.current = conversation.title || 'Untitled Conversation'
+    setTitle(conversation.title || '')
+    setDisplayTitle(conversation.title || getRelativeTimeString(conversation.startedAt))
+  }, [conversation.id]) // Only run when conversation.id changes
+  
 
   // Update display title every minute only if no custom title is set
   useEffect(() => {
@@ -108,11 +106,10 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     
     const newTitle = title.trim()
     if (newTitle === '') {
-      // If the new title is an empty string
-      const initialTitle = conversation.title || 'Untitled Conversation'
-      setTitle(initialTitle)  // Reset the title state to the initial value or 'Untitled Conversation'
-      setDisplayTitle(initialTitle)  // Update the display title
-      updateConversation({ ...conversation, title: initialTitle })  // Update the conversation with the initial title
+      // Reset to the default title
+      setTitle('')
+      setDisplayTitle(defaultTitleRef.current)
+      updateConversation({ ...conversation, title: defaultTitleRef.current }) // Keep title empty in data
     } else {
       setDisplayTitle(newTitle)
       updateConversation({ ...conversation, title: newTitle })
