@@ -76,7 +76,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       return () => clearInterval(timer)
     }
   }, [conversation])
-
+  
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus()
@@ -105,16 +105,20 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
   const handleTitleBlur = () => {
     setIsEditing(false)
     if (!conversation) return
-
+    
     const newTitle = title.trim()
     if (newTitle === '') {
-      setDisplayTitle(getRelativeTimeString(conversation.startedAt))
-      updateConversation({ ...conversation, title: '' })
+      // If the new title is an empty string
+      const initialTitle = conversation.title || 'Untitled Conversation'
+      setTitle(initialTitle)  // Reset the title state to the initial value or 'Untitled Conversation'
+      setDisplayTitle(initialTitle)  // Update the display title
+      updateConversation({ ...conversation, title: initialTitle })  // Update the conversation with the initial title
     } else {
       setDisplayTitle(newTitle)
       updateConversation({ ...conversation, title: newTitle })
     }
   }
+  
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
