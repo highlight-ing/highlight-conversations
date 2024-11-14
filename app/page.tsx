@@ -34,12 +34,9 @@ const MainPageContent: React.FC = () => {
     return null
   }
 
-  // commented out the welcome page, new conversations onboarding will take place 
-/**
-if (showOnboarding) {
-  return <OnboardingFlow onComplete={handleOnboardingComplete} />
-}
-*/
+  // if (showOnboarding) {
+  //   return <OnboardingFlow onComplete={handleOnboardingComplete} />
+  // }
 
   return (
     <div className="flex max-h-screen min-h-screen flex-col overflow-hidden">
