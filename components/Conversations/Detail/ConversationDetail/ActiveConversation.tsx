@@ -52,7 +52,6 @@ const ActiveConversation: React.FC<ActiveConversationProps> = ({ onConversationS
       onConversationSaved(savedConversation)
     } catch (error) {
       console.error('Error saving conversation:', error)
-      // Optionally, display an error message to the user
     }
   }
   
