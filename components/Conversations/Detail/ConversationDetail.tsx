@@ -74,7 +74,7 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
   const isTranscribing = useTranscriptionTimer(isAudioOn, micActivity, saveCurrentConversation)
   
   // If there's an active transcription, show ActiveConversation
-  if (isTranscribing) {
+  if (!conversation && isTranscribing) {
     return <ActiveConversation />
   }
 
