@@ -13,10 +13,6 @@ interface PanelHeaderProps {
   setIsSettingsActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-/**
- * 
- * @returns 
- */
 const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActive, setIsSettingsActive}) => {
   return (
     <div className="flex items-center justify-between border-b border-tertiary">
