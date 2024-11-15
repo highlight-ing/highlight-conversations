@@ -1,14 +1,4 @@
-
-export type Meeting = {
-  app: MeetingApp
-  appName: string
-  windowTitle: string
-  url: string | undefined
-  titleMatch: string | undefined
-  start?: number
-  end?: number
-  duration?: number
-}
+import { Meeting } from '@/data/conversations'
 
 const MeetingIcon = ({ meeting, size = 24 }: { meeting: Meeting; size: number }) => {
   switch (meeting.app.name) {
