@@ -30,24 +30,24 @@ export interface SerializedConversationData {
 }
 
 export type Meeting = {
-  app: MeetingApp;
-  appName: string;
-  windowTitle: string;
-  url?: string;
-  titleMatch?: string;
-  start?: number;
-  end?: number;
-  duration?: number;
-};
+  app: MeetingApp
+  appName: string
+  windowTitle: string
+  url?: string
+  titleMatch?: string
+  start?: number
+  end?: number
+  duration?: number
+}
 
 export type MeetingApp = {
-  name: MeetingAppName;
-  titlePattern: RegExp;
-  urlPattern?: RegExp;
-  isBrowser?: boolean;
-};
+  name: MeetingAppName
+  titlePattern: RegExp
+  urlPattern?: RegExp
+  isBrowser?: boolean
+}
 
-type MeetingAppName = 'Google Meet' | 'Zoom';
+type MeetingAppName = 'Google Meet' | 'Zoom'
 
 export type FormatType = "CardTranscript" | "DialogueTranscript"
 
