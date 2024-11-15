@@ -12,6 +12,7 @@ export interface ConversationData {
   summarized: boolean
   shareLink: string
   userId: string
+  meeting?: Meeting
 }
 
 export interface SerializedConversationData {
@@ -27,6 +28,26 @@ export interface SerializedConversationData {
   shareLink: string
   userId: string
 }
+
+export type Meeting = {
+  app: MeetingApp;
+  appName: string;
+  windowTitle: string;
+  url?: string;
+  titleMatch?: string;
+  start?: number;
+  end?: number;
+  duration?: number;
+};
+
+export type MeetingApp = {
+  name: MeetingAppName;
+  titlePattern: RegExp;
+  urlPattern?: RegExp;
+  isBrowser?: boolean;
+};
+
+type MeetingAppName = 'Google Meet' | 'Zoom';
 
 export type FormatType = "CardTranscript" | "DialogueTranscript"
 
