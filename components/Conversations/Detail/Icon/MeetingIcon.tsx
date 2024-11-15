@@ -1,4 +1,5 @@
 import { Meeting } from '@/data/conversations'
+import VoiceSquareIcon from './PanelIcons/ConversationEntry/VoiceSquareIcon'
 
 const MeetingIcon = ({ meeting, size = 24 }: { meeting: Meeting; size: number }) => {
   switch (meeting.app.name) {
@@ -97,6 +98,9 @@ const MeetingIcon = ({ meeting, size = 24 }: { meeting: Meeting; size: number })
           </defs>
         </svg>
       )
+
+    default:
+      return <VoiceSquareIcon />
   }
 }
 
