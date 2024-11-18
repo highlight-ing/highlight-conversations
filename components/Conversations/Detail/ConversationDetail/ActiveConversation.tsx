@@ -40,6 +40,7 @@ const ActiveConversation: React.FC = () => {
     return () => removeConversationSavedListener()
   }, [])
 
+  // Function to handle saving the current convo and selecting it if saved successfully 
   const handleSaveConversation = async () => {
     try {
       const savedConversation = await saveCurrentConversation()
@@ -61,6 +62,7 @@ const ActiveConversation: React.FC = () => {
     )
   }
 
+  // jsx component 
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
       <div className="mb-6 flex w-full flex-row justify-between">
