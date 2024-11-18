@@ -12,20 +12,16 @@ interface ConversationDetailProps {
 
 // Timeout Values
 const TRANSCRIBE_TIMEOUT = 30000 // 30 seconds
-const SAVE_TIMEOUT = 60000 // 60 seconds 
+const SAVE_TIMEOUT = 60000 // 60 seconds
 
-const useTranscriptionTimer = (
-  isAudioOn: boolean,
-  micActivity: number,
-  saveCurrentConversation: () => void
-) => {
+const useTranscriptionTimer = (isAudioOn: boolean, micActivity: number, saveCurrentConversation: () => void) => {
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false)
   const [saveTimer, setSaveTimer] = useState<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     let transcribeTimer: NodeJS.Timeout | null = null
     // Check if sound is detected
-    const isSoundDetected = isAudioOn && micActivity > 0 
+    const isSoundDetected = isAudioOn && micActivity > 0
     const isSilent = isAudioOn && micActivity === 0
 
     if (isSoundDetected) {
@@ -40,7 +36,7 @@ const useTranscriptionTimer = (
       // Set a timer to stop transcribing after 30 seconds of silence
       transcribeTimer = setTimeout(() => {
         setIsTranscribing(false)
-      }, TRANSCRIBE_TIMEOUT) 
+      }, TRANSCRIBE_TIMEOUT)
 
       if (!saveTimer) {
         const newSaveTimer = setTimeout(() => {
@@ -60,10 +56,8 @@ const useTranscriptionTimer = (
 
     // Cleanup the timers on component unmount or when dependencies change
     return () => {
-      if (transcribeTimer) 
-        clearTimeout(transcribeTimer)
-      if (saveTimer) 
-        clearTimeout(saveTimer)
+      if (transcribeTimer) clearTimeout(transcribeTimer)
+      if (saveTimer) clearTimeout(saveTimer)
     }
   }, [isAudioOn, micActivity, saveTimer, saveCurrentConversation])
   return isTranscribing
@@ -72,16 +66,9 @@ const useTranscriptionTimer = (
 const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
   const { micActivity, isAudioOn, saveCurrentConversation } = useConversations()
   const isTranscribing = useTranscriptionTimer(isAudioOn, micActivity, saveCurrentConversation)
-  const [savedConversation, setSavedConversation] = useState<ConversationData | null>(conversation || null)
 
- useEffect(() => {
-    if (conversation) {
-      setSavedConversation(conversation)
-    }
-  }, [conversation])
-
-  if (savedConversation) {
-    return <CompletedConversation conversation={savedConversation} />
+  if (conversation) {
+    return <CompletedConversation conversation={conversation} />
   }
 
   if (!isAudioOn) {
@@ -92,7 +79,7 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
     return <NoAudioDetected />
   }
 
-  return <ActiveConversation onConversationSaved={setSavedConversation} />
+  return <ActiveConversation />
 }
 
 export default ConversationDetail

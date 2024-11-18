@@ -6,12 +6,9 @@ import { ConversationData } from '@/data/conversations'
 import Transcript from '../../Components/Transcript'
 import { formatTimestampWithTimer } from '@/utils/dateUtils'
 
-interface ActiveConversationProps {
-  onConversationSaved: (conversation: ConversationData) => void
-}
-
-const ActiveConversation: React.FC<ActiveConversationProps> = ({ onConversationSaved }) => {
-  const { currentConversation, saveCurrentConversation, elapsedTime, isAudioOn } = useConversations()
+const ActiveConversation: React.FC = () => {
+  const { currentConversation, saveCurrentConversation, elapsedTime, isAudioOn, handleConversationSelect } =
+    useConversations()
   const hasTranscription = currentConversation.trim().length > 0
   const [startTime, setStartTime] = useState<Date | null>(null)
   const startTimeRef = useRef(startTime)
@@ -37,12 +34,9 @@ const ActiveConversation: React.FC<ActiveConversationProps> = ({ onConversationS
 
   // Reset the startTime when the conversation is saved
   useEffect(() => {
-    const removeConversationSavedListener = Highlight.app.addListener(
-      'onConversationSaved',
-      () => {
-        setStartTime(null)
-      }
-    )
+    const removeConversationSavedListener = Highlight.app.addListener('onConversationSaved', () => {
+      setStartTime(null)
+    })
     return () => removeConversationSavedListener()
   }, [])
 
@@ -50,13 +44,12 @@ const ActiveConversation: React.FC<ActiveConversationProps> = ({ onConversationS
     try {
       const savedConversation = await saveCurrentConversation()
       if (savedConversation) {
-        onConversationSaved(savedConversation)
+        handleConversationSelect(savedConversation.id)
       }
     } catch (error) {
       console.error('Error saving conversation:', error)
     }
   }
-  
 
   // Truncate the save button text for smaller screens
   const TruncateSaveButton = (text: string) => {
