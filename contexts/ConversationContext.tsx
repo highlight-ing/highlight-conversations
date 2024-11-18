@@ -462,7 +462,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     searchQuery,
     isMergeActive,
     saveCurrentConversation: async () => {
-      const savedConversation = await Highlight.conversations.saveCurrentConversation()
+      await Highlight.conversations.saveCurrentConversation()
+      const savedConversation = await Highlight.conversations.getLastSavedConversation()
       trackEvent('conversation_added', {})
       return savedConversation
     },
