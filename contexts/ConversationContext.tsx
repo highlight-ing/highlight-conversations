@@ -34,7 +34,7 @@ interface ConversationContextType {
   isAudioOn: boolean
   searchQuery: string
   isMergeActive: boolean
-  saveCurrentConversation: () => Promise<ConversationData>
+  saveCurrentConversation: () => Promise<void>
   addConversation: (conversation: ConversationData) => Promise<void>
   updateConversation: (conversation: ConversationData) => Promise<void>
   deleteConversation: (id: string) => Promise<void>
@@ -463,10 +463,9 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     isMergeActive,
     saveCurrentConversation: async () => {
       await Highlight.conversations.saveCurrentConversation()
-      const savedConversation = await Highlight.conversations.getLastSavedConversation()
       trackEvent('conversation_added', {})
-      return savedConversation
     },
+    
     addConversation,
     updateConversation,
     deleteConversation,
