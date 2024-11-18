@@ -3,6 +3,7 @@ import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
 import { getStandardTimezoneAbbr, formatTimestamp, formatTimestampSimple } from '@/utils/dateUtils'
 import VoiceSquareIcon from '../Detail/Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
+import MeetingIcon from '../Detail/Icon/MeetingIcon'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { MessageText } from 'iconsax-react'
@@ -114,7 +115,11 @@ export function ConversationEntry({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 relative flex-shrink-0">
+              {conversation.meeting ? (
+                <MeetingIcon meeting={conversation.meeting} size={24} />
+              ) : (
                 <VoiceSquareIcon />
+              )}
               </div>
               <span className="text-[15px] font-medium text-[#eeeeee]">
                 {displayTitle}

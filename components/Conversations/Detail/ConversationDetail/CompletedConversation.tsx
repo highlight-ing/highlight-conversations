@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react'
 import Summary from '../../Components/Summary'
 import Transcript from '../../Components/Transcript'
 
-import { ConversationData } from '@/data/conversations'
+import { ConversationData, Meeting, MeetingApp } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
 import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { Toaster, toast } from 'sonner'
@@ -10,6 +10,7 @@ import { Toaster, toast } from 'sonner'
 import { Pencil1Icon } from '@radix-ui/react-icons'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import VoiceSquareIcon from '../Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
+import MeetingIcon from '../Icon/MeetingIcon'
 
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
@@ -165,7 +166,11 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       <div className="mb-6 flex w-full flex-row justify-between">
         <div className="flex max-w-[70%] items-center gap-[13px]">
           <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
-            <VoiceSquareIcon />
+            {conversation.meeting ? (
+              <MeetingIcon meeting={conversation.meeting} size={24} />
+            ) : (
+              <VoiceSquareIcon />
+            )}
           </div>
 
           <div className="font-inter overflow-hidden text-2xl font-semibold leading-[31px] text-white">
