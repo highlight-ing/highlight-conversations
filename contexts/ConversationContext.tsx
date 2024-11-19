@@ -477,7 +477,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           throw new Error('Failed to retrieve the saved conversation.')
         }
     
-        trackEvent('conversation_added', { conversationId: savedConversation.id })
+        trackEvent('conversation_added', { })
         return savedConversation
       } catch (error) {
         console.error('Error saving conversation:', error)
