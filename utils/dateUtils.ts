@@ -201,15 +201,13 @@ export function isToday(date: Date): boolean {
 export function isPast7Days(date: Date): boolean {
   const now = new Date()
   const sevenDaysAgo = subDays(now, 7)
-  const twentyFourHoursAgo = subHours(now, 24)
   
   return (
     isWithinInterval(date, { 
       start: sevenDaysAgo, 
       end: now 
     }) &&
-    !isToday(date) &&
-    (date >= twentyFourHoursAgo || date < startOfDay(now))
+    !isToday(date) 
   )
 }
 
