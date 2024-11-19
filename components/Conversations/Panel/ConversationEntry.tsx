@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ConversationData } from '@/data/conversations'
 import { useConversations } from '@/contexts/ConversationContext'
-import { getStandardTimezoneAbbr, formatTimestamp, formatTimestampSimple } from '@/utils/dateUtils'
+import { getStandardTimezoneAbbr, formatTimestamp, formatTimestampSimple, getRelativeTimeString } from '@/utils/dateUtils'
 import VoiceSquareIcon from '../Detail/Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
 import MeetingIcon from '../Detail/Icon/MeetingIcon'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
@@ -72,6 +72,7 @@ export function ConversationEntry({
     handleConversationSelect(conversation.id)
   }
 
+  // calculate duration of each time, displayed below 
   const calculateDurationInMinutes = (conversation: ConversationData) => {
     if (conversation.startedAt && conversation.endedAt) {
       const start = new Date(conversation.startedAt)
@@ -102,7 +103,8 @@ export function ConversationEntry({
 
   const isDefaultTitle = (title: string): boolean => title.startsWith('Audio Notes from')
 
-  const displayTitle = isDefaultTitle(conversation.title) ? 'Audio Note' : conversation.title
+  // TODO: Need to update this 
+  const displayTitle = isDefaultTitle(conversation.title) ? `Last Updated ${getRelativeTimeString(conversation.timestamp)}` : conversation.title
 
   return(
       <div

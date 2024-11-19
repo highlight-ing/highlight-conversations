@@ -1,25 +1,23 @@
+/**
+ * @fileoverview PanelHeader component for left side panel on the conversations app.
+ * @author Jungyoon Lim, Joanne <joanne@highlight.ing>
+ * @created October 2024 
+ */
+
 import React from 'react'
 import HighlightGreenLogo from '../Detail/Icon/HighlightGreenLogo'
 
 interface PanelHeaderProps {
-  onMergeActivate: () => void
-  isMergeActive: boolean
-  setIsSettingsActive: (isActive: boolean) => void; 
+  onMergeActivate: () => void;
+  isMergeActive: boolean;
+  setIsSettingsActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface HighLightGreenLogoProps {
-  className?: string; 
-}
-
+/**
+ * 
+ * @returns 
+ */
 const PanelHeader: React.FC<PanelHeaderProps> = ({ onMergeActivate, isMergeActive, setIsSettingsActive }) => {
-  const handleDeleteAll = () => {
-    // Implement delete all conversations logic
-  }
-
-  const handleSettings = () => {
-    setIsSettingsActive(true); 
-  }
-
   return (
     <div className="flex items-center justify-between border-b border-tertiary">
       <div className="flex items-center ml-6">
