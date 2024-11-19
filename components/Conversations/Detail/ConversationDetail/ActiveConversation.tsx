@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import Highlight from '@highlight-ai/app-runtime'
 import BigGreenSoundIcon from '../Icon/DetailIcons/ActiveConversationIcon/BigGreenSoundIcon'
 import { useConversations } from '@/contexts/ConversationContext'
+import { ConversationData } from '@/data/conversations'
 import Transcript from '../../Components/Transcript'
 import { formatTimestampWithTimer } from '@/utils/dateUtils'
 
 const ActiveConversation: React.FC = () => {
-  const { currentConversation, saveCurrentConversation, elapsedTime, isAudioOn } = useConversations()
+  const { currentConversation, saveCurrentConversation, elapsedTime, isAudioOn, handleConversationSelect } =
+    useConversations()
   const hasTranscription = currentConversation.trim().length > 0
   const [startTime, setStartTime] = useState<Date | null>(null)
   const startTimeRef = useRef(startTime)
@@ -32,14 +34,23 @@ const ActiveConversation: React.FC = () => {
 
   // Reset the startTime when the conversation is saved
   useEffect(() => {
-    const removeConversationSavedListener = Highlight.app.addListener(
-      'onConversationSaved',
-      () => {
-        setStartTime(null)
-      }
-    )
+    const removeConversationSavedListener = Highlight.app.addListener('onConversationSaved', () => {
+      setStartTime(null)
+    })
     return () => removeConversationSavedListener()
   }, [])
+
+  // Function to handle saving the current convo and selecting it if saved successfully 
+  const handleSaveConversation = async () => {
+    try {
+      const savedConversation = await saveCurrentConversation()
+      if (savedConversation) {
+        handleConversationSelect(savedConversation.id)
+      }
+    } catch (error) {
+      console.error('Error saving conversation:', error)
+    }
+  }
 
   // Truncate the save button text for smaller screens
   const TruncateSaveButton = (text: string) => {
@@ -51,6 +62,7 @@ const ActiveConversation: React.FC = () => {
     )
   }
 
+  // jsx component 
   return (
     <div className="relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12">
       <div className="mb-6 flex w-full flex-row justify-between">
@@ -66,7 +78,7 @@ const ActiveConversation: React.FC = () => {
         </div>
         {hasTranscription && (
           <button
-            onClick={saveCurrentConversation}
+            onClick={handleSaveConversation}
             className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-white/10 px-4 py-1.5 text-[15px] font-medium leading-tight text-[#b4b4b4] hover:bg-white/20"
           >
             {TruncateSaveButton('Save Transcript Now')}
