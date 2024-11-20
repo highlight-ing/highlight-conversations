@@ -8,6 +8,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import Highlight from '@highlight-ai/app-runtime'
 import BigGreenSoundIcon from '../Icon/DetailIcons/ActiveConversationIcon/BigGreenSoundIcon'
 import { useConversations } from '@/contexts/ConversationContext'
+import { ConversationData } from '@/data/conversations'
 import Transcript from '../../Components/Transcript'
 import { formatTimestampWithTimer } from '@/utils/dateUtils'
 import { HighlightEvent } from '@highlight-ai/app-runtime'
@@ -149,6 +150,7 @@ export const ActiveConversation: React.FC = () => {
     handleSaveTranscript
   } = useActiveConversation()
 
+  // jsx component 
   return (
     <div className={CLASSES.container}>
       <Header 

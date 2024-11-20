@@ -34,7 +34,7 @@ interface ConversationContextType {
   isAudioOn: boolean
   searchQuery: string
   isMergeActive: boolean
-  saveCurrentConversation: () => Promise<void>
+  saveCurrentConversation: () => Promise<ConversationData>
   addConversation: (conversation: ConversationData) => Promise<void>
   updateConversation: (conversation: ConversationData) => Promise<void>
   deleteConversation: (id: string) => Promise<void>
@@ -461,10 +461,30 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     isAudioOn,
     searchQuery,
     isMergeActive,
-    saveCurrentConversation: async () => {
-      const savedConversation = await Highlight.conversations.saveCurrentConversation()
-      trackEvent('conversation_added', {})
+    saveCurrentConversation: async (): Promise<ConversationData> => {
+      try {
+        await Highlight.conversations.saveCurrentConversation()
+    
+        // Fetch updated conversations
+        const updatedConversations = await Highlight.conversations.getAllConversations()
+    
+        // Find the conversation with the most recent timestamp
+        const savedConversation = updatedConversations.reduce((latest, conversation) => {
+          return conversation.timestamp > latest.timestamp ? conversation : latest
+        }, updatedConversations[0])
+    
+        if (!savedConversation) {
+          throw new Error('Failed to retrieve the saved conversation.')
+        }
+    
+        trackEvent('conversation_added', { })
+        return savedConversation
+      } catch (error) {
+        console.error('Error saving conversation:', error)
+        throw error
+      }
     },
+    
     addConversation,
     updateConversation,
     deleteConversation,
