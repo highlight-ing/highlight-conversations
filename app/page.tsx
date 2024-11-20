@@ -33,9 +33,9 @@ const MainPageContent: React.FC = () => {
     return null
   }
 
-  if (showOnboarding) {
-    return <OnboardingFlow onComplete={handleOnboardingComplete} />
-  }
+  // if (showOnboarding) {
+  //   return <OnboardingFlow onComplete={handleOnboardingComplete} />
+  // }
 
   return (
     <div className="flex max-h-screen min-h-screen flex-col overflow-hidden">
