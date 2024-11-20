@@ -1,5 +1,5 @@
 // utils/dateUtils.ts
-import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours, startOfDay, endOfDay } from 'date-fns'
+import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours, subMonths, startOfDay, endOfDay } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
 export const formatTimestamp = (date: Date | string | number, locale?: string): string => {
@@ -215,6 +215,12 @@ export function isPast7Days(date: Date): boolean {
 export function isOlderThan7Days(date: Date): boolean {
   const sevenDaysAgo = subDays(new Date(), 7)
   return date < startOfDay(sevenDaysAgo)
+}
+
+// function to check if the conversation is past month 
+export function isPastMonths(date: Date): boolean {
+  const pastMonth = subMonths(new Date(), 1)
+  return date < startOfDay(pastMonth)
 }
 
 // Function to check if the date is within the past 24 hours but not today
