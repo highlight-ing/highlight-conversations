@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 /**
  * Utility functions for formatting and manipulating dates.
  * Author: Jungyoon Lim, Joanne
  */
 
 import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours } from 'date-fns'
+=======
+// utils/dateUtils.ts
+import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours, startOfDay, endOfDay } from 'date-fns'
+>>>>>>> bbe8f763670c00fd6650a960248cf15068cddefe
 import { formatInTimeZone } from 'date-fns-tz'
 
 /**
@@ -190,18 +195,42 @@ export function formatTimestampSimple(date: Date): string {
   return format(date, 'PPpp')
 }
 
+// Function to check if the date is today (from midnight to now)
 export function isToday(date: Date): boolean {
-  return isTodayDate(date)
+  const now = new Date();
+  return isWithinInterval(date, {
+    start: startOfDay(now),
+    end: now, // Up to the current time
+  });
 }
 
+// Function to check if the date is within the past 7 days, including last 24 hours but excluding today
 export function isPast7Days(date: Date): boolean {
-  return isWithinInterval(date, { start: subDays(new Date(), 7), end: new Date() })
+  const now = new Date()
+  const sevenDaysAgo = subDays(now, 7)
+  
+  return (
+    isWithinInterval(date, { 
+      start: sevenDaysAgo, 
+      end: now 
+    }) &&
+    !isToday(date) 
+  )
 }
 
+// Function to check if the date is older than 7 days
 export function isOlderThan7Days(date: Date): boolean {
-  return date < subDays(new Date(), 7)
+  const sevenDaysAgo = subDays(new Date(), 7)
+  return date < startOfDay(sevenDaysAgo)
 }
 
+// Function to check if the date is within the past 24 hours but not today
 export function isLast24Hours(date: Date): boolean {
-  return isWithinInterval(date, { start: subHours(new Date(), 24), end: new Date() })
+  const now = new Date()
+  const twentyFourHoursAgo = subHours(now, 24)
+  return isWithinInterval(date, { 
+    start: twentyFourHoursAgo, 
+    end: now 
+  }) && !isToday(date)
 }
+
