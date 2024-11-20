@@ -1,5 +1,5 @@
 // utils/dateUtils.ts
-import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours, subMonths, startOfDay, isAfter, isThisWeek } from 'date-fns'
+import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours, subMonths, startOfDay, isAfter, isThisWeek, isBefore, startOfWeek } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
 export const formatTimestamp = (date: Date | string | number, locale?: string): string => {
@@ -211,31 +211,23 @@ export function isPast7Days(date: Date): boolean {
   )
 }
 
-// Function to check if the date is older than 7 days
-export function isOlderThan7Days(date: Date): boolean {
-  const sevenDaysAgo = subDays(new Date(), 7)
-  return date < startOfDay(sevenDaysAgo)
-}
-
-// Function to check if the date is dates from 1 month ago up to the start of this week 
+// Function to check if the date is from 1 month ago up to the start of this week (excluding this week)
 export function isPastMonth(date: Date): boolean {
   const oneMonthAgo = subMonths(new Date(), 1)
-  const startOfToday = startOfDay(new Date())
+  const startOfThisWeek = startOfWeek(new Date())
   
   return (
-    isAfter(date, oneMonthAgo) && // Date is within the past month
-    date < startOfToday &&        // Date is before today
-    !isThisWeek(date)             // Date is not in this week
+    isWithinInterval(date, {
+      start: oneMonthAgo,
+      end: startOfThisWeek
+    }) &&
+    isBefore(date, startOfThisWeek) // Ensures date is before the start of this week
   )
 }
 
-// Function to check if the date is within the past 24 hours but not today
-export function isLast24Hours(date: Date): boolean {
-  const now = new Date()
-  const twentyFourHoursAgo = subHours(now, 24)
-  return isWithinInterval(date, { 
-    start: twentyFourHoursAgo, 
-    end: now 
-  }) && !isToday(date)
+// Function to check if the date is older than 1 month 
+export function isOlder(date: Date): boolean {
+  const oneMonthAgo = subMonths(startOfDay(new Date()), 1)
+  return isBefore(date, oneMonthAgo)
 }
 
