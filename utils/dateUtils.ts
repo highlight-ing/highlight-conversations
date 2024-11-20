@@ -1,6 +1,6 @@
 /**
  * Utility functions for formatting and manipulating dates.
- * Author: Jungyoon Lim, Joanne
+ * Author: Jungyoon Lim, Joanne <joanne@highlight.ing>
  */
 
 import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours } from 'date-fns'
