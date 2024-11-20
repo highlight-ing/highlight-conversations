@@ -190,7 +190,7 @@ export function formatTimestampSimple(date: Date): string {
 
 // Function to check if the date is today (from midnight to now)
 export function isToday(date: Date): boolean {
-  const now = new Date();
+  const now = new Date()
   return isWithinInterval(date, {
     start: startOfDay(now),
     end: now, // Up to the current time
