@@ -226,7 +226,7 @@ export function isPastMonth(date: Date): boolean {
 }
 
 // Function to check if the date is older than 1 month 
-export function isOlder(date: Date): boolean {
+export function isOlderThanOneMonth(date: Date): boolean {
   const oneMonthAgo = subMonths(startOfDay(new Date()), 1)
   return isBefore(date, oneMonthAgo)
 }
