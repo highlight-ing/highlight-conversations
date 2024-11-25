@@ -100,9 +100,11 @@ export function ConversationEntry({
   const [attachmentTooltipState, setAttachmentTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
   const [deleteTooltipState, setDeleteTooltipState] = useState<'idle' | 'active' | 'success' | 'hiding'>('idle')
 
-  const isDefaultTitle = (title: string): boolean => title.startsWith('Audio Notes from')
+  const isDefaultTitle = (title?: string): boolean => {
+    return title ? title.startsWith('Audio Notes from') : false;
+  }
 
-  const displayTitle = isDefaultTitle(conversation.title) ? 'Audio Note' : conversation.title
+  const displayTitle = isDefaultTitle(conversation?.title) ? 'Audio Note' : conversation?.title || 'Untitled';
 
   return(
       <div
