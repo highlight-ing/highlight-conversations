@@ -7,13 +7,14 @@ import { useConversations } from '@/contexts/ConversationContext'
 import { formatHeaderTimestamp, getRelativeTimeString } from '@/utils/dateUtils'
 import { Toaster, toast } from 'sonner'
 
-import { Pencil1Icon } from '@radix-ui/react-icons'
+import { Pencil1Icon, Pencil2Icon } from '@radix-ui/react-icons'
 import DeleteConversationDialog from '@/components/Card/DeleteConversationDialog'
 import VoiceSquareIcon from '../Icon/PanelIcons/ConversationEntry/VoiceSquareIcon'
 import MeetingIcon from '../Icon/MeetingIcon'
 
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
+import { ClipboardText } from 'iconsax-react'
 
 interface CompletedConversationProps {
   conversation: ConversationData
@@ -41,6 +42,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
   const summaryRef = useRef<HTMLDivElement>(null)
   const [summaryHeight, setSummaryHeight] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [isEditingTranscript, setIsEditingTranscript] = useState(false)
 
   useEffect(() => {
     if (shareMessage) {
@@ -154,11 +156,32 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
             return unit
         }
       }
-
       return isCompact ? `${number} ${getCompactUnit(unit)}...` : title
     }
 
     return title
+  }
+
+  const handleTranscriptEdit = (updatedTranscript: string) => {
+    if (conversation) {
+      updateConversation({
+        ...conversation,
+        transcript: updatedTranscript
+      })
+      setIsEditingTranscript(false)
+      toast.success('Transcript updated successfully')
+    }
+  }
+
+  const handleCopyTranscript = (text: string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        toast.success('Transcript copied to clipboard')
+      })
+      .catch((err) => {
+        console.error('Failed to copy transcript: ', err)
+        toast.error('Failed to copy transcript')
+      })
   }
 
   return (
@@ -242,7 +265,32 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       </div>
 
       <div className="transition-all duration-300 ease-in-out">
-        <Transcript transcript={conversation.transcript} />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-white">Transcript</h2>
+            {conversation.transcript.trim().length > 0 && (
+              <button onClick={() => handleCopyTranscript(conversation.transcript)} className="flex h-5 w-5">
+                <ClipboardText
+                  variant="Bold"
+                  size={20}
+                  className="text-white/50 hover:text-white transition-colors"
+                />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setIsEditingTranscript(!isEditingTranscript)}
+            className="flex items-center gap-2 text-white/50 hover:text-white"
+          >
+            <Pencil2Icon className="h-4 w-4" />
+            <span>{isEditingTranscript ? 'Cancel' : 'Edit'}</span>
+          </button>
+        </div>
+        <Transcript 
+          transcript={conversation.transcript} 
+          isEditing={isEditingTranscript}
+          onSave={handleTranscriptEdit}
+        />
       </div>
 
       <Toaster theme="dark" className="bg-background text-foreground" />

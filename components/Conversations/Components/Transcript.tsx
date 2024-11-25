@@ -39,6 +39,8 @@ const parseTranscript = (transcript: string): Message[] => {
 interface TranscriptProps {
   transcript: string
   isActive?: boolean
+  isEditing?: boolean
+  onSave?: (updatedTranscript: string) => void
 }
 
 const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
@@ -75,11 +77,16 @@ const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
   )
 }
 
-const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false }) => {
+const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false, isEditing = false, onSave }) => {
   const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
   const [seenMessageKeys, setSeenMessageKeys] = useState(new Set<string>())
+  const [editedTranscript, setEditedTranscript] = useState(transcript)
   const messages = parseTranscript(transcript)
   const hasContent = transcript.trim().length > 0
+
+  useEffect(() => {
+    setEditedTranscript(transcript)
+  }, [transcript])
 
   // Create a unique key for each message
   const getMessageKey = (message: Message) => {
@@ -114,24 +121,44 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false })
         console.error('Failed to copy transcript: ', err)
       })
   }
-  
+
+  const handleSave = () => {
+    onSave?.(editedTranscript)
+  }
+
+  if (isEditing) {
+    return (
+      <div className="flex h-fit flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
+        <div className="flex w-full flex-col gap-4">
+          <textarea
+            value={editedTranscript}
+            onChange={(e) => setEditedTranscript(e.target.value)}
+            className="min-h-[300px] w-full rounded-lg bg-[#222222] p-4 font-inter text-[15px] text-[#eeeeee] focus:outline-none focus:ring-1 focus:ring-[#484848]"
+          />
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => {
+                setEditedTranscript(transcript)
+                onSave?.(transcript)
+              }}
+              className="rounded-lg px-4 py-2 font-inter text-[15px] text-[#484848] hover:text-[#eeeeee]"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="rounded-lg bg-[#222222] px-4 py-2 font-inter text-[15px] text-[#eeeeee] hover:bg-[#2a2a2a]"
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex h-fit flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
-    <div className="bg-blue flex items-center justify-between gap-4">
-      <h2 className="font-inter text-xl font-semibold text-primary">Transcript</h2>
-      {hasContent && (
-        <button onClick={copyToClipboard} className="flex h-5 w-5">
-          <ClipboardText
-            variant="Bold"
-            size={20}
-            className={`text-subtle transition-colors transition-transform duration-200 ${
-              copyStatus === 'success' ? 'animate-gentle-scale scale-110' : ''
-            } hover:text-primary`}
-          />
-        </button>
-        )}
-      </div>
-      
       <div className="flex flex-col items-start justify-start gap-6 self-stretch">
         {isActive && (
           <div className="inline-flex items-center justify-start gap-1 self-stretch">
