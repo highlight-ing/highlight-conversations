@@ -31,7 +31,10 @@ const ConversationList: React.FC<ConversationListProps> = ({
             transition={{ duration: 0.3 }}
           >
             <ConversationEntry
-              conversation={conversation}
+              conversation={{
+                ...conversation,
+                title: conversation.title || 'Audio Note'
+              }}
               isFirst={index === 0}
               isLast={index === conversations.length - 1}
               isMergeActive={isMergeActive}

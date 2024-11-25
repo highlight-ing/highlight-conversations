@@ -18,13 +18,22 @@ const ConversationPanel: React.FC = () => {
 
   const { filteredConversations, isMergeActive, toggleMergeActive } = useConversations()
 
-  const TodayConversations = filteredConversations.filter((convo) => isToday(new Date(convo.timestamp)))
-  const TodayConversationsTitle = TodayConversations.length > 0 ? 'Today' : undefined
+  const sortedConversations = filteredConversations.sort((a, b) => {
+    // First try to sort by startedAt
+    const startedAtDiff = b.startedAt.getTime() - a.startedAt.getTime();
+    if (startedAtDiff !== 0) return startedAtDiff;
+    
+    // If startedAt is the same, sort by timestamp
+    return b.timestamp.getTime() - a.timestamp.getTime();
+  })
 
-  const past7DaysConversations = filteredConversations.filter((convo) => isPast7Days(new Date(convo.timestamp)))
-  const past7DaysTitle = past7DaysConversations.length > 0 ? 'This Week' : undefined
+  const todayConversations = sortedConversations.filter(conv => isToday(conv.startedAt))
+  const todayConversationsTitle = todayConversations.length > 0 ? 'Today' : undefined
 
-  const olderConversations = filteredConversations.filter((convo) => isOlderThan7Days(new Date(convo.timestamp)))
+  const last7DaysConversations = sortedConversations.filter(conv => isPast7Days(conv.startedAt))
+  const last7DaysTitle = last7DaysConversations.length > 0 ? 'This Week' : undefined
+
+  const olderConversations = sortedConversations.filter(conv => isOlderThan7Days(conv.startedAt))
   const olderTitle = olderConversations.length > 0 ? 'Older' : undefined
 
   // Example: Simulate turning on/off the microphone (for testing purposes)
@@ -70,8 +79,8 @@ const ConversationPanel: React.FC = () => {
                     </span>
                   </button>
                 </div>
-                {<ConversationList title={TodayConversationsTitle} conversations={TodayConversations} />}
-                <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />
+                {<ConversationList title={todayConversationsTitle} conversations={todayConversations} />}
+                <ConversationList title={last7DaysTitle} conversations={last7DaysConversations} />
                 <ConversationList title={olderTitle} conversations={olderConversations} />
             </>
             )}
