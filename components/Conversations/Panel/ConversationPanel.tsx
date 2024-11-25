@@ -60,10 +60,20 @@ const ConversationPanel: React.FC = () => {
             ) : (
               <>
                 <ActiveConversationComponent />
+                <div className="mb-6">
+                  <button 
+                    onClick={toggleMergeActive}
+                    className="flex cursor-pointer items-center justify-center rounded-[10px] bg-[#2A2A2A] px-4 py-2 hover:bg-[#333333] transition-colors"
+                  >
+                    <span className="text-[15px] font-medium text-[#b4b4b4]">
+                      {isMergeActive ? 'Cancel Merge' : 'Merge Conversations'}
+                    </span>
+                  </button>
+                </div>
                 {<ConversationList title={TodayConversationsTitle} conversations={TodayConversations} />}
                 <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />
                 <ConversationList title={olderTitle} conversations={olderConversations} />
-              </>
+            </>
             )}
           </motion.div>
         </AnimatePresence>
