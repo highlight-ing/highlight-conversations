@@ -4,7 +4,7 @@ import ActiveConversationComponent from '../Panel/ActiveConversationComponent'
 import ConversationList from '../Panel/ConversationList'
 import MyTranscriptPanel from './MyTranscriptPanel'
 import { useConversations } from '@/contexts/ConversationContext'
-import { isToday, isPast7Days, isOlderThan7Days } from '@/utils/dateUtils'
+import { isToday, isPast7Days, isPastMonth, isOlderThanOneMonth } from '@/utils/dateUtils'
 import { AnimatePresence, motion } from 'framer-motion'
 import SettingsPage from '../Settings/SettingsPage'
 import FloatingMergeControl from '../Panel/FloatingMergeControl'
@@ -24,7 +24,10 @@ const ConversationPanel: React.FC = () => {
   const past7DaysConversations = filteredConversations.filter((convo) => isPast7Days(new Date(convo.timestamp)))
   const past7DaysTitle = past7DaysConversations.length > 0 ? 'This Week' : undefined
 
-  const olderConversations = filteredConversations.filter((convo) => isOlderThan7Days(new Date(convo.timestamp)))
+  const pastMonthConversations = filteredConversations.filter((convo) => isPastMonth(new Date(convo.timestamp)))
+  const pastMonthTitle = pastMonthConversations.length > 0 ? 'Past Month' : undefined 
+
+  const olderConversations = filteredConversations.filter((convo) => isOlderThanOneMonth(new Date(convo.timestamp)))
   const olderTitle = olderConversations.length > 0 ? 'Older' : undefined
 
   // Example: Simulate turning on/off the microphone (for testing purposes)
@@ -62,6 +65,7 @@ const ConversationPanel: React.FC = () => {
                 <ActiveConversationComponent />
                 {<ConversationList title={TodayConversationsTitle} conversations={TodayConversations} />}
                 <ConversationList title={past7DaysTitle} conversations={past7DaysConversations} />
+                <ConversationList title={pastMonthTitle} conversations={pastMonthConversations} />
                 <ConversationList title={olderTitle} conversations={olderConversations} />
               </>
             )}
