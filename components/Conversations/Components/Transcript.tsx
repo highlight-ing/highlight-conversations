@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ClipboardText } from 'iconsax-react'
 import { useTranscriptButtons } from '@/components/Conversations/Detail/TranscriptButtons/useTranscriptButtons'
 import { TranscriptButtonRow } from '@/components/Conversations/Detail/TranscriptButtons/TranscriptButtonRow'
 import LoadingSpinner from '../Detail/Icon/Transcript/LoadingSpinnerIcon'
@@ -43,50 +42,86 @@ interface TranscriptProps {
   onSave?: (updatedTranscript: string) => void
 }
 
-const MessageText = ({ text, isNew }: { text: string; isNew: boolean }) => {
-  if (!isNew) {
-    return (
-      <div className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee] select-text">
-        {text}
-      </div>
-    )
+interface InlineEditProps {
+  content: string
+  isEditing: boolean
+  onSave: (content: string) => void
+  lastSaved?: Date
+}
+
+const InlineEdit: React.FC<InlineEditProps> = ({ content, isEditing, onSave, lastSaved }) => {
+  const [editableContent, setEditableContent] = useState(content)
+  const editRef = useRef<HTMLDivElement>(null)
+  const [timeSinceLastSave, setTimeSinceLastSave] = useState<string>('')
+
+  useEffect(() => {
+    if (lastSaved) {
+      const interval = setInterval(() => {
+        const seconds = Math.floor((Date.now() - lastSaved.getTime()) / 1000)
+        if (seconds < 60) {
+          setTimeSinceLastSave(`${seconds}s ago`)
+        } else if (seconds < 3600) {
+          setTimeSinceLastSave(`${Math.floor(seconds / 60)}m ago`)
+        } else {
+          setTimeSinceLastSave(`${Math.floor(seconds / 3600)}h ago`)
+        }
+      }, 1000)
+      return () => clearInterval(interval)
+    }
+  }, [lastSaved])
+
+  useEffect(() => {
+    if (isEditing && editRef.current) {
+      editRef.current.focus()
+    }
+  }, [isEditing])
+
+  const handleBlur = () => {
+    if (editableContent !== content) {
+      onSave(editableContent)
+    }
   }
 
   return (
-    <motion.div 
-      className="font-inter self-stretch text-[15px] font-normal leading-normal text-[#eeeeee] select-text"
-      initial={{ 
-        clipPath: "inset(0 100% 0 0)", 
-        filter: "blur(4px)",
-        opacity: 0 
-      }}
-      animate={{ 
-        clipPath: "inset(0 0% 0 0)", 
-        filter: "blur(0px)",
-        opacity: 1 
-      }}
-      transition={{ 
-        duration: 1.5,
-        ease: [0.4, 0, 0.2, 1],
-        opacity: { duration: 0.5, delay: 0.2 },
-        filter: { duration: 1, delay: 0.2 }
-      }}
-    >
-      {text}
-    </motion.div>
+    <div className="relative group">
+      {lastSaved && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute -top-6 right-0 text-xs text-[#484848]"
+        >
+          Last saved {timeSinceLastSave}
+        </motion.div>
+      )}
+      <div
+        ref={editRef}
+        contentEditable={isEditing}
+        onBlur={handleBlur}
+        onInput={(e) => setEditableContent(e.currentTarget.textContent || '')}
+        className={`font-inter text-[15px] leading-normal text-[#eeeeee]
+                   transition-all duration-200 ease-in-out
+                   ${isEditing 
+                     ? 'cursor-text selection:bg-[#4ceda0]/20 selection:text-white' 
+                     : 'cursor-default'
+                   }
+                   focus:outline-none
+                   rounded-sm
+                   ${isEditing && 'hover:bg-white/[0.02] focus:bg-white/[0.03]'}
+                   p-1 -m-1
+                   whitespace-pre-wrap`}
+        suppressContentEditableWarning={true}
+      >
+        {content}
+      </div>
+    </div>
   )
 }
 
 const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false, isEditing = false, onSave }) => {
-  const [copyStatus, setCopyStatus] = useState<'default' | 'success'>('default')
   const [seenMessageKeys, setSeenMessageKeys] = useState(new Set<string>())
-  const [editedTranscript, setEditedTranscript] = useState(transcript)
+  const [lastSaved, setLastSaved] = useState<Date>()
   const messages = parseTranscript(transcript)
   const hasContent = transcript.trim().length > 0
-
-  useEffect(() => {
-    setEditedTranscript(transcript)
-  }, [transcript])
 
   // Create a unique key for each message
   const getMessageKey = (message: Message) => {
@@ -110,51 +145,9 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false, i
     buttonTypes: ['Copy']
   })
 
-  const copyToClipboard = () => {
-    navigator.clipboard
-      .writeText(transcript)
-      .then(() => {
-        setCopyStatus('success')
-        setTimeout(() => setCopyStatus('default'), 2000)
-      })
-      .catch((err) => {
-        console.error('Failed to copy transcript: ', err)
-      })
-  }
-
-  const handleSave = () => {
-    onSave?.(editedTranscript)
-  }
-
-  if (isEditing) {
-    return (
-      <div className="flex h-fit flex-col items-start justify-start gap-6 border-t border-[#222222]/50 pb-8 pt-8">
-        <div className="flex w-full flex-col gap-4">
-          <textarea
-            value={editedTranscript}
-            onChange={(e) => setEditedTranscript(e.target.value)}
-            className="min-h-[300px] w-full rounded-lg bg-[#222222] p-4 font-inter text-[15px] text-[#eeeeee] focus:outline-none focus:ring-1 focus:ring-[#484848]"
-          />
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => {
-                setEditedTranscript(transcript)
-                onSave?.(transcript)
-              }}
-              className="rounded-lg px-4 py-2 font-inter text-[15px] text-[#484848] hover:text-[#eeeeee]"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="rounded-lg bg-[#222222] px-4 py-2 font-inter text-[15px] text-[#eeeeee] hover:bg-[#2a2a2a]"
-            >
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+  const handleSave = (newContent: string) => {
+    onSave?.(newContent)
+    setLastSaved(new Date())
   }
 
   return (
@@ -172,8 +165,7 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false, i
         )}
 
         {messages.map((message, index) => {
-          const messageKey = getMessageKey(message);
-          const isNewMessage = !seenMessageKeys.has(messageKey);
+          const messageKey = getMessageKey(message)
           
           return (
             <div 
@@ -189,7 +181,20 @@ const Transcript: React.FC<TranscriptProps> = ({ transcript, isActive = false, i
               >
                 {message.time} - {message.sender}
               </div>
-              <MessageText text={message.text} isNew={isNewMessage} />
+              <InlineEdit 
+                content={message.text} 
+                isEditing={isEditing}
+                onSave={(newText) => {
+                  // Update the specific message's text and reconstruct transcript
+                  const updatedMessages = [...messages]
+                  updatedMessages[index] = { ...message, text: newText }
+                  const newTranscript = updatedMessages
+                    .map(m => `${m.time} - ${m.sender}: ${m.text}`)
+                    .join('\n')
+                  handleSave(newTranscript)
+                }}
+                lastSaved={lastSaved}
+              />
             </div>
           )
         })}

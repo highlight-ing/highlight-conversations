@@ -15,9 +15,28 @@ import MeetingIcon from '../Icon/MeetingIcon'
 import { useConversationActions } from '@/components/Card/SavedConversation/useConversationsActions'
 import { ShareButton } from '@/components/Card/SavedConversation/ShareButton'
 import { ClipboardText } from 'iconsax-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface CompletedConversationProps {
   conversation: ConversationData
+}
+
+const EditButton: React.FC<{
+  isEditing: boolean
+  onClick: () => void
+}> = ({ isEditing, onClick }) => {
+  return (
+    <motion.button
+      onClick={onClick}
+      className="flex items-center gap-2 text-subtle hover:text-foreground
+                 transition-colors duration-200"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Pencil2Icon className="h-4 w-4" />
+      <span className="text-sm">{isEditing ? 'Cancel' : 'Edit'}</span>
+    </motion.button>
+  )
 }
 
 const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversation }) => {
@@ -267,30 +286,46 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       <div className="transition-all duration-300 ease-in-out">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold text-white">Transcript</h2>
-            {conversation.transcript.trim().length > 0 && (
-              <button onClick={() => handleCopyTranscript(conversation.transcript)} className="flex h-5 w-5">
-                <ClipboardText
-                  variant="Bold"
-                  size={20}
-                  className="text-white/50 hover:text-white transition-colors"
-                />
-              </button>
-            )}
+            <h2 className="text-xl font-semibold text-foreground">Transcript</h2>
+            <AnimatePresence mode="wait">
+              {conversation.transcript.trim().length > 0 && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  onClick={() => handleCopyTranscript(conversation.transcript)}
+                  className="flex h-5 w-5"
+                >
+                  <ClipboardText
+                    variant="Bold"
+                    size={20}
+                    className="text-subtle hover:text-foreground transition-colors"
+                  />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
-          <button
+          <EditButton 
+            isEditing={isEditingTranscript}
             onClick={() => setIsEditingTranscript(!isEditingTranscript)}
-            className="flex items-center gap-2 text-white/50 hover:text-white"
-          >
-            <Pencil2Icon className="h-4 w-4" />
-            <span>{isEditingTranscript ? 'Cancel' : 'Edit'}</span>
-          </button>
+          />
         </div>
-        <Transcript 
-          transcript={conversation.transcript} 
-          isEditing={isEditingTranscript}
-          onSave={handleTranscriptEdit}
-        />
+        
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={isEditingTranscript ? 'editing' : 'viewing'}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Transcript 
+              transcript={conversation.transcript} 
+              isEditing={isEditingTranscript}
+              onSave={handleTranscriptEdit}
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <Toaster theme="dark" className="bg-background text-foreground" />
