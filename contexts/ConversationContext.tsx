@@ -449,9 +449,11 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [])
 
   const getLatestConversation = () => {
-    return conversations.length > 0 
-      ? conversations[conversations.length - 1] 
-      : undefined
+    if (conversations.length === 0) return undefined;
+    
+    return conversations.reduce((latest, current) => 
+      current.timestamp > latest.timestamp ? current : latest
+    );
   }
 
   const contextValue: ConversationContextType = {
