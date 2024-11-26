@@ -64,9 +64,26 @@ const useTranscriptionTimer = (isAudioOn: boolean, micActivity: number, saveCurr
 }
 
 const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
-  const { micActivity, isAudioOn, saveCurrentConversation } = useConversations()
+  const { micActivity, isAudioOn, saveCurrentConversation, getLatestConversation } = useConversations()
   const isTranscribing = useTranscriptionTimer(isAudioOn, micActivity, saveCurrentConversation)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+  
+  useEffect(() => {
+    // Once a conversation is selected or user interacts, mark initial load as complete
+    if (conversation || !isInitialLoad) {
+      setIsInitialLoad(false)
+    }
+  }, [conversation])
 
+  // Show latest conversation on initial load
+  if (isInitialLoad && !conversation) {
+    const latestConversation = getLatestConversation()
+    if (latestConversation) {
+      return <CompletedConversation conversation={latestConversation} />
+    }
+  }
+
+  // After initial load, follow normal flow
   if (conversation) {
     return <CompletedConversation conversation={conversation} />
   }

@@ -54,6 +54,7 @@ interface ConversationContextType {
   selectedConversationId: string | null
   setSelectedConversationId: (id: string | null) => void
   handleCurrentConversationSelect: () => void
+  getLatestConversation: () => ConversationData | undefined
 }
 
 const ConversationContext = createContext<ConversationContextType | undefined>(undefined)
@@ -447,6 +448,12 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [])
 
+  const getLatestConversation = () => {
+    return conversations.length > 0 
+      ? conversations[conversations.length - 1] 
+      : undefined;
+  };
+
   const contextValue: ConversationContextType = {
     conversations,
     selectedConversations,
@@ -546,7 +553,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     mergeSelectedConversations,
     selectedConversationId,
     setSelectedConversationId,
-    handleCurrentConversationSelect
+    handleCurrentConversationSelect,
+    getLatestConversation,
   }
 
   const autoClearConversations = useCallback(async () => {
