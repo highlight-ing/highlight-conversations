@@ -451,8 +451,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const getLatestConversation = () => {
     return conversations.length > 0 
       ? conversations[conversations.length - 1] 
-      : undefined;
-  };
+      : undefined
+  }
 
   const contextValue: ConversationContextType = {
     conversations,
