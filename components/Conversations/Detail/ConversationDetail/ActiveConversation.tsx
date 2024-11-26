@@ -24,6 +24,10 @@ interface HeaderProps {
   onSave: () => void
 }
 
+interface ActiveConversationProps {
+  conversation?: ConversationData
+}
+
 // Constants
 const CLASSES = {
   container: 'relative flex max-h-full flex-col overflow-y-scroll px-16 pt-12',
@@ -141,7 +145,7 @@ const useActiveConversation = () => {
  * ActiveConversation component displays the current transcription session
  * including the transcribed text, elapsed time, and save controls.
  */
-export const ActiveConversation: React.FC = () => {
+export const ActiveConversation: React.FC<ActiveConversationProps> = ({ conversation }) => {
   const {
     currentConversation,
     hasTranscription,

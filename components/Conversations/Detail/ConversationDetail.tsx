@@ -8,7 +8,6 @@ import CompletedConversation from './ConversationDetail/CompletedConversation'
 
 interface ConversationDetailProps {
   conversation?: ConversationData
-  conversations?: ConversationData[]
 }
 
 // Timeout Values
@@ -64,34 +63,24 @@ const useTranscriptionTimer = (isAudioOn: boolean, micActivity: number, saveCurr
   return isTranscribing
 }
 
-const ConversationDetail: React.FC<ConversationDetailProps> = ({ 
-  conversation 
-}) => {
-  const { micActivity, isAudioOn, saveCurrentConversation, conversations } = useConversations()
+const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
+  const { micActivity, isAudioOn, saveCurrentConversation } = useConversations()
   const isTranscribing = useTranscriptionTimer(isAudioOn, micActivity, saveCurrentConversation)
 
-  // Show the selected conversation if one is selected. 
   if (conversation) {
     return <CompletedConversation conversation={conversation} />
   }
 
-  // Show ActiveConversation when transcribing. 
-  if (isTranscribing) {
-    return <ActiveConversation />
-  }
-
-  // Show the most recent conversation by default if available. 
-  if (conversations && conversations.length > 0) {
-    return <CompletedConversation conversation={conversations[0]} />
-  }
-
-  // If audio is off and no conversations, show TranscriptionDisabled. 
   if (!isAudioOn) {
     return <TranscriptionDisabled />
   }
 
-  // When the audio is on and there's no transcription, show NoAudioDetected. 
-  return <NoAudioDetected />
+  if (isAudioOn && !isTranscribing) {
+    return <NoAudioDetected />
+  }
+
+  return <ActiveConversation />
 }
 
 export default ConversationDetail
+
