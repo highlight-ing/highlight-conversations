@@ -107,10 +107,11 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
     
     const newTitle = title.trim()
     if (newTitle === '') {
-      // Reset to the default title
-      setTitle('')
-      setDisplayTitle(defaultTitleRef.current)
-      updateConversation({ ...conversation, title: defaultTitleRef.current })
+      // If the new title is an empty string
+      const initialTitle = conversation.title || 'Untitled Conversation'
+      setTitle(initialTitle)  // Reset the title state to the initial value or 'Untitled Conversation'
+      setDisplayTitle(initialTitle)  // Update the display title
+      updateConversation({ ...conversation, title: initialTitle })  // Update the conversation with the initial title
     } else {
       setDisplayTitle(newTitle)
       updateConversation({ ...conversation, title: newTitle })
