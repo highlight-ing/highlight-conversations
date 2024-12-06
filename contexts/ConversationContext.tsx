@@ -14,7 +14,7 @@ const HOUR_IN_MS = 60 * 60 * 1000
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
 const AUTO_SAVE_TIME_DEFAULT = 60 * 10
-const AUTO_CLEAR_DAYS_DEFAULT = 7
+const AUTO_CLEAR_DAYS_DEFAULT = -1
 const ASR_DURATION_HOURS_DEFAULT = 8
 
 const MIN_AUTO_SAVE_TIME = 60
@@ -257,7 +257,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       const autoClearDaysFromAPI = await Highlight.conversations.getAutoClearDays()
-      const validAutoClearDays = autoClearDaysFromAPI !== 0 ? autoClearDaysFromAPI : AUTO_CLEAR_DAYS_DEFAULT
+      const validAutoClearDays = autoClearDaysFromAPI ?? AUTO_CLEAR_DAYS_DEFAULT
       setAutoClearDays(validAutoClearDays)
 
       try {
@@ -280,12 +280,17 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const { allConversations, appStorageConversations } = await fetchConversations()
       const mergedConversations = migrateAppStorageConversations(allConversations, appStorageConversations)
 
-      const now = new Date()
-      const cutoffDate = new Date(now.getTime() - validAutoClearDays * DAY_IN_MS)
+      let updatedConversations = mergedConversations
 
-      const updatedConversations = mergedConversations.filter((conversation) => {
-        return conversation.timestamp >= cutoffDate
-      })
+      // If auto-clear days is set, filter out conversations older than the cutoff date
+      if (validAutoClearDays > 0) {
+        const now = new Date()
+        const cutoffDate = new Date(now.getTime() - validAutoClearDays * DAY_IN_MS)
+  
+        updatedConversations = mergedConversations.filter((conversation) => {
+          return conversation.timestamp >= cutoffDate
+        })  
+      }
 
       if (updatedConversations.length !== mergedConversations.length) {
         setConversations(updatedConversations)
@@ -295,8 +300,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       console.log('Finished fetching initial data')
-      await autoClearConversations()
     }
+
     fetchInitialData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -499,7 +504,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       trackEvent('changed_auto_save_value', { newValue: validTime })
     },
     setAutoClearDays: async (days: number) => {
-      const validDays = days !== 0 ? days : AUTO_CLEAR_DAYS_DEFAULT
+      const validDays = days
       await Highlight.conversations.setAutoClearDays(validDays)
       setAutoClearDays(validDays)
       trackEvent('changed_auto_clear_value', { newValue: validDays })
@@ -549,19 +554,23 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     handleCurrentConversationSelect
   }
 
-  const autoClearConversations = useCallback(async () => {
-    const now = new Date()
-    const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
+  // const autoClearConversations = useCallback(async () => {
+  //   console.log('Auto-clearing conversations:', autoClearDays)
+  //   if (autoClearDays <= 0) return
 
-    const updatedConversations = conversations.filter((conversation) => {
-      return conversation.timestamp >= cutoffDate
-    })
+  //   const now = new Date()
+  //   const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
 
-    if (updatedConversations.length !== conversations.length) {
-      setConversations(updatedConversations)
-      await Highlight.conversations.updateConversations(updatedConversations)
-    }
-  }, [conversations, autoClearDays])
+  //   const updatedConversations = conversations.filter((conversation) => {
+  //     return conversation.timestamp >= cutoffDate
+  //   })
+
+  //   if (updatedConversations.length !== conversations.length) {
+  //     console.log('Auto-cleared conversations:', conversations.length - updatedConversations.length)
+  //     setConversations(updatedConversations)
+  //     await Highlight.conversations.updateConversations(updatedConversations)
+  //   }
+  // }, [conversations, autoClearDays])
 
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
 }
