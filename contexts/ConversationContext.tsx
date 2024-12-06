@@ -504,7 +504,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       trackEvent('changed_auto_save_value', { newValue: validTime })
     },
     setAutoClearDays: async (days: number) => {
-      const validDays = days !== 0 ? days : AUTO_CLEAR_DAYS_DEFAULT
+      const validDays = days
       await Highlight.conversations.setAutoClearDays(validDays)
       setAutoClearDays(validDays)
       trackEvent('changed_auto_clear_value', { newValue: validDays })
