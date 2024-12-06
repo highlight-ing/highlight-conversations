@@ -257,8 +257,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       const autoClearDaysFromAPI = await Highlight.conversations.getAutoClearDays()
-      const validAutoClearDays = autoClearDaysFromAPI !== 0 ? autoClearDaysFromAPI : AUTO_CLEAR_DAYS_DEFAULT
-      setAutoClearDays(validAutoClearDays)
+      const validAutoClearDays = autoClearDaysFromAPI ?? AUTO_CLEAR_DAYS_DEFAULT
+      setAutoClearDays(autoClearDaysFromAPI ?? AUTO_CLEAR_DAYS_DEFAULT)
 
       try {
         const duration = await Highlight.conversations.getAsrDuration?.() ?? ASR_DURATION_HOURS_DEFAULT
@@ -279,23 +279,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       // Fetch conversations again after setting autoClearDays
       const { allConversations, appStorageConversations } = await fetchConversations()
       const mergedConversations = migrateAppStorageConversations(allConversations, appStorageConversations)
-
-      const now = new Date()
-      const cutoffDate = new Date(now.getTime() - validAutoClearDays * DAY_IN_MS)
-
-      const updatedConversations = mergedConversations.filter((conversation) => {
-        return conversation.timestamp >= cutoffDate
-      })
-
-      if (updatedConversations.length !== mergedConversations.length) {
-        setConversations(updatedConversations)
-        await Highlight.conversations.updateConversations(updatedConversations)
-      } else {
-        setConversations(mergedConversations)
-      }
-
+      setConversations(mergedConversations)
       console.log('Finished fetching initial data')
-      await autoClearConversations()
     }
     fetchInitialData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -548,20 +533,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setSelectedConversationId,
     handleCurrentConversationSelect
   }
-
-  const autoClearConversations = useCallback(async () => {
-    const now = new Date()
-    const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
-
-    const updatedConversations = conversations.filter((conversation) => {
-      return conversation.timestamp >= cutoffDate
-    })
-
-    if (updatedConversations.length !== conversations.length) {
-      setConversations(updatedConversations)
-      await Highlight.conversations.updateConversations(updatedConversations)
-    }
-  }, [conversations, autoClearDays])
 
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
 }

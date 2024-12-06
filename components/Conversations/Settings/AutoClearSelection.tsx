@@ -6,6 +6,7 @@ const AutoClearSelection: React.FC = () => {
   const { autoClearDays, setAutoClearDays } = useConversations()
 
   const options = [
+    { value: -1, label: 'Never' },
     { value: 1, label: 'Every Day' },
     { value: 2, label: 'Every 2 Days' },
     { value: 3, label: 'Every 3 Days' },
