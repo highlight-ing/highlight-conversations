@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const BigGreenSoundIcon: React.FC = () => {
   const barVariants = {
     animate: {
-      scaleY: [1, 1.5, 1.5, 1, 1],
+      scaleY: [1, 1.5, 1.5, 1, 1], // repeating states reduces motion
       transition: {
         duration: 6,
         repeat: Infinity,

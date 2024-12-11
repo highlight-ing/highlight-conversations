@@ -16,11 +16,11 @@ const DEBOUNCE_TIMES = {
 const useAudioStateManager = () => {
   const [audioState, setAudioState] = useState<AudioState>('inactive')
   const {
+    noAudio,
     isSaving,
     isAudioOn,
     setIsAudioOn,
-    saveCurrentConversation,
-    noAudio
+    saveCurrentConversation
   } = useConversations()
 
   const slowDebounce = useDebouncedCallback(
