@@ -9,7 +9,7 @@ import {
 import { useAudioPermission } from '@/hooks/useAudioPermission'
 import { useAmplitude } from '@/hooks/useAmplitude'
 
-const POLL_MIC_ACTIVITY = 300
+const POLL_MIC_ACTIVITY = 500
 const HOUR_IN_MS = 60 * 60 * 1000
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
@@ -31,6 +31,7 @@ interface ConversationContextType {
   asrDuration: number
   asrCloudFallback: boolean
   micActivity: number
+  noAudio: boolean
   isAudioOn: boolean
   searchQuery: string
   isMergeActive: boolean
@@ -72,6 +73,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [searchQuery, setSearchQuery] = useState('')
   const [isMergeActive, setIsMergeActive] = useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
+  const [noAudio, setNoAudio] = useState(true)
 
   // Use the useAudioPermission hook
   const { isAudioPermissionEnabled: isAudioOn, toggleAudioPermission } = useAudioPermission()
@@ -138,7 +140,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     )
 
-    const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => {})
+    const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => { })
 
     const removeConversationSavedListener = Highlight.app.addListener('onConversationSaved', () => {
       setIsSaving(true)
@@ -151,13 +153,13 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     const removeOnAsrDurationListener = Highlight.app.addListener?.('onAsrDurationUpdated', (duration: number) => {
       setAsrDuration(duration)
-    }) ?? (() => {})
+    }) ?? (() => { })
 
-    const removeOnAsrCloudFallbackListener = Highlight.app.addListener?.('onAsrCloudFallbackUpdated', 
+    const removeOnAsrCloudFallbackListener = Highlight.app.addListener?.('onAsrCloudFallbackUpdated',
       (enabled: boolean) => {
         setAsrCloudFallback(enabled)
       }
-    ) ?? (() => {})
+    ) ?? (() => { })
 
     return () => {
       removeCurrentConversationListener()
@@ -286,10 +288,10 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (validAutoClearDays > 0) {
         const now = new Date()
         const cutoffDate = new Date(now.getTime() - validAutoClearDays * DAY_IN_MS)
-  
+
         updatedConversations = mergedConversations.filter((conversation) => {
           return conversation.timestamp >= cutoffDate
-        })  
+        })
       }
 
       if (updatedConversations.length !== mergedConversations.length) {
@@ -312,8 +314,26 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       return
     }
     const activity = await Highlight.user.getMicActivity(POLL_MIC_ACTIVITY)
-    setMicActivity(activity)
+    if (activity !== micActivity) {
+      setMicActivity(activity)
+    }
   }, [isAudioOn])
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+
+    if ((micActivity || 0) < 1) {
+      timer = setTimeout(() => {
+        setNoAudio(true)
+      }, 1000)
+    } else {
+      setNoAudio(false)
+    }
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [micActivity])
 
   useEffect(() => {
     const intervalId = setInterval(pollMicActivity, POLL_MIC_ACTIVITY)
@@ -463,33 +483,34 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     asrDuration,
     asrCloudFallback,
     micActivity,
+    noAudio,
     isAudioOn,
     searchQuery,
     isMergeActive,
     saveCurrentConversation: async (): Promise<ConversationData> => {
       try {
         await Highlight.conversations.saveCurrentConversation()
-    
+
         // Fetch updated conversations
         const updatedConversations = await Highlight.conversations.getAllConversations()
-    
+
         // Find the conversation with the most recent timestamp
         const savedConversation = updatedConversations.reduce((latest, conversation) => {
           return conversation.timestamp > latest.timestamp ? conversation : latest
         }, updatedConversations[0])
-    
+
         if (!savedConversation) {
           throw new Error('Failed to retrieve the saved conversation.')
         }
-    
-        trackEvent('conversation_added', { })
+
+        trackEvent('conversation_added', {})
         return savedConversation
       } catch (error) {
         console.error('Error saving conversation:', error)
         throw error
       }
     },
-    
+
     addConversation,
     updateConversation,
     deleteConversation,
