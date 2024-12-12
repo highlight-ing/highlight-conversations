@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import NewTooltip from '@/components/Tooltip/newTooltip'
 import { formatInTimeZone } from 'date-fns-tz'
 
-// Conversation Entry Props 
+// Conversation Entry Props
 interface ConversationEntryProps {
   conversation: ConversationData
   isFirst: boolean
@@ -28,8 +28,14 @@ export function ConversationEntry({
   isMergeActive,
   isSelected
 }: ConversationEntryProps) {
-  const { getWordCount, handleConversationSelect, selectedConversationId, deleteConversation, updateConversation } =
-    useConversations()
+  const {
+    getWordCount,
+    handleConversationSelect,
+    selectedConversationId,
+    deleteConversation,
+    updateConversation,
+    handleCurrentConversationSelect
+  } = useConversations()
 
   const {
     localConversation,
@@ -50,7 +56,7 @@ export function ConversationEntry({
     return `${timeStr} ${tzAbbr}`
   }
 
-  // Toast Share Message 
+  // Toast Share Message
   useEffect(() => {
     if (shareMessage) {
       if (shareMessage.type === 'success') {
@@ -64,7 +70,6 @@ export function ConversationEntry({
     }
   }, [shareMessage, setShareMessage])
 
-
   const roundedClasses =
     isFirst && isLast ? 'rounded-[20px]' : isFirst ? 'rounded-t-[20px]' : isLast ? 'rounded-b-[20px]' : ''
 
@@ -76,11 +81,11 @@ export function ConversationEntry({
     if (conversation.startedAt && conversation.endedAt) {
       const start = new Date(conversation.startedAt)
       const end = new Date(conversation.endedAt)
-      
+
       // Always use timestamp difference for consistent results
       const diffMs = end.getTime() - start.getTime()
       const minutes = Math.round(diffMs / 60000)
-      
+
       // Return at least 1 minute (to avoid 0 minutes)
       return Math.max(1, minutes)
     }
@@ -94,6 +99,10 @@ export function ConversationEntry({
   const handleDelete = () => {
     if (conversation) {
       deleteConversation(conversation.id)
+
+      if (selectedConversationId === conversation.id) {
+        handleCurrentConversationSelect()
+      }
     }
   }
 
@@ -104,89 +113,69 @@ export function ConversationEntry({
 
   const displayTitle = isDefaultTitle(conversation.title) ? 'Audio Note' : conversation.title
 
-  return(
-      <div
-        className={`min-h-[56px] w-full cursor-pointer border-t border-[#010101] bg-tertiary ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover' : 'hover:bg-white/10'} ${selectedClass} group`}
-        onClick={handleClick}
-      >
-        {/* Main Content Container */}
-        <div className="px-4 py-4 flex flex-col gap-3">
-          {/* Title Row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 relative flex-shrink-0">
-              {conversation.meeting ? (
-                <MeetingIcon meeting={conversation.meeting} size={24} />
-              ) : (
-                <VoiceSquareIcon />
-              )}
-              </div>
-              <span className="text-[15px] font-medium text-[#eeeeee]">
-                {displayTitle}
-              </span>
+  return (
+    <div
+      className={`min-h-[56px] w-full cursor-pointer border-t border-[#010101] bg-tertiary ${roundedClasses} ${isMergeActive ? 'hover:bg-tertiary-hover' : 'hover:bg-white/10'} ${selectedClass} group`}
+      onClick={handleClick}
+    >
+      {/* Main Content Container */}
+      <div className="flex flex-col gap-3 px-4 py-4">
+        {/* Title Row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="relative h-6 w-6 flex-shrink-0">
+              {conversation.meeting ? <MeetingIcon meeting={conversation.meeting} size={24} /> : <VoiceSquareIcon />}
             </div>
-    
-            {/* Action Buttons - Only show on hover */}
-            {!isMergeActive && (
-              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100">
-                <ShareButton
-                  onShare={handleShare}
-                  isSharing={shareStatus === 'processing'}
-                  hasExistingShareLink={!!localConversation.shareLink}
-                  onGenerateShareLink={handleGenerateShareLink}
-                  onCopyLink={handleCopyLink}
+            <span className="text-[15px] font-medium text-[#eeeeee]">{displayTitle}</span>
+          </div>
+
+          {/* Action Buttons - Only show on hover */}
+          {!isMergeActive && (
+            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100">
+              <ShareButton
+                onShare={handleShare}
+                isSharing={shareStatus === 'processing'}
+                hasExistingShareLink={!!localConversation.shareLink}
+                onGenerateShareLink={handleGenerateShareLink}
+                onCopyLink={handleCopyLink}
+              />
+              <NewTooltip type="save-attachment" message="Add Context" state={attachmentTooltipState}>
+                <MessageText
+                  variant="Bold"
+                  size={18}
+                  className="cursor-pointer text-[#484848] transition-colors hover:text-gray-300"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleAttachment()
+                  }}
+                  onMouseEnter={() => setAttachmentTooltipState('active')}
+                  onMouseLeave={() => setAttachmentTooltipState('idle')}
                 />
-                <NewTooltip
-                  type="save-attachment"
-                  message="Add Context"
-                  state={attachmentTooltipState}
+              </NewTooltip>
+              <NewTooltip type="delete" message="Delete" state={deleteTooltipState}>
+                <div
+                  onMouseEnter={() => setDeleteTooltipState('active')}
+                  onMouseLeave={() => setDeleteTooltipState('idle')}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <MessageText
-                    variant="Bold"
-                    size={18}
-                    className="cursor-pointer text-[#484848] hover:text-gray-300 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAttachment();
-                    }}
-                    onMouseEnter={() => setAttachmentTooltipState('active')}
-                    onMouseLeave={() => setAttachmentTooltipState('idle')}
-                  />
-                </NewTooltip>
-                <NewTooltip
-                  type="delete"
-                  message="Delete"
-                  state={deleteTooltipState}
-                >
-                  <div 
-                    onMouseEnter={() => setDeleteTooltipState('active')}
-                    onMouseLeave={() => setDeleteTooltipState('idle')}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <DeleteConversationDialog
-                      onDelete={handleDelete}
-                      size={18}
-                      colorVariant="tertiary"
-                    />
-                  </div>
-                </NewTooltip>
-              </div>
-            )}
-          </div>
-    
-          {/* Metadata Row */}
-          <div className="flex items-center gap-2 text-[13px] font-medium text-[#484848]">
-            <span className="whitespace-nowrap">{formatTime(conversation.timestamp)}</span>
-            <span className="whitespace-nowrap">
-              {calculateDurationInMinutes(conversation)} Minute{calculateDurationInMinutes(conversation) > 1 ? 's' : ''}
-            </span>
-            <span className="whitespace-nowrap">
-              {getWordCount(conversation.transcript).toLocaleString()} Words
-            </span>
-          </div>
+                  <DeleteConversationDialog onDelete={handleDelete} size={18} colorVariant="tertiary" />
+                </div>
+              </NewTooltip>
+            </div>
+          )}
+        </div>
+
+        {/* Metadata Row */}
+        <div className="flex items-center gap-2 text-[13px] font-medium text-[#484848]">
+          <span className="whitespace-nowrap">{formatTime(conversation.timestamp)}</span>
+          <span className="whitespace-nowrap">
+            {calculateDurationInMinutes(conversation)} Minute{calculateDurationInMinutes(conversation) > 1 ? 's' : ''}
+          </span>
+          <span className="whitespace-nowrap">{getWordCount(conversation.transcript).toLocaleString()} Words</span>
         </div>
       </div>
-    )
+    </div>
+  )
 }
 
 export default ConversationEntry
