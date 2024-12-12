@@ -20,7 +20,7 @@ interface CompletedConversationProps {
 }
 
 const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversation }) => {
-  const { updateConversation, deleteConversation } = useConversations()
+  const { updateConversation, deleteConversation, handleCurrentConversationSelect } = useConversations()
   const {
     localConversation,
     handleShare,
@@ -100,6 +100,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
   const handleDelete = () => {
     if (conversation) {
       deleteConversation(conversation.id)
+      handleCurrentConversationSelect()
     }
   }
 
@@ -166,11 +167,7 @@ const CompletedConversation: React.FC<CompletedConversationProps> = ({ conversat
       <div className="mb-6 flex w-full flex-row justify-between">
         <div className="flex max-w-[70%] items-center gap-[13px]">
           <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
-            {conversation.meeting ? (
-              <MeetingIcon meeting={conversation.meeting} size={24} />
-            ) : (
-              <VoiceSquareIcon />
-            )}
+            {conversation.meeting ? <MeetingIcon meeting={conversation.meeting} size={24} /> : <VoiceSquareIcon />}
           </div>
 
           <div className="font-inter overflow-hidden text-2xl font-semibold leading-[31px] text-white">
