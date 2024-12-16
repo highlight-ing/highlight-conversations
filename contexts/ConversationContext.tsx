@@ -9,7 +9,7 @@ import {
 import { useAudioPermission } from '@/hooks/useAudioPermission'
 import { useAmplitude } from '@/hooks/useAmplitude'
 
-const POLL_MIC_ACTIVITY = 500
+const POLL_MIC_ACTIVITY = 300
 const HOUR_IN_MS = 60 * 60 * 1000
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
@@ -315,13 +315,14 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
     const activity = await Highlight.user.getMicActivity(POLL_MIC_ACTIVITY)
     if (activity !== micActivity) {
+      console.log('micActivity1', activity)
       setMicActivity(activity)
     }
-  }, [isAudioOn])
+  }, [isAudioOn, micActivity])
 
   useEffect(() => {
     let timer: NodeJS.Timeout
-
+    console.log('micActivity', micActivity)
     if ((micActivity || 0) < 1) {
       timer = setTimeout(() => {
         setNoAudio(true)
