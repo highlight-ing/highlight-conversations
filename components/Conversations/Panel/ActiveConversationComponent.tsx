@@ -15,12 +15,12 @@ const DEBOUNCE_TIMES = {
 
 const useAudioStateManager = () => {
   const [audioState, setAudioState] = useState<AudioState>('inactive')
-  const { 
-    micActivity, 
-    isSaving, 
-    isAudioOn, 
-    setIsAudioOn, 
-    saveCurrentConversation 
+  const {
+    noAudio,
+    isSaving,
+    isAudioOn,
+    setIsAudioOn,
+    saveCurrentConversation
   } = useConversations()
 
   const slowDebounce = useDebouncedCallback(
@@ -50,7 +50,7 @@ const useAudioStateManager = () => {
       return
     }
 
-    if (micActivity > 0) {
+    if (!noAudio) {
       fastDebounce()
       saveDebounce.cancel()
     } else {
@@ -58,7 +58,7 @@ const useAudioStateManager = () => {
       saveDebounce()
       setAudioState('inactive')
     }
-  }, [isAudioOn, micActivity, isSaving, fastDebounce, slowDebounce, saveDebounce])
+  }, [isAudioOn, noAudio, isSaving, fastDebounce, slowDebounce, saveDebounce])
 
   useEffect(() => {
     updateAudioState()
@@ -67,7 +67,7 @@ const useAudioStateManager = () => {
   const handleToggle = () => {
     const newIsOn = !isAudioOn
     setIsAudioOn(newIsOn)
-    setAudioState(newIsOn ? (micActivity > 0 ? 'active' : 'inactive') : 'off')
+    setAudioState(newIsOn ? (!noAudio ? 'active' : 'inactive') : 'off')
     if (!newIsOn) {
       saveDebounce.cancel()
     }
@@ -164,13 +164,13 @@ export default function ActiveConversationComponent() {
 
   return (
     <div className="mb-6 flex w-full flex-col">
-      <AudioStatus 
-        audioState={audioState} 
-        onSelect={handleCurrentConversationSelect} 
+      <AudioStatus
+        audioState={audioState}
+        onSelect={handleCurrentConversationSelect}
       />
-      <EnableAudioButton 
-        isAudioOn={isAudioOn} 
-        onToggle={handleToggle} 
+      <EnableAudioButton
+        isAudioOn={isAudioOn}
+        onToggle={handleToggle}
       />
     </div>
   )

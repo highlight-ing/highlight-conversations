@@ -31,6 +31,7 @@ interface ConversationContextType {
   asrDuration: number
   asrCloudFallback: boolean
   micActivity: number
+  noAudio: boolean
   isAudioOn: boolean
   searchQuery: string
   isMergeActive: boolean
@@ -72,6 +73,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [searchQuery, setSearchQuery] = useState('')
   const [isMergeActive, setIsMergeActive] = useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
+  const [noAudio, setNoAudio] = useState(true)
 
   // Use the useAudioPermission hook
   const { isAudioPermissionEnabled: isAudioOn, toggleAudioPermission } = useAudioPermission()
@@ -138,7 +140,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     )
 
-    const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => {})
+    const removeSaveConversationListener = Highlight.app.addListener('onConversationSaved', () => { })
 
     const removeConversationSavedListener = Highlight.app.addListener('onConversationSaved', () => {
       setIsSaving(true)
@@ -152,12 +154,12 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const removeOnAsrDurationListener =
       Highlight.app.addListener?.('onAsrDurationUpdated', (duration: number) => {
         setAsrDuration(duration)
-      }) ?? (() => {})
+      }) ?? (() => { })
 
     const removeOnAsrCloudFallbackListener =
       Highlight.app.addListener?.('onAsrCloudFallbackUpdated', (enabled: boolean) => {
         setAsrCloudFallback(enabled)
-      }) ?? (() => {})
+      }) ?? (() => { })
 
     return () => {
       removeCurrentConversationListener()
@@ -312,8 +314,25 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       return
     }
     const activity = await Highlight.user.getMicActivity(POLL_MIC_ACTIVITY)
-    setMicActivity(activity)
-  }, [isAudioOn])
+    if (activity !== micActivity) {
+      setMicActivity(activity)
+    }
+  }, [isAudioOn, micActivity])
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if ((micActivity || 0) < 1) {
+      timer = setTimeout(() => {
+        setNoAudio(true)
+      }, 1000)
+    } else {
+      setNoAudio(false)
+    }
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [micActivity])
 
   useEffect(() => {
     const intervalId = setInterval(pollMicActivity, POLL_MIC_ACTIVITY)
@@ -464,6 +483,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     asrDuration,
     asrCloudFallback,
     micActivity,
+    noAudio,
     isAudioOn,
     searchQuery,
     isMergeActive,
