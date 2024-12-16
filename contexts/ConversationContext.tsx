@@ -151,15 +151,15 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }, 10)
     })
 
-    const removeOnAsrDurationListener = Highlight.app.addListener?.('onAsrDurationUpdated', (duration: number) => {
-      setAsrDuration(duration)
-    }) ?? (() => { })
+    const removeOnAsrDurationListener =
+      Highlight.app.addListener?.('onAsrDurationUpdated', (duration: number) => {
+        setAsrDuration(duration)
+      }) ?? (() => { })
 
-    const removeOnAsrCloudFallbackListener = Highlight.app.addListener?.('onAsrCloudFallbackUpdated',
-      (enabled: boolean) => {
+    const removeOnAsrCloudFallbackListener =
+      Highlight.app.addListener?.('onAsrCloudFallbackUpdated', (enabled: boolean) => {
         setAsrCloudFallback(enabled)
-      }
-    ) ?? (() => { })
+      }) ?? (() => { })
 
     return () => {
       removeCurrentConversationListener()
@@ -263,7 +263,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setAutoClearDays(validAutoClearDays)
 
       try {
-        const duration = await Highlight.conversations.getAsrDuration?.() ?? ASR_DURATION_HOURS_DEFAULT
+        const duration = (await Highlight.conversations.getAsrDuration?.()) ?? ASR_DURATION_HOURS_DEFAULT
         setAsrDuration(duration)
       } catch (error) {
         console.warn('ASR Duration API not available, using default:', ASR_DURATION_HOURS_DEFAULT)
@@ -271,7 +271,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       try {
-        const cloudFallback = await Highlight.conversations.getAsrCloudFallback?.() ?? false
+        const cloudFallback = (await Highlight.conversations.getAsrCloudFallback?.()) ?? false
         setAsrCloudFallback(cloudFallback)
       } catch (error) {
         console.warn('ASR Cloud Fallback API not available, using default: false')
@@ -403,8 +403,9 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const deleteConversation = useCallback(
     async (id: string) => {
-      await Highlight.conversations.deleteConversation(id)
       trackEvent('conversation_deleted', { conversationId: id })
+      await Highlight.conversations.deleteConversation(id)
+      fetchLatestData()
     },
     [trackEvent]
   )
