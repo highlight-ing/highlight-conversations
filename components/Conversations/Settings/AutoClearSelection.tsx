@@ -27,7 +27,13 @@ const AutoClearSelection: React.FC = () => {
   }
 
   return (
-    <Dropdown value={autoClearDays} options={options} onSelect={onSelect} style={{ minWidth: '100px' }} size="medium" />
+    <Dropdown
+      value={autoClearDays}
+      options={options}
+      onSelect={onSelect}
+      style={{ minWidth: '100px' }}
+      size="medium"
+    />
   )
 }
 

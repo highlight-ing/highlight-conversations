@@ -7,20 +7,24 @@ import ActiveConversation from './ConversationDetail/ActiveConversation'
 import CompletedConversation from './ConversationDetail/CompletedConversation'
 
 interface ConversationDetailProps {
-  conversation: ConversationData | undefined
+  conversation?: ConversationData
 }
 
-const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
-  const { micActivity, isAudioOn, saveCurrentConversation } = useConversations()
+// Timeout Values
+const TRANSCRIBE_TIMEOUT = 30000 // 30 seconds
+const SAVE_TIMEOUT = 60000 // 60 seconds
 
+const useTranscriptionTimer = (isAudioOn: boolean, micActivity: number, saveCurrentConversation: () => void) => {
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false)
   const [saveTimer, setSaveTimer] = useState<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     let transcribeTimer: NodeJS.Timeout | null = null
+    // Check if sound is detected
+    const isSoundDetected = isAudioOn && micActivity > 0
+    const isSilent = isAudioOn && micActivity === 0
 
-    if (isAudioOn && micActivity > 0) {
-      // Start transcribing when sound is detected
+    if (isSoundDetected) {
       setIsTranscribing(true)
       // Clear any existing timers
       if (transcribeTimer) clearTimeout(transcribeTimer)
@@ -28,18 +32,17 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
         clearTimeout(saveTimer)
         setSaveTimer(null)
       }
-    } else if (isAudioOn && micActivity === 0) {
+    } else if (isSilent) {
       // Set a timer to stop transcribing after 30 seconds of silence
       transcribeTimer = setTimeout(() => {
         setIsTranscribing(false)
-      }, 30000) // 30 seconds
+      }, TRANSCRIBE_TIMEOUT)
 
-      // Set a timer to save the transcript after 60 seconds of silence
       if (!saveTimer) {
         const newSaveTimer = setTimeout(() => {
           saveCurrentConversation()
           setSaveTimer(null)
-        }, 60000) // 60 seconds
+        }, SAVE_TIMEOUT) // 60 seconds
         setSaveTimer(newSaveTimer)
       }
     } else {
@@ -57,23 +60,26 @@ const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation })
       if (saveTimer) clearTimeout(saveTimer)
     }
   }, [isAudioOn, micActivity, saveTimer, saveCurrentConversation])
+  return isTranscribing
+}
 
-  // Completed Conversation when a user clicks on a conversation
+const ConversationDetail: React.FC<ConversationDetailProps> = ({ conversation }) => {
+  const { micActivity, isAudioOn, saveCurrentConversation } = useConversations()
+  const isTranscribing = useTranscriptionTimer(isAudioOn, micActivity, saveCurrentConversation)
+
   if (conversation) {
     return <CompletedConversation conversation={conversation} />
   }
 
-  // When the audio is off, TranscriptionDisabled
   if (!isAudioOn) {
     return <TranscriptionDisabled />
   }
 
-  // when the audio is off and there's no transcription, show noAudioDetected
   if (isAudioOn && !isTranscribing) {
     return <NoAudioDetected />
   }
 
-  // When the audio is on and there's transcription, show ActiveConversation
   return <ActiveConversation />
 }
+
 export default ConversationDetail

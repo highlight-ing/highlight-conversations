@@ -6,34 +6,18 @@ import { Trash } from 'iconsax-react'
 const NoAudioDetected: React.FC = () => {
   return (
     <div className="flex flex-col items-center min-h-screen bg-black px-6 py-8 md:px-12 md:py-16 lg:px-20 lg:py-20 max-w-5xl mx-auto space-y-8">
-      
       {/* Header Section */}
-      <div className="flex flex-col w-full space-y-2">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 flex items-center justify-center">
-              <BigSoundIcon />
-            </div>
-            <h1 className="text-white text-lg md:text-2xl font-semibold font-inter leading-snug">
-              No Audio Detected...
-            </h1>
+      <div className="flex flex-col w-full space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 flex items-center justify-center">
+            <BigSoundIcon />
           </div>
-          
-          {/* Right Action Buttons */}
-          <div className="flex items-center gap-4">
-            <div className="w-6 h-6 opacity-40 flex items-center justify-center">
-              <Trash variant="Bold" className="text-primary" size={24} />
-            </div>
-            <button className="px-4 py-1.5 bg-white/10 rounded-lg flex items-center justify-center gap-2 hover:bg-white/20">
-              <span className="text-[#b4b4b4] text-sm md:text-base font-medium font-inter leading-tight">Open</span>
-            </button>
-            <button className="px-4 py-1.5 bg-white/10 rounded-lg flex items-center justify-center gap-2 hover:bg-white/20">
-              <span className="text-[#b4b4b4] text-sm md:text-base font-medium font-inter leading-tight">Copy Link</span>
-            </button>
-          </div>
+          <h1 className="text-white text-lg md:text-2xl font-semibold font-inter leading-snug">
+            No Audio Detected...
+          </h1>
         </div>
-
-        {/* Subtitle directly below header */}
+        
+        {/* Subtitle below header */}
         <p className="text-[#484848] text-[14px] md:text-[15px] font-normal font-inter leading-relaxed max-w-lg">
           Transcript will update every ~30s
         </p>

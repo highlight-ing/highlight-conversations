@@ -1,5 +1,5 @@
 // utils/dateUtils.ts
-import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours } from 'date-fns'
+import { format, isToday as isTodayDate, isWithinInterval, subDays, subHours, subMonths, startOfDay, isAfter, isThisWeek, isBefore, startOfWeek } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
 export const formatTimestamp = (date: Date | string | number, locale?: string): string => {
@@ -55,7 +55,7 @@ export const formatHeaderTimestamp = (startDate: Date | string | number, endDate
 }
 
 // Helper function to get standard timezone abbreviation
-const getStandardTimezoneAbbr = (timeZone: string): string => {
+export const getStandardTimezoneAbbr = (timeZone: string): string => {
   const timezoneMap: { [key: string]: string } = {
     // North America
     'America/Los_Angeles': 'PST',
@@ -188,18 +188,46 @@ export function formatTimestampSimple(date: Date): string {
   return format(date, 'PPpp')
 }
 
+// Function to check if the date is today (from midnight to now)
 export function isToday(date: Date): boolean {
-  return isTodayDate(date)
+  const now = new Date()
+  return isWithinInterval(date, {
+    start: startOfDay(now),
+    end: now, // Up to the current time
+  });
 }
 
+// Function to check if the date is within the past 7 days, including last 24 hours but excluding today
 export function isPast7Days(date: Date): boolean {
-  return isWithinInterval(date, { start: subDays(new Date(), 7), end: new Date() })
+  const now = new Date()
+  const sevenDaysAgo = subDays(now, 7)
+  
+  return (
+    isWithinInterval(date, { 
+      start: sevenDaysAgo, 
+      end: now 
+    }) &&
+    !isToday(date) 
+  )
 }
 
-export function isOlderThan7Days(date: Date): boolean {
-  return date < subDays(new Date(), 7)
+// Function to check if the date is from 1 month ago up to the start of this week (excluding this week)
+export function isPastMonth(date: Date): boolean {
+  const oneMonthAgo = subMonths(new Date(), 1)
+  const startOfThisWeek = startOfWeek(new Date())
+  
+  return (
+    isWithinInterval(date, {
+      start: oneMonthAgo,
+      end: startOfThisWeek
+    }) &&
+    isBefore(date, startOfThisWeek) // Ensures date is before the start of this week
+  )
 }
 
-export function isLast24Hours(date: Date): boolean {
-  return isWithinInterval(date, { start: subHours(new Date(), 24), end: new Date() })
+// Function to check if the date is older than 1 month 
+export function isOlderThanOneMonth(date: Date): boolean {
+  const oneMonthAgo = subMonths(startOfDay(new Date()), 1)
+  return isBefore(date, oneMonthAgo)
 }
+

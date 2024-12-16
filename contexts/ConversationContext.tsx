@@ -10,14 +10,13 @@ import { useAudioPermission } from '@/hooks/useAudioPermission'
 import { useAmplitude } from '@/hooks/useAmplitude'
 
 const POLL_MIC_ACTIVITY = 300
-const HOUR_IN_MS = 60 * 60 * 1000
-const DAY_IN_MS = 24 * 60 * 60 * 1000
 
-const AUTO_SAVE_TIME_DEFAULT = 60 * 2
-const AUTO_CLEAR_DAYS_DEFAULT = 7
+const AUTO_SAVE_TIME_DEFAULT = 60 * 10
+const AUTO_CLEAR_DAYS_DEFAULT = -1
+const ASR_DURATION_HOURS_DEFAULT = 8
 
 const MIN_AUTO_SAVE_TIME = 60
-const DEFAULT_AUTO_SAVE_TIME = 120
+const DEFAULT_AUTO_SAVE_TIME = 600
 
 interface ConversationContextType {
   conversations: ConversationData[]
@@ -27,17 +26,21 @@ interface ConversationContextType {
   elapsedTime: number
   autoSaveTime: number
   autoClearDays: number
+  asrDuration: number
+  asrCloudFallback: boolean
   micActivity: number
   isAudioOn: boolean
   searchQuery: string
   isMergeActive: boolean
-  saveCurrentConversation: () => Promise<void>
+  saveCurrentConversation: () => Promise<ConversationData>
   addConversation: (conversation: ConversationData) => Promise<void>
   updateConversation: (conversation: ConversationData) => Promise<void>
   deleteConversation: (id: string) => Promise<void>
   deleteAllConversations: () => Promise<void>
   setAutoSaveTime: (time: number) => Promise<void>
   setAutoClearDays: (days: number) => Promise<void>
+  setAsrDuration: (hours: number) => Promise<void>
+  setAsrCloudFallback: (enabled: boolean) => Promise<void>
   setIsAudioOn: (isOn: boolean) => Promise<void>
   setSearchQuery: (query: string) => void
   isSaving: boolean
@@ -60,6 +63,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [elapsedTime, setElapsedTime] = useState<number>(0)
   const [autoSaveTime, setAutoSaveTime] = useState<number>(AUTO_SAVE_TIME_DEFAULT)
   const [autoClearDays, setAutoClearDays] = useState<number>(AUTO_CLEAR_DAYS_DEFAULT)
+  const [asrDuration, setAsrDuration] = useState<number>(ASR_DURATION_HOURS_DEFAULT)
+  const [asrCloudFallback, setAsrCloudFallback] = useState<boolean>(false)
   const [micActivity, setMicActivity] = useState(0)
   const [isSaving, setIsSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -142,6 +147,16 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }, 10)
     })
 
+    const removeOnAsrDurationListener =
+      Highlight.app.addListener?.('onAsrDurationUpdated', (duration: number) => {
+        setAsrDuration(duration)
+      }) ?? (() => {})
+
+    const removeOnAsrCloudFallbackListener =
+      Highlight.app.addListener?.('onAsrCloudFallbackUpdated', (enabled: boolean) => {
+        setAsrCloudFallback(enabled)
+      }) ?? (() => {})
+
     return () => {
       removeCurrentConversationListener()
       removeConversationsUpdatedListener()
@@ -151,6 +166,8 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       removeSaveConversationListener()
       removeConversationSavedListener()
       removeExternalMessageListener()
+      removeOnAsrDurationListener()
+      removeOnAsrCloudFallbackListener()
     }
   }, [isAudioOn, trackEvent])
 
@@ -238,8 +255,23 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       const autoClearDaysFromAPI = await Highlight.conversations.getAutoClearDays()
-      const validAutoClearDays = autoClearDaysFromAPI ?? AUTO_CLEAR_DAYS_DEFAULT
       setAutoClearDays(autoClearDaysFromAPI ?? AUTO_CLEAR_DAYS_DEFAULT)
+
+      try {
+        const duration = (await Highlight.conversations.getAsrDuration?.()) ?? ASR_DURATION_HOURS_DEFAULT
+        setAsrDuration(duration)
+      } catch (error) {
+        console.warn('ASR Duration API not available, using default:', ASR_DURATION_HOURS_DEFAULT)
+        setAsrDuration(ASR_DURATION_HOURS_DEFAULT)
+      }
+
+      try {
+        const cloudFallback = (await Highlight.conversations.getAsrCloudFallback?.()) ?? false
+        setAsrCloudFallback(cloudFallback)
+      } catch (error) {
+        console.warn('ASR Cloud Fallback API not available, using default: false')
+        setAsrCloudFallback(false)
+      }
 
       // Fetch conversations again after setting autoClearDays
       const { allConversations, appStorageConversations } = await fetchConversations()
@@ -247,6 +279,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setConversations(mergedConversations)
       console.log('Finished fetching initial data')
     }
+
     fetchInitialData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -329,8 +362,9 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const deleteConversation = useCallback(
     async (id: string) => {
-      await Highlight.conversations.deleteConversation(id)
       trackEvent('conversation_deleted', { conversationId: id })
+      await Highlight.conversations.deleteConversation(id)
+      fetchLatestData()
     },
     [trackEvent]
   )
@@ -405,14 +439,36 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     elapsedTime,
     autoSaveTime,
     autoClearDays,
+    asrDuration,
+    asrCloudFallback,
     micActivity,
     isAudioOn,
     searchQuery,
     isMergeActive,
-    saveCurrentConversation: async () => {
-      const savedConversation = await Highlight.conversations.saveCurrentConversation()
-      trackEvent('conversation_added', {})
+    saveCurrentConversation: async (): Promise<ConversationData> => {
+      try {
+        await Highlight.conversations.saveCurrentConversation()
+
+        // Fetch updated conversations
+        const updatedConversations = await Highlight.conversations.getAllConversations()
+
+        // Find the conversation with the most recent timestamp
+        const savedConversation = updatedConversations.reduce((latest, conversation) => {
+          return conversation.timestamp > latest.timestamp ? conversation : latest
+        }, updatedConversations[0])
+
+        if (!savedConversation) {
+          throw new Error('Failed to retrieve the saved conversation.')
+        }
+
+        trackEvent('conversation_added', {})
+        return savedConversation
+      } catch (error) {
+        console.error('Error saving conversation:', error)
+        throw error
+      }
     },
+
     addConversation,
     updateConversation,
     deleteConversation,
@@ -427,10 +483,38 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       trackEvent('changed_auto_save_value', { newValue: validTime })
     },
     setAutoClearDays: async (days: number) => {
-      const validDays = days !== 0 ? days : AUTO_CLEAR_DAYS_DEFAULT
+      const validDays = days
       await Highlight.conversations.setAutoClearDays(validDays)
       setAutoClearDays(validDays)
       trackEvent('changed_auto_clear_value', { newValue: validDays })
+    },
+    setAsrDuration: async (hours: number) => {
+      if (hours <= 0) {
+        console.log('Invalid ASR duration. Skipping update:', hours)
+        return
+      }
+      try {
+        if (Highlight.conversations.setAsrDuration) {
+          await Highlight.conversations.setAsrDuration(hours)
+        }
+        setAsrDuration(hours)
+        trackEvent('changed_asr_duration', { newValue: hours })
+      } catch (error) {
+        console.error('Error setting ASR duration:', error)
+        throw error
+      }
+    },
+    setAsrCloudFallback: async (enabled: boolean) => {
+      try {
+        if (Highlight.conversations.setAsrCloudFallback) {
+          await Highlight.conversations.setAsrCloudFallback(enabled)
+        }
+        setAsrCloudFallback(enabled)
+        trackEvent('changed_asr_cloud_fallback', { newValue: enabled })
+      } catch (error) {
+        console.error('Error setting ASR cloud fallback:', error)
+        throw error
+      }
     },
     setIsAudioOn: setIsAudioOnAndSave,
     setSearchQuery,
