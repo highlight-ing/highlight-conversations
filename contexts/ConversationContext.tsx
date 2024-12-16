@@ -315,14 +315,12 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
     const activity = await Highlight.user.getMicActivity(POLL_MIC_ACTIVITY)
     if (activity !== micActivity) {
-      console.log('micActivity1', activity)
       setMicActivity(activity)
     }
   }, [isAudioOn, micActivity])
 
   useEffect(() => {
     let timer: NodeJS.Timeout
-    console.log('micActivity', micActivity)
     if ((micActivity || 0) < 1) {
       timer = setTimeout(() => {
         setNoAudio(true)
