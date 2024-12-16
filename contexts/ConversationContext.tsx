@@ -10,8 +10,6 @@ import { useAudioPermission } from '@/hooks/useAudioPermission'
 import { useAmplitude } from '@/hooks/useAmplitude'
 
 const POLL_MIC_ACTIVITY = 300
-const HOUR_IN_MS = 60 * 60 * 1000
-const DAY_IN_MS = 24 * 60 * 60 * 1000
 
 const AUTO_SAVE_TIME_DEFAULT = 60 * 10
 const AUTO_CLEAR_DAYS_DEFAULT = -1
@@ -257,8 +255,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       const autoClearDaysFromAPI = await Highlight.conversations.getAutoClearDays()
-      const validAutoClearDays = autoClearDaysFromAPI ?? AUTO_CLEAR_DAYS_DEFAULT
-      setAutoClearDays(validAutoClearDays)
+      setAutoClearDays(autoClearDaysFromAPI ?? AUTO_CLEAR_DAYS_DEFAULT)
 
       try {
         const duration = (await Highlight.conversations.getAsrDuration?.()) ?? ASR_DURATION_HOURS_DEFAULT
@@ -279,26 +276,7 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       // Fetch conversations again after setting autoClearDays
       const { allConversations, appStorageConversations } = await fetchConversations()
       const mergedConversations = migrateAppStorageConversations(allConversations, appStorageConversations)
-
-      let updatedConversations = mergedConversations
-
-      // If auto-clear days is set, filter out conversations older than the cutoff date
-      if (validAutoClearDays > 0) {
-        const now = new Date()
-        const cutoffDate = new Date(now.getTime() - validAutoClearDays * DAY_IN_MS)
-
-        updatedConversations = mergedConversations.filter((conversation) => {
-          return conversation.timestamp >= cutoffDate
-        })
-      }
-
-      if (updatedConversations.length !== mergedConversations.length) {
-        setConversations(updatedConversations)
-        await Highlight.conversations.updateConversations(updatedConversations)
-      } else {
-        setConversations(mergedConversations)
-      }
-
+      setConversations(mergedConversations)
       console.log('Finished fetching initial data')
     }
 
@@ -554,24 +532,6 @@ export const ConversationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setSelectedConversationId,
     handleCurrentConversationSelect
   }
-
-  // const autoClearConversations = useCallback(async () => {
-  //   console.log('Auto-clearing conversations:', autoClearDays)
-  //   if (autoClearDays <= 0) return
-
-  //   const now = new Date()
-  //   const cutoffDate = new Date(now.getTime() - autoClearDays * DAY_IN_MS)
-
-  //   const updatedConversations = conversations.filter((conversation) => {
-  //     return conversation.timestamp >= cutoffDate
-  //   })
-
-  //   if (updatedConversations.length !== conversations.length) {
-  //     console.log('Auto-cleared conversations:', conversations.length - updatedConversations.length)
-  //     setConversations(updatedConversations)
-  //     await Highlight.conversations.updateConversations(updatedConversations)
-  //   }
-  // }, [conversations, autoClearDays])
 
   return <ConversationContext.Provider value={contextValue}>{children}</ConversationContext.Provider>
 }
